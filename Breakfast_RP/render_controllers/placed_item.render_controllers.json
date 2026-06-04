@@ -1,0 +1,52 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.placed_item": {
+      "arrays": {
+        "textures": {
+          "Array.textures": [
+            "Texture.default",            // 0: fallback
+            "Texture.porkchop",           // 1
+            "Texture.potato",             // 2
+            "Texture.egg",                // 3
+            "Texture.bread",              // 4
+            "Texture.beef",               // 5
+            "Texture.chicken",            // 6
+            "Texture.mutton",             // 7
+            "Texture.rabbit",             // 8
+            "Texture.cod",                // 9
+            "Texture.salmon",             // 10
+            "Texture.kelp",               // 11
+            "Texture.cooked_beef",        // 12
+            "Texture.cooked_chicken",     // 13
+            "Texture.cooked_porkchop",     // 14
+            "Texture.cooked_mutton",      // 15
+            "Texture.cooked_rabbit",      // 16
+            "Texture.cooked_cod",         // 17
+            "Texture.cooked_salmon",      // 18
+            "Texture.dried_kelp",         // 19
+            "Texture.baked_potato",       // 20
+            "Texture.bacon",              // 21
+            "Texture.cooked_bacon",       // 22
+            "Texture.fried_egg",          // 23
+            "Texture.toast",              // 24
+            "Texture.hash_browns",        // 25
+            "Texture.raw_hash_browns",    // 26
+            "Texture.sausage",            // 27
+            "Texture.ham",                // 28
+            "Texture.pork_belly",         // 29
+            "Texture.ground_pork",        // 30
+            "Texture.lard"                // 31
+          ]
+        }
+      },
+      "geometry": "Geometry.default",
+      "materials": [
+        { "*": "Material.default" }
+      ],
+      "textures": [
+        "Array.textures[query.property('breakfast:item_variant')]"
+      ]
+    }
+  }
+}

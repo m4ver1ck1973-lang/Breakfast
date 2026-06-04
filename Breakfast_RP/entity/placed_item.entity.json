@@ -1,0 +1,51 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "breakfast:placed_item",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/items/bacon",
+        "porkchop": "textures/items/porkchop_raw",
+        "potato": "textures/items/potato",
+        "egg": "textures/items/egg",
+        "bread": "textures/items/bread",
+        "beef": "textures/items/beef_raw",
+        "chicken": "textures/items/chicken_raw",
+        "mutton": "textures/items/mutton_raw",
+        "rabbit": "textures/items/rabbit_raw",
+        "cod": "textures/items/fish_cod_raw",
+        "salmon": "textures/items/fish_salmon_raw",
+        "kelp": "textures/items/kelp",
+        "cooked_beef": "textures/items/beef_cooked",
+        "cooked_chicken": "textures/items/chicken_cooked",
+        "cooked_porkchop": "textures/items/porkchop_cooked",
+        "cooked_mutton": "textures/items/mutton_cooked",
+        "cooked_rabbit": "textures/items/rabbit_cooked",
+        "cooked_cod": "textures/items/fish_cod_cooked",
+        "cooked_salmon": "textures/items/fish_salmon_cooked",
+        "dried_kelp": "textures/items/dried_kelp",
+        "baked_potato": "textures/items/potato_baked",
+        "bacon": "textures/items/bacon",
+        "cooked_bacon": "textures/items/cooked_bacon",
+        "fried_egg": "textures/items/fried_egg",
+        "toast": "textures/items/toast",
+        "hash_browns": "textures/items/hash_browns",
+        "raw_hash_browns": "textures/items/raw_hash_browns",
+        "sausage": "textures/items/sausage",
+        "ham": "textures/items/ham",
+        "pork_belly": "textures/items/pork_belly",
+        "ground_pork": "textures/items/ground_pork",
+        "lard": "textures/items/lard"
+      },
+      "geometry": {
+        "default": "geometry.placed_item"
+      },
+      "render_controllers": [
+        "controller.render.placed_item"
+      ]
+    }
+  }
+}

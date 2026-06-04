@@ -1,0 +1,32 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "breakfast:placed_item",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "properties": {
+        "breakfast:item_variant": {
+          "type": "int",
+          "range": [0, 32],
+          "default": 0,
+          "client_sync": true
+        }
+      }
+    },
+    "components": {
+      "minecraft:physics": {
+        "has_gravity": false,
+        "has_collision": false
+      },
+      "minecraft:collision_box": {
+        "width": 0.0,
+        "height": 0.0
+      },
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": false
+      }
+    }
+  }
+}

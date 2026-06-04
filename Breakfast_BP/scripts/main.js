@@ -22,6 +22,97 @@ system.beforeEvents.startup.subscribe((event) => {
   }
 });
 
+// Item to visual variant mapping
+const ITEM_TO_VARIANT = {
+  "minecraft:porkchop": 1,
+  "minecraft:potato": 2,
+  "minecraft:egg": 3,
+  "minecraft:bread": 4,
+  "minecraft:beef": 5,
+  "minecraft:chicken": 6,
+  "minecraft:mutton": 7,
+  "minecraft:rabbit": 8,
+  "minecraft:cod": 9,
+  "minecraft:salmon": 10,
+  "minecraft:kelp": 11,
+  "minecraft:cooked_beef": 12,
+  "minecraft:cooked_chicken": 13,
+  "minecraft:cooked_porkchop": 14,
+  "minecraft:cooked_mutton": 15,
+  "minecraft:cooked_rabbit": 16,
+  "minecraft:cooked_cod": 17,
+  "minecraft:cooked_salmon": 18,
+  "minecraft:dried_kelp": 19,
+  "minecraft:baked_potato": 20,
+  "breakfast:bacon": 21,
+  "breakfast:cooked_bacon": 22,
+  "breakfast:fried_egg": 23,
+  "breakfast:toast": 24,
+  "breakfast:hash_browns": 25,
+  "breakfast:raw_hash_browns": 26,
+  "breakfast:sausage": 27,
+  "breakfast:ham": 28,
+  "breakfast:pork_belly": 29,
+  "breakfast:ground_pork": 30,
+  "breakfast:lard": 31
+};
+
+function getVariantFromItem(itemTypeId) {
+  return ITEM_TO_VARIANT[itemTypeId] || 0;
+}
+
+function getGriddleSlotOffsets(index) {
+  switch (index) {
+    case 0: return { x: -0.25, z: -0.25 };
+    case 1: return { x: 0.25, z: -0.25 };
+    case 2: return { x: -0.25, z: 0.25 };
+    case 3: return { x: 0.25, z: 0.25 };
+    default: return { x: 0, z: 0 };
+  }
+}
+
+// Helper to remove any placed visual entities in a slot or butcher block
+function removePlacedEntity(block, slotTag) {
+  try {
+    const searchLoc = { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 };
+    const entities = block.dimension.getEntities({
+      type: "breakfast:placed_item",
+      location: searchLoc,
+      maxDistance: 1.2
+    });
+    for (const ent of entities) {
+      if (ent.hasTag(slotTag)) {
+        ent.remove();
+      }
+    }
+  } catch (e) {
+    console.warn("[Breakfast] Error removing entity: " + e);
+  }
+}
+
+// Helper to spawn/update a placed visual entity
+function updatePlacedEntity(block, slotTag, itemTypeId, yOffset, xOffset = 0, zOffset = 0) {
+  try {
+    // First remove any existing entity in that slot
+    removePlacedEntity(block, slotTag);
+    
+    // Spawn new entity
+    const spawnLoc = {
+      x: block.location.x + 0.5 + xOffset,
+      y: block.location.y + yOffset,
+      z: block.location.z + 0.5 + zOffset
+    };
+    
+    const entity = block.dimension.spawnEntity("breakfast:placed_item", spawnLoc);
+    entity.addTag(slotTag);
+    
+    const variant = getVariantFromItem(itemTypeId);
+    entity.setProperty("breakfast:item_variant", variant);
+  } catch (e) {
+    console.warn("[Breakfast] Error updating entity: " + e);
+  }
+}
+
 // Recipe Definitions
 const BUTCHER_RECIPES = {
   "minecraft:porkchop": { output: "breakfast:ham", count: 1 },
@@ -96,7 +187,7 @@ function handleButcherBlockInteract(event) {
   const { block, player } = event;
   if (!player) return;
 
-  const inventory = player.getComponent("inventory");
+  const inventory = player.getComponent("minecraft:inventory");
   if (!inventory || !inventory.container) return;
 
   const container = inventory.container;
@@ -109,6 +200,7 @@ function handleButcherBlockInteract(event) {
     const returnItem = new ItemStack(blockData.placedItem, 1);
     block.dimension.spawnItem(returnItem, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
     
+    removePlacedEntity(block, "breakfast:butcher");
     blockData.placedItem = null;
     saveBlockData(block, null);
     block.dimension.playSound("random.pop", block.location);
@@ -150,6 +242,7 @@ function handleButcherBlockInteract(event) {
       }
 
       // Clear the block and play effects
+      removePlacedEntity(block, "breakfast:butcher");
       blockData.placedItem = null;
       saveBlockData(block, null);
       
@@ -167,6 +260,7 @@ function handleButcherBlockInteract(event) {
       // Place the item
       blockData.placedItem = itemInHand.typeId;
       saveBlockData(block, blockData);
+      updatePlacedEntity(block, "breakfast:butcher", itemInHand.typeId, 1.01);
 
       // Consume 1 item from player's hand
       if (itemInHand.amount > 1) {
@@ -191,7 +285,7 @@ function handleGriddleInteract(event) {
   const { block, player } = event;
   if (!player) return;
 
-  const inventory = player.getComponent("inventory");
+  const inventory = player.getComponent("minecraft:inventory");
   if (!inventory || !inventory.container) return;
 
   const container = inventory.container;
@@ -199,9 +293,8 @@ function handleGriddleInteract(event) {
   const itemInHand = container.getItem(selectedIndex);
   const blockData = getBlockData(block) || { slots: [null, null, null, null] };
 
-  // Case 1: Player interacts with empty hand -> Retrieve cooked or placed item
-  if (!itemInHand || !GRIDDLE_RECIPES[itemInHand.typeId]) {
-    // Find the first occupied slot to retrieve
+  // Case 1: Player interacts with empty hand -> Retrieve first item (cooked or raw)
+  if (!itemInHand) {
     for (let i = 0; i < 4; i++) {
       const slot = blockData.slots[i];
       if (slot) {
@@ -209,6 +302,7 @@ function handleGriddleInteract(event) {
         const spawnStack = new ItemStack(slot.item, 1);
         block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 0.6, z: block.location.z + 0.5 });
 
+        removePlacedEntity(block, "breakfast:slot_" + i);
         blockData.slots[i] = null;
         
         // Clean up block data if completely empty
@@ -241,6 +335,9 @@ function handleGriddleInteract(event) {
         progress: 0
       };
       saveBlockData(block, blockData);
+      
+      const offsets = getGriddleSlotOffsets(placedIndex);
+      updatePlacedEntity(block, "breakfast:slot_" + placedIndex, itemInHand.typeId, 0.51, offsets.x, offsets.z);
 
       // Consume item from player
       if (itemInHand.amount > 1) {
@@ -255,7 +352,31 @@ function handleGriddleInteract(event) {
     } else {
       player.onScreenDisplay.setActionBar("Griddle is full!");
     }
+    return;
   }
+
+  // Case 3: Holding a non-cookable item -> Retrieve first COOKED item if any exists
+  for (let i = 0; i < 4; i++) {
+    const slot = blockData.slots[i];
+    if (slot && !GRIDDLE_RECIPES[slot.item]) {
+      // Cooked item found -> retrieve it!
+      const spawnStack = new ItemStack(slot.item, 1);
+      block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 0.6, z: block.location.z + 0.5 });
+
+      removePlacedEntity(block, "breakfast:slot_" + i);
+      blockData.slots[i] = null;
+      
+      const isStillOccupied = blockData.slots.some(s => s !== null);
+      saveBlockData(block, isStillOccupied ? blockData : null);
+
+      block.dimension.playSound("random.pop", block.location);
+      player.onScreenDisplay.setActionBar("Retrieved cooked " + slot.item.split(":")[1] + " from slot " + (i + 1));
+      return;
+    }
+  }
+
+  // Case 4: Holding a non-cookable item and no cooked items exist -> Show warning
+  player.onScreenDisplay.setActionBar("Cannot cook this item on the griddle");
 }
 
 // Tick handler to cook items on Griddle
@@ -276,15 +397,45 @@ function handleGriddleTick(event) {
         slot.progress += 1;
         dataChanged = true;
 
+        // Spawn cooking steam/smoke particle
+        if (Math.random() < 0.4) {
+          const offsets = getGriddleSlotOffsets(i);
+          const pLoc = {
+            x: block.location.x + 0.5 + offsets.x,
+            y: block.location.y + 0.6,
+            z: block.location.z + 0.5 + offsets.z
+          };
+          try {
+            block.dimension.spawnParticle("minecraft:basic_smoke_particle", pLoc);
+          } catch (pe) {}
+        }
+
         // Cook completed
         if (slot.progress >= recipe.cookTime) {
           slot.item = recipe.output;
           slot.progress = 0; // reset progress
           
           block.dimension.playSound("random.fizz", block.location);
+
+          // Update texture on the visual entity
+          try {
+            const entities = block.dimension.getEntities({
+              type: "breakfast:placed_item",
+              location: { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 },
+              maxDistance: 1.2
+            });
+            for (const ent of entities) {
+              if (ent.hasTag("breakfast:slot_" + i)) {
+                ent.setProperty("breakfast:item_variant", getVariantFromItem(recipe.output));
+                break;
+              }
+            }
+          } catch (e) {
+            console.warn("[Breakfast] Error updating griddle item texture: " + e);
+          }
         } else {
           // Play crackle sound occasionally
-          if (Math.random() < 0.3) {
+          if (Math.random() < 0.6) {
             block.dimension.playSound("block.campfire.crackle", block.location);
           }
         }
@@ -319,5 +470,63 @@ world.afterEvents.itemCompleteUse.subscribe((event) => {
     } catch (err) {
       console.warn("[Breakfast] Error applying Miner's Skillet effects: " + err);
     }
+  }
+});
+
+// Clean up and drop contents when Griddle or Butcher Block is broken
+function handleBlockBreak(location, dimension, blockTypeId) {
+  try {
+    const key = `${dimension.id}:${location.x},${location.y},${location.z}`;
+    const globalData = getGlobalData();
+    const blockData = globalData[key];
+    
+    if (blockData) {
+      if (blockTypeId === "breakfast:butcher_block" && blockData.placedItem) {
+        const itemStack = new ItemStack(blockData.placedItem, 1);
+        dimension.spawnItem(itemStack, { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+      } else if (blockTypeId === "breakfast:griddle" && blockData.slots) {
+        for (let i = 0; i < 4; i++) {
+          const slot = blockData.slots[i];
+          if (slot) {
+            const itemStack = new ItemStack(slot.item, 1);
+            dimension.spawnItem(itemStack, { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+          }
+        }
+      }
+      
+      // Remove data
+      delete globalData[key];
+      saveGlobalData(globalData);
+    }
+    
+    // Clean up entities
+    const searchLoc = { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 };
+    const entities = dimension.getEntities({
+      type: "breakfast:placed_item",
+      location: searchLoc,
+      maxDistance: 1.2
+    });
+    for (const ent of entities) {
+      ent.remove();
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in handleBlockBreak: " + err);
+  }
+}
+
+// Global after events for block breaks
+world.afterEvents.playerBreakBlock.subscribe((event) => {
+  const { block, brokenBlockPermutation, dimension } = event;
+  const blockId = brokenBlockPermutation.type.id;
+  if (blockId === "breakfast:butcher_block" || blockId === "breakfast:griddle") {
+    handleBlockBreak(block.location, dimension, blockId);
+  }
+});
+
+world.afterEvents.blockExplode.subscribe((event) => {
+  const { block, explodedBlockPermutation, dimension } = event;
+  const blockId = explodedBlockPermutation.type.id;
+  if (blockId === "breakfast:butcher_block" || blockId === "breakfast:griddle") {
+    handleBlockBreak(block.location, dimension, blockId);
   }
 });

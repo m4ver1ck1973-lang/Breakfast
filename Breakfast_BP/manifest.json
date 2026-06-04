@@ -1,36 +1,36 @@
 {
   "format_version": 2,
   "header": {
-    "name": "pack.name",
-    "description": "pack.description",
-    "uuid": "fb328176-e7dc-44c5-843b-49c9a677b71e",
-    "version": [1, 0, 3],
-    "min_engine_version": [1, 21, 0]
+    "name": "Breakfast BP v1.0.14",
+    "description": "Expand early-game cooking, pig and egg utility.",
+    "uuid": "e74904ac-43d1-4177-8522-67a689103a09",
+    "version": [1, 0, 14],
+    "min_engine_version": [1, 26, 0]
   },
   "modules": [
     {
-      "description": "pack.description",
+      "description": "Expand early-game cooking, pig and egg utility.",
       "type": "data",
-      "uuid": "bbaf9d7d-0967-4984-b2b3-4b9501ad2a12",
-      "version": [1, 0, 3]
+      "uuid": "bee5e914-c9d5-4a82-87ca-30c73d5818fc",
+      "version": [1, 0, 14]
     },
     {
       "description": "Scripting Module",
       "type": "script",
       "language": "javascript",
-      "uuid": "af70ebbf-50ff-4f41-902d-e48b99376492",
-      "version": [1, 0, 3],
+      "uuid": "091dd8f2-d2c0-4f5c-a7cd-35bf750c8030",
+      "version": [1, 0, 14],
       "entry": "scripts/main.js"
     }
   ],
   "dependencies": [
     {
-      "uuid": "071f3168-cbec-4721-a8e5-8c3da245d6dc",
-      "version": [1, 0, 3]
+      "uuid": "ddcd3f13-18cb-4342-b2ae-fc7aacd9a897",
+      "version": [1, 0, 14]
     },
     {
       "module_name": "@minecraft/server",
-      "version": "1.13.0"
+      "version": "2.7.0"
     }
   ]
 }

@@ -18,9 +18,15 @@
             "name": "night_vision",
             "duration": 30,
             "amplifier": 0,
-            "chance": 1.0
+            "chance": 1
           }
-        ]
+        ],
+        "can_always_eat": false
+      },
+      "minecraft:use_animation": "eat",
+      "minecraft:use_modifiers": {
+        "use_duration": 1.6,
+        "movement_modifier": 0.35
       }
     }
   }
