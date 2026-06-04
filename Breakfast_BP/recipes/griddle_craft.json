@@ -1,5 +1,5 @@
 {
-  "format_version": "1.12.0",
+  "format_version": "1.21.0",
   "minecraft:recipe_shaped": {
     "description": {
       "identifier": "breakfast:griddle_craft"
@@ -7,15 +7,18 @@
     "tags": ["crafting_table"],
     "pattern": [
       "III",
-      "P P",
-      "P P"
+      "S S",
+      "SCS"
     ],
     "key": {
       "I": {
         "item": "minecraft:iron_ingot"
       },
-      "P": {
-        "item": "minecraft:oak_planks"
+      "S": {
+        "tag": "minecraft:stone_crafting_materials"
+      },
+      "C": {
+        "item": "minecraft:campfire"
       }
     },
     "result": {

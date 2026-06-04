@@ -29,8 +29,14 @@
           "render_method": "opaque"
         }
       },
-      "minecraft:selection_box": true,
-      "minecraft:collision_box": true
+      "minecraft:selection_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
+      "minecraft:collision_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      }
     }
   }
 }

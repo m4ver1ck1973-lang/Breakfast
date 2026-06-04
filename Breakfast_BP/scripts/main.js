@@ -54,7 +54,8 @@ const ITEM_TO_VARIANT = {
   "breakfast:ham": 28,
   "breakfast:pork_belly": 29,
   "breakfast:ground_pork": 30,
-  "breakfast:lard": 31
+  "breakfast:lard": 31,
+  "breakfast:raw_sausage": 32
 };
 
 function getVariantFromItem(itemTypeId) {
@@ -132,6 +133,7 @@ const GRIDDLE_RECIPES = {
   "minecraft:egg": { output: "breakfast:fried_egg", cookTime: 8 },
   "minecraft:bread": { output: "breakfast:toast", cookTime: 6 },
   "breakfast:raw_hash_browns": { output: "breakfast:hash_browns", cookTime: 12 },
+  "breakfast:raw_sausage": { output: "breakfast:sausage", cookTime: 10 },
 
   // Vanilla Campfire Cooking
   "minecraft:beef": { output: "minecraft:cooked_beef", cookTime: 30 },
@@ -300,7 +302,7 @@ function handleGriddleInteract(event) {
       if (slot) {
         // Spawn item
         const spawnStack = new ItemStack(slot.item, 1);
-        block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 0.6, z: block.location.z + 0.5 });
+        block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
 
         removePlacedEntity(block, "breakfast:slot_" + i);
         blockData.slots[i] = null;
@@ -337,7 +339,7 @@ function handleGriddleInteract(event) {
       saveBlockData(block, blockData);
       
       const offsets = getGriddleSlotOffsets(placedIndex);
-      updatePlacedEntity(block, "breakfast:slot_" + placedIndex, itemInHand.typeId, 0.51, offsets.x, offsets.z);
+      updatePlacedEntity(block, "breakfast:slot_" + placedIndex, itemInHand.typeId, 1.01, offsets.x, offsets.z);
 
       // Consume item from player
       if (itemInHand.amount > 1) {
@@ -361,7 +363,7 @@ function handleGriddleInteract(event) {
     if (slot && !GRIDDLE_RECIPES[slot.item]) {
       // Cooked item found -> retrieve it!
       const spawnStack = new ItemStack(slot.item, 1);
-      block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 0.6, z: block.location.z + 0.5 });
+      block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
 
       removePlacedEntity(block, "breakfast:slot_" + i);
       blockData.slots[i] = null;
@@ -402,7 +404,7 @@ function handleGriddleTick(event) {
           const offsets = getGriddleSlotOffsets(i);
           const pLoc = {
             x: block.location.x + 0.5 + offsets.x,
-            y: block.location.y + 0.6,
+            y: block.location.y + 1.1,
             z: block.location.z + 0.5 + offsets.z
           };
           try {

@@ -23,6 +23,9 @@
     "sausage": {
       "textures": "textures/items/sausage"
     },
+    "raw_sausage": {
+      "textures": "textures/items/raw_sausage"
+    },
     "lard": {
       "textures": "textures/items/lard"
     },
