@@ -1,0 +1,19 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "breakfast:sausage",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "sausage",
+      "minecraft:max_stack_size": 64,
+      "minecraft:food": {
+        "nutrition": 6,
+        "saturation_modifier": 0.8
+      }
+    }
+  }
+}

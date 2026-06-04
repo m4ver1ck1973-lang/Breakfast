@@ -1,0 +1,25 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "breakfast:griddle_craft"
+    },
+    "tags": ["crafting_table"],
+    "pattern": [
+      "III",
+      "P P",
+      "P P"
+    ],
+    "key": {
+      "I": {
+        "item": "minecraft:iron_ingot"
+      },
+      "P": {
+        "item": "minecraft:planks"
+      }
+    },
+    "result": {
+      "item": "breakfast:griddle"
+    }
+  }
+}

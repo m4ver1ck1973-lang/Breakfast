@@ -1,0 +1,21 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:sausage_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      {
+        "item": "breakfast:ground_pork"
+      },
+      {
+        "item": "breakfast:bacon"
+      }
+    ],
+    "result": {
+      "item": "breakfast:sausage",
+      "count": 1
+    }
+  }
+}

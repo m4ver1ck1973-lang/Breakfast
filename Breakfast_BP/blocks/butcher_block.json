@@ -1,0 +1,41 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "breakfast:butcher_block",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:custom_components": [
+        "breakfast:butcher_block_component"
+      ],
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 2.0
+      },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "butcher_block_side",
+          "render_method": "opaque"
+        },
+        "up": {
+          "texture": "butcher_block_top",
+          "render_method": "opaque"
+        },
+        "down": {
+          "texture": "butcher_block_side",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:selection_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
+      "minecraft:collision_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      }
+    }
+  }
+}

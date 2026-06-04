@@ -1,0 +1,24 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:ham_omelet_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      {
+        "item": "minecraft:egg"
+      },
+      {
+        "item": "breakfast:ham"
+      },
+      {
+        "item": "minecraft:sweet_berries"
+      }
+    ],
+    "result": {
+      "item": "breakfast:ham_omelet",
+      "count": 1
+    }
+  }
+}

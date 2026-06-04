@@ -1,0 +1,19 @@
+{
+  "format_version": [1, 1, 0],
+  "breakfast:butcher_block": {
+    "sound": "wood",
+    "textures": {
+      "up": "butcher_block_top",
+      "down": "butcher_block_side",
+      "side": "butcher_block_side"
+    }
+  },
+  "breakfast:griddle": {
+    "sound": "stone",
+    "textures": {
+      "up": "griddle_top",
+      "down": "griddle_side",
+      "side": "griddle_side"
+    }
+  }
+}

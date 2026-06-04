@@ -1,0 +1,33 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "breakfast:nether_fungi_omelet",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "nether_fungi_omelet",
+      "minecraft:max_stack_size": 64,
+      "minecraft:food": {
+        "nutrition": 6,
+        "saturation_modifier": 0.6,
+        "effects": [
+          {
+            "name": "fire_resistance",
+            "duration": 15,
+            "amplifier": 0,
+            "chance": 1.0
+          },
+          {
+            "name": "nausea",
+            "duration": 5,
+            "amplifier": 0,
+            "chance": 1.0
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "resource_pack_name": "Breakfast_RP",
+  "texture_name": "atlas.terrain",
+  "num_mip_levels": 4,
+  "padding": 8,
+  "texture_data": {
+    "butcher_block_top": {
+      "textures": "textures/blocks/butcher_block_top"
+    },
+    "butcher_block_side": {
+      "textures": "textures/blocks/butcher_block_side"
+    },
+    "griddle_top": {
+      "textures": "textures/blocks/griddle_top"
+    },
+    "griddle_side": {
+      "textures": "textures/blocks/griddle_side"
+    }
+  }
+}

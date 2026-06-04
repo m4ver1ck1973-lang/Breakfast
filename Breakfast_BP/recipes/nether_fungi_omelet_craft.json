@@ -1,0 +1,24 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:nether_fungi_omelet_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      {
+        "item": "minecraft:egg"
+      },
+      {
+        "item": "minecraft:crimson_fungus"
+      },
+      {
+        "item": "minecraft:warped_fungus"
+      }
+    ],
+    "result": {
+      "item": "breakfast:nether_fungi_omelet",
+      "count": 1
+    }
+  }
+}

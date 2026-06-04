@@ -1,0 +1,24 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:miners_skillet_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      {
+        "item": "breakfast:cooked_bacon"
+      },
+      {
+        "item": "breakfast:hash_browns"
+      },
+      {
+        "item": "breakfast:fried_egg"
+      }
+    ],
+    "result": {
+      "item": "breakfast:miners_skillet",
+      "count": 1
+    }
+  }
+}

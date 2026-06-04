@@ -1,0 +1,36 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "breakfast:griddle",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:custom_components": [
+        "breakfast:griddle_component"
+      ],
+      "minecraft:tick": {
+        "interval_range": [20, 20],
+        "looping": true
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 2.0
+      },
+      "minecraft:geometry": "geometry.griddle",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "griddle_side",
+          "render_method": "alpha_test"
+        },
+        "up": {
+          "texture": "griddle_top",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:selection_box": true,
+      "minecraft:collision_box": true
+    }
+  }
+}

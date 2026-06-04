@@ -1,0 +1,78 @@
+{
+  "resource_pack_name": "Breakfast_RP",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "knife": {
+      "textures": "textures/items/knife"
+    },
+    "pork_belly": {
+      "textures": "textures/items/pork_belly"
+    },
+    "bacon": {
+      "textures": "textures/items/bacon"
+    },
+    "cooked_bacon": {
+      "textures": "textures/items/cooked_bacon"
+    },
+    "ham": {
+      "textures": "textures/items/ham"
+    },
+    "ground_pork": {
+      "textures": "textures/items/ground_pork"
+    },
+    "sausage": {
+      "textures": "textures/items/sausage"
+    },
+    "lard": {
+      "textures": "textures/items/lard"
+    },
+    "fried_egg": {
+      "textures": "textures/items/fried_egg"
+    },
+    "hash_browns": {
+      "textures": "textures/items/hash_browns"
+    },
+    "raw_hash_browns": {
+      "textures": "textures/items/raw_hash_browns"
+    },
+    "toast": {
+      "textures": "textures/items/toast"
+    },
+    "toast_jam": {
+      "textures": "textures/items/toast_jam"
+    },
+    "glowberry_toast": {
+      "textures": "textures/items/glowberry_toast"
+    },
+    "berry_pancakes": {
+      "textures": "textures/items/berry_pancakes"
+    },
+    "omelet": {
+      "textures": "textures/items/omelet"
+    },
+    "mushroom_omelet": {
+      "textures": "textures/items/mushroom_omelet"
+    },
+    "bacon_omelet": {
+      "textures": "textures/items/bacon_omelet"
+    },
+    "ham_omelet": {
+      "textures": "textures/items/ham_omelet"
+    },
+    "nether_fungi_omelet": {
+      "textures": "textures/items/nether_fungi_omelet"
+    },
+    "breakfast_sandwich": {
+      "textures": "textures/items/breakfast_sandwich"
+    },
+    "biscuits": {
+      "textures": "textures/items/biscuits"
+    },
+    "biscuits_and_gravy": {
+      "textures": "textures/items/biscuits_and_gravy"
+    },
+    "miners_skillet": {
+      "textures": "textures/items/miners_skillet"
+    }
+  }
+}

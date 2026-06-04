@@ -1,0 +1,24 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:biscuits_and_gravy_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      {
+        "item": "breakfast:biscuits"
+      },
+      {
+        "item": "minecraft:milk_bucket"
+      },
+      {
+        "item": "breakfast:sausage"
+      }
+    ],
+    "result": {
+      "item": "breakfast:biscuits_and_gravy",
+      "count": 1
+    }
+  }
+}

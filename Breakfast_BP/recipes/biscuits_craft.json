@@ -1,0 +1,26 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "breakfast:biscuits_craft"
+    },
+    "tags": ["crafting_table"],
+    "pattern": [
+      "W",
+      "L",
+      "W"
+    ],
+    "key": {
+      "W": {
+        "item": "minecraft:wheat"
+      },
+      "L": {
+        "item": "breakfast:lard"
+      }
+    },
+    "result": {
+      "item": "breakfast:biscuits",
+      "count": 4
+    }
+  }
+}
