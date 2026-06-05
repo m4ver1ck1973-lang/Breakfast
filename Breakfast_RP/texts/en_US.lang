@@ -1,2 +1,7 @@
 pack.name=Breakfast RP
 pack.description=Expand early-game cooking, pig and egg utility resources.
+
+item.breakfast:knife_flint=Flint Knife
+item.breakfast:knife_copper=Copper Knife
+item.breakfast:knife_iron=Iron Knife
+item.breakfast:knife_diamond=Diamond Knife

@@ -2,8 +2,17 @@
   "resource_pack_name": "Breakfast_RP",
   "texture_name": "atlas.items",
   "texture_data": {
-    "knife": {
-      "textures": "textures/items/knife"
+    "knife_flint": {
+      "textures": "textures/items/knife_flint"
+    },
+    "knife_copper": {
+      "textures": "textures/items/knife_copper"
+    },
+    "knife_iron": {
+      "textures": "textures/items/knife_iron"
+    },
+    "knife_diamond": {
+      "textures": "textures/items/knife_diamond"
     },
     "pork_belly": {
       "textures": "textures/items/pork_belly"

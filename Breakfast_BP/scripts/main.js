@@ -117,6 +117,13 @@ function updatePlacedEntity(block, slotTag, itemTypeId, yOffset, xOffset = 0, zO
   }
 }
 
+const KNIVES = [
+  "breakfast:knife_flint",
+  "breakfast:knife_copper",
+  "breakfast:knife_iron",
+  "breakfast:knife_diamond"
+];
+
 // Recipe Definitions
 const BUTCHER_RECIPES = {
   "minecraft:porkchop": { output: "breakfast:ham", count: 1 },
@@ -216,7 +223,7 @@ function handleButcherBlockInteract(event) {
   if (!itemInHand) return;
 
   // Case 2: Holding a Knife -> Cut the placed item
-  if (itemInHand.typeId === "breakfast:knife") {
+  if (KNIVES.includes(itemInHand.typeId)) {
     if (!blockData.placedItem) {
       player.onScreenDisplay.setActionBar("Place a pork chop, ham, pork belly, or potato first");
       return;
@@ -606,7 +613,10 @@ world.beforeEvents.itemUse.subscribe((event) => {
   const typeId = itemStack.typeId;
   if (typeId.startsWith("breakfast:")) {
     const nonFoods = [
-      "breakfast:knife",
+      "breakfast:knife_flint",
+      "breakfast:knife_copper",
+      "breakfast:knife_iron",
+      "breakfast:knife_diamond",
       "breakfast:lard",
       "breakfast:griddle",
       "breakfast:butcher_block"
