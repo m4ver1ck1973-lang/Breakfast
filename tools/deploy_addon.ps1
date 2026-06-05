@@ -1,7 +1,14 @@
 # Get project root folder
 $ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
 
-$MojangDir = "$env:localappdata\Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\LocalState\games\com.mojang"
+# Detect active Mojang directory (prioritizing Roaming AppData, then checking standard/beta UWP paths)
+$MojangDir = "$env:appdata\Minecraft Bedrock\Users\Shared\games\com.mojang"
+if (-not (Test-Path $MojangDir)) {
+    $MojangDir = "$env:localappdata\Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\LocalState\games\com.mojang"
+}
+if (-not (Test-Path $MojangDir)) {
+    $MojangDir = "$env:localappdata\Packages\Microsoft.MinecraftWindowsBeta_8wekyb3d8bbwe\LocalState\games\com.mojang"
+}
 
 if (Test-Path $MojangDir) {
     # 1. Clean up standard behavior_packs and resource_packs to avoid UUID conflicts

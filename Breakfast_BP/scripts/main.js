@@ -304,6 +304,7 @@ function handleGriddleInteract(event) {
         const spawnStack = new ItemStack(slot.item, 1);
         block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
 
+        checkShortOrderCook(player, slot.item);
         removePlacedEntity(block, "breakfast:slot_" + i);
         blockData.slots[i] = null;
         
@@ -365,6 +366,7 @@ function handleGriddleInteract(event) {
       const spawnStack = new ItemStack(slot.item, 1);
       block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
 
+      checkShortOrderCook(player, slot.item);
       removePlacedEntity(block, "breakfast:slot_" + i);
       blockData.slots[i] = null;
       
@@ -408,7 +410,7 @@ function handleGriddleTick(event) {
             z: block.location.z + 0.5 + offsets.z
           };
           try {
-            block.dimension.spawnParticle("minecraft:basic_smoke_particle", pLoc);
+            block.dimension.spawnParticle("minecraft:campfire_smoke_particle", pLoc);
           } catch (pe) {}
         }
 
@@ -469,8 +471,21 @@ world.afterEvents.itemCompleteUse.subscribe((event) => {
       player.addEffect("haste", 1800, { amplifier: 0 });
 
       player.onScreenDisplay.setActionBar("Mining Fatigue cleared!");
+
+      // Award achievement
+      awardAchievement(player, "miners_breakfast", "Miner's Breakfast", "Consume a Miner's Skillet");
     } catch (err) {
       console.warn("[Breakfast] Error applying Miner's Skillet effects: " + err);
+    }
+  }
+
+  if (itemStack.typeId === "breakfast:nether_fungi_omelet") {
+    try {
+      if (player.dimension.id === "minecraft:the_nether") {
+        awardAchievement(player, "nether_brunch", "Nether Brunch", "Consume a Nether Fungi Omelet in the Nether");
+      }
+    } catch (err) {
+      console.warn("[Breakfast] Error checking Nether Brunch achievement: " + err);
     }
   }
 });
@@ -532,3 +547,113 @@ world.afterEvents.blockExplode.subscribe((event) => {
     handleBlockBreak(block.location, dimension, blockId);
   }
 });
+
+// Workaround for Bedrock bug MCPE-188410 where custom foods ignore can_always_eat: false
+world.beforeEvents.itemUse.subscribe((event) => {
+  const { itemStack, source: player } = event;
+  if (!player || !itemStack) return;
+
+  const typeId = itemStack.typeId;
+  if (typeId.startsWith("breakfast:")) {
+    const nonFoods = [
+      "breakfast:knife",
+      "breakfast:lard",
+      "breakfast:griddle",
+      "breakfast:butcher_block"
+    ];
+    if (nonFoods.includes(typeId)) return;
+
+    try {
+      const hunger = player.getComponent("minecraft:player.hunger");
+      if (hunger && hunger.currentValue >= 20) {
+        event.cancel = true;
+      }
+    } catch (e) {
+      console.warn("[Breakfast] Error in itemUse hunger check: " + e);
+    }
+  }
+});
+
+// ----------------------------------------------------
+// Custom Achievements / Advancements System
+// ----------------------------------------------------
+function awardAchievement(player, id, name, description) {
+  try {
+    const propKey = `breakfast:ach_${id}`;
+    if (player.getDynamicProperty(propKey)) return; // already awarded
+
+    player.setDynamicProperty(propKey, true);
+
+    // Broadcast message to everyone in the world
+    world.sendMessage(`[§6Advancement§r] §a${player.name}§r has made the advancement [§a${name}§r]: ${description}`);
+
+    // Play standard advancement sound
+    player.dimension.playSound("ui.toast", player.location);
+
+    // Show screen title/subtitle
+    player.onScreenDisplay.setTitle("§aAdvancement Made!");
+    player.onScreenDisplay.setSubtitle("§6" + name);
+  } catch (err) {
+    console.warn(`[Breakfast] Error awarding achievement ${id}: ` + err);
+  }
+}
+
+// 1. Rise and Shine (Place Griddle)
+world.afterEvents.playerPlaceBlock.subscribe((event) => {
+  const { player, block } = event;
+  if (!player || !block) return;
+
+  if (block.typeId === "breakfast:griddle") {
+    awardAchievement(player, "rise_and_shine", "Rise and Shine", "Craft and place a Griddle");
+  }
+});
+
+// 2. Most Important Meal (Obtain Berry Pancakes)
+system.runInterval(() => {
+  try {
+    for (const player of world.getAllPlayers()) {
+      const inventory = player.getComponent("minecraft:inventory");
+      if (inventory && inventory.container) {
+        const container = inventory.container;
+        for (let i = 0; i < container.size; i++) {
+          const item = container.getItem(i);
+          if (item && item.typeId === "breakfast:berry_pancakes") {
+            awardAchievement(player, "most_important_meal", "Most Important Meal", "Obtain Berry Pancakes");
+            break;
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in pancakes achievement scan: " + err);
+  }
+}, 20);
+
+// 3. Short Order Cook (Cook every ingredient)
+const COOKED_INGREDIENTS = [
+  "breakfast:cooked_bacon",
+  "breakfast:fried_egg",
+  "breakfast:toast",
+  "breakfast:hash_browns",
+  "breakfast:sausage"
+];
+
+function checkShortOrderCook(player, itemTypeId) {
+  if (!COOKED_INGREDIENTS.includes(itemTypeId)) return;
+
+  try {
+    const cookedListStr = player.getDynamicProperty("breakfast:cooked_list") || "";
+    const cookedList = cookedListStr ? cookedListStr.split(",") : [];
+    
+    if (!cookedList.includes(itemTypeId)) {
+      cookedList.push(itemTypeId);
+      player.setDynamicProperty("breakfast:cooked_list", cookedList.join(","));
+      
+      if (cookedList.length === 5) {
+        awardAchievement(player, "short_order_cook", "Short Order Cook", "Cook every breakfast ingredient on the Griddle");
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in checkShortOrderCook: " + err);
+  }
+}
