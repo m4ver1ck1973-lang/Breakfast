@@ -18,10 +18,10 @@
       "textures": "textures/items/pork_belly"
     },
     "bacon": {
-      "textures": "textures/items/bacon"
+      "textures": "textures/items/bacon_raw"
     },
     "cooked_bacon": {
-      "textures": "textures/items/cooked_bacon"
+      "textures": "textures/items/bacon_cooked"
     },
     "ham": {
       "textures": "textures/items/ham"
@@ -46,6 +46,9 @@
     },
     "raw_hash_browns": {
       "textures": "textures/items/raw_hash_browns"
+    },
+    "bread_slice": {
+      "textures": "textures/items/bread_slice"
     },
     "toast": {
       "textures": "textures/items/toast"

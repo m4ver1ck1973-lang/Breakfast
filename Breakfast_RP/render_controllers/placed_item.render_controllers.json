@@ -37,7 +37,8 @@
             "Texture.pork_belly",         // 29
             "Texture.ground_pork",        // 30
             "Texture.lard",               // 31
-            "Texture.raw_sausage"         // 32
+            "Texture.raw_sausage",         // 32
+            "Texture.bread_slice"          // 33
           ]
         }
       },

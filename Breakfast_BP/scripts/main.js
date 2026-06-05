@@ -58,7 +58,8 @@ const ITEM_TO_VARIANT = {
   "breakfast:pork_belly": 29,
   "breakfast:ground_pork": 30,
   "breakfast:lard": 31,
-  "breakfast:raw_sausage": 32
+  "breakfast:raw_sausage": 32,
+  "breakfast:bread_slice": 33
 };
 
 function getVariantFromItem(itemTypeId) {
@@ -134,14 +135,15 @@ const BUTCHER_RECIPES = {
     extra: "breakfast:lard", 
     extraChance: 0.5 
   },
-  "minecraft:potato": { output: "breakfast:raw_hash_browns", count: 1 }
+  "minecraft:potato": { output: "breakfast:raw_hash_browns", count: 1 },
+  "minecraft:bread": { output: "breakfast:bread_slice", count: 3 }
 };
 
 const GRIDDLE_RECIPES = {
   // Custom Add-on Cooking
   "breakfast:bacon": { output: "breakfast:cooked_bacon", cookTime: 10 },
   "minecraft:egg": { output: "breakfast:fried_egg", cookTime: 8 },
-  "minecraft:bread": { output: "breakfast:toast", cookTime: 6 },
+  "breakfast:bread_slice": { output: "breakfast:toast", cookTime: 6 },
   "breakfast:raw_hash_browns": { output: "breakfast:hash_browns", cookTime: 12 },
   "breakfast:raw_sausage": { output: "breakfast:sausage", cookTime: 10 },
 
@@ -225,7 +227,7 @@ function handleButcherBlockInteract(event) {
   // Case 2: Holding a Knife -> Cut the placed item
   if (KNIVES.includes(itemInHand.typeId)) {
     if (!blockData.placedItem) {
-      player.onScreenDisplay.setActionBar("Place a pork chop, ham, pork belly, or potato first");
+      player.onScreenDisplay.setActionBar("Place a pork chop, ham, pork belly, potato, or bread first");
       return;
     }
 
@@ -352,7 +354,7 @@ function handleButcherBlockInteract(event) {
       block.dimension.playSound("dig.wood", block.location);
       player.onScreenDisplay.setActionBar("Placed " + itemInHand.typeId.split(":")[1]);
     } else {
-      player.onScreenDisplay.setActionBar("Hold a pork chop, ham, pork belly, or potato to place");
+      player.onScreenDisplay.setActionBar("Hold a pork chop, ham, pork belly, potato, or bread to place");
     }
   }
 }

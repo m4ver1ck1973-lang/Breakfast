@@ -7,7 +7,7 @@
         "default": "entity_alphatest"
       },
       "textures": {
-        "default": "textures/items/bacon",
+        "default": "textures/items/bacon_raw",
         "porkchop": "textures/items/porkchop_raw",
         "potato": "textures/items/potato",
         "egg": "textures/items/egg",
@@ -28,8 +28,8 @@
         "cooked_salmon": "textures/items/fish_salmon_cooked",
         "dried_kelp": "textures/items/dried_kelp",
         "baked_potato": "textures/items/potato_baked",
-        "bacon": "textures/items/bacon",
-        "cooked_bacon": "textures/items/cooked_bacon",
+        "bacon": "textures/items/bacon_raw",
+        "cooked_bacon": "textures/items/bacon_cooked",
         "fried_egg": "textures/items/fried_egg",
         "toast": "textures/items/toast",
         "hash_browns": "textures/items/hash_browns",
@@ -39,7 +39,8 @@
         "ham": "textures/items/ham",
         "pork_belly": "textures/items/pork_belly",
         "ground_pork": "textures/items/ground_pork",
-        "lard": "textures/items/lard"
+        "lard": "textures/items/lard",
+        "bread_slice": "textures/items/bread_slice"
       },
       "geometry": {
         "default": "geometry.placed_item"
