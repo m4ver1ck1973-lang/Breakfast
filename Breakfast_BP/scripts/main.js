@@ -231,17 +231,9 @@ function handleButcherBlockInteract(event) {
 
     const recipe = BUTCHER_RECIPES[blockData.placedItem];
     if (recipe) {
-      // Spawn processed items
-      const outputStack = new ItemStack(recipe.output, recipe.count);
-      block.dimension.spawnItem(outputStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
+      const knifeType = itemInHand.typeId;
 
-      // Handle extra drops like Lard
-      if (recipe.extra && Math.random() < recipe.extraChance) {
-        const extraStack = new ItemStack(recipe.extra, 1);
-        block.dimension.spawnItem(extraStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
-      }
-
-      // Damage the Knife tool
+      // 1. Damage the Knife tool (happens regardless of success)
       const durability = itemInHand.getComponent("minecraft:durability");
       if (durability) {
         durability.damage += 1;
@@ -253,13 +245,88 @@ function handleButcherBlockInteract(event) {
         }
       }
 
+      // 2. Flint Knife fail check (20% failure rate)
+      if (knifeType === "breakfast:knife_flint" && Math.random() < 0.20) {
+        block.dimension.playSound("dig.stone", block.location);
+        player.onScreenDisplay.setActionBar("Failed to slice! Try again.");
+        return;
+      }
+
+      // 3. Process outcomes based on knife tier
+      let count = recipe.count;
+      let extraChance = recipe.extraChance || 0;
+      let hasBonusSlice = false;
+      let hasBonusExtra = false;
+      let hasBonusScraps = false;
+
+      if (knifeType === "breakfast:knife_flint") {
+        // Flint drops no byproducts
+        extraChance = 0;
+      } else if (knifeType === "breakfast:knife_iron") {
+        // Iron has a 20% chance for a special trigger
+        if (Math.random() < 0.20) {
+          if (recipe.extra && Math.random() < 0.5) {
+            // Option A: Guaranteed byproduct
+            extraChance = 1.0;
+            hasBonusExtra = true;
+          } else {
+            // Option B: Double output
+            count += 1;
+            hasBonusSlice = true;
+          }
+        }
+      } else if (knifeType === "breakfast:knife_diamond") {
+        // Diamond always produces +1 output
+        count += 1;
+        // Diamond guarantees recipe byproduct
+        if (recipe.extra) {
+          extraChance = 1.0;
+        }
+        // Diamond has 30% chance for extra scraps (bone for meats, poisonous potato for potato)
+        if (Math.random() < 0.30) {
+          hasBonusScraps = true;
+        }
+      }
+
+      // Spawn processed items
+      const outputStack = new ItemStack(recipe.output, count);
+      block.dimension.spawnItem(outputStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
+
+      // Handle extra drops like Lard
+      if (recipe.extra && Math.random() < extraChance) {
+        const extraStack = new ItemStack(recipe.extra, 1);
+        block.dimension.spawnItem(extraStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
+      }
+
+      // Spawn Diamond scraps
+      if (hasBonusScraps) {
+        let scrapItem = "minecraft:bone";
+        if (blockData.placedItem === "minecraft:potato") {
+          scrapItem = "minecraft:poisonous_potato";
+        }
+        const scrapStack = new ItemStack(scrapItem, 1);
+        block.dimension.spawnItem(scrapStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
+      }
+
+      // Display feedback
+      if (hasBonusSlice) {
+        player.onScreenDisplay.setActionBar("Bonus Slice!");
+      } else if (hasBonusExtra) {
+        player.onScreenDisplay.setActionBar("Bonus Byproduct!");
+      } else if (hasBonusScraps) {
+        player.onScreenDisplay.setActionBar("Bonus Scraps!");
+      } else if (knifeType === "breakfast:knife_diamond") {
+        player.onScreenDisplay.setActionBar("Diamond Quality Cut!");
+      } else {
+        player.onScreenDisplay.setActionBar("Processed!");
+      }
+
       // Clear the block and play effects
       removePlacedEntity(block, "breakfast:butcher");
       blockData.placedItem = null;
       saveBlockData(block, null);
       
       block.dimension.playSound("mob.sheep.shear", block.location);
-      player.onScreenDisplay.setActionBar("Processed!");
     } else {
       player.onScreenDisplay.setActionBar("Cannot process this item on the butcher block");
     }
