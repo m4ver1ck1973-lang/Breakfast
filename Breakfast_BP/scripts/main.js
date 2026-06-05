@@ -15,6 +15,9 @@ system.beforeEvents.startup.subscribe((event) => {
       },
       onTick: (e) => {
         handleGriddleTick(e);
+      },
+      onStepOn: (e) => {
+        handleGriddleStepOn(e);
       }
     });
   } catch (err) {
@@ -386,6 +389,10 @@ function handleGriddleInteract(event) {
 // Tick handler to cook items on Griddle
 function handleGriddleTick(event) {
   const { block } = event;
+
+  // Deal damage to entities standing on top of the griddle
+  dealGriddleBurnDamage(block);
+
   const blockData = getBlockData(block);
   if (!blockData || !blockData.slots) return;
 
@@ -452,6 +459,49 @@ function handleGriddleTick(event) {
     saveBlockData(block, null);
   } else if (dataChanged) {
     saveBlockData(block, blockData);
+  }
+}
+
+function dealGriddleBurnDamage(block) {
+  try {
+    const topLoc = {
+      x: block.location.x + 0.5,
+      y: block.location.y + 1.2,
+      z: block.location.z + 0.5
+    };
+    const entities = block.dimension.getEntities({
+      location: topLoc,
+      maxDistance: 0.8
+    });
+    
+    for (const entity of entities) {
+      if (entity.typeId === "breakfast:placed_item") continue;
+      if (entity.typeId === "minecraft:item") continue;
+      
+      const health = entity.getComponent("minecraft:health");
+      if (health) {
+        entity.applyDamage(1, { cause: "fire" });
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in dealGriddleBurnDamage: " + err);
+  }
+}
+
+function handleGriddleStepOn(event) {
+  const { entity } = event;
+  if (!entity) return;
+  
+  if (entity.typeId === "breakfast:placed_item") return;
+  if (entity.typeId === "minecraft:item") return;
+
+  try {
+    const health = entity.getComponent("minecraft:health");
+    if (health) {
+      entity.applyDamage(1, { cause: "fire" });
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in handleGriddleStepOn: " + err);
   }
 }
 
