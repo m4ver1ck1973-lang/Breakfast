@@ -7,7 +7,7 @@
     "tags": ["crafting_table"],
     "ingredients": [
       {
-        "item": "breakfast:biscuits"
+        "item": "breakfast:biscuit"
       },
       {
         "item": "minecraft:milk_bucket"

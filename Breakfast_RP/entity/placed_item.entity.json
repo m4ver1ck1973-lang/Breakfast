@@ -33,7 +33,7 @@
         "fried_egg": "textures/items/fried_egg",
         "toast": "textures/items/toast",
         "hash_browns": "textures/items/hash_browns",
-        "raw_hash_browns": "textures/items/raw_hash_browns",
+        "raw_hash_browns": "textures/items/hash_browns_raw",
         "sausage": "textures/items/sausage",
         "raw_sausage": "textures/items/raw_sausage",
         "ham": "textures/items/ham",

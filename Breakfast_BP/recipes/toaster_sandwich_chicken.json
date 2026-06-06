@@ -1,0 +1,24 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:toaster_sandwich_chicken"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      {
+        "item": "breakfast:toast"
+      },
+      {
+        "item": "breakfast:fried_egg"
+      },
+      {
+        "item": "minecraft:cooked_chicken"
+      }
+    ],
+    "result": {
+      "item": "breakfast:toaster_sandwich",
+      "count": 1
+    }
+  }
+}

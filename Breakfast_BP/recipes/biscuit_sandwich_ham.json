@@ -1,0 +1,24 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:biscuit_sandwich_ham"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      {
+        "item": "breakfast:biscuit"
+      },
+      {
+        "item": "breakfast:fried_egg"
+      },
+      {
+        "item": "breakfast:ham"
+      }
+    ],
+    "result": {
+      "item": "breakfast:biscuit_sandwich",
+      "count": 1
+    }
+  }
+}

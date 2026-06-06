@@ -1,24 +1,40 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Breakfast RP v1.0.21",
+    "name": "Breakfast RP v1.0.22",
     "description": "Expand early-game cooking, pig and egg utility resources.",
     "uuid": "ddcd3f13-18cb-4342-b2ae-fc7aacd9a897",
-    "version": [1, 0, 21],
-    "min_engine_version": [1, 26, 0]
+    "version": [
+      1,
+      0,
+      22
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      0
+    ]
   },
   "modules": [
     {
       "description": "Expand early-game cooking, pig and egg utility resources.",
       "type": "resources",
       "uuid": "b01d2858-cb1f-4a08-b192-b6ff1ef32ea5",
-      "version": [1, 0, 21]
+      "version": [
+        1,
+        0,
+        22
+      ]
     }
   ],
   "dependencies": [
     {
       "uuid": "e74904ac-43d1-4177-8522-67a689103a09",
-      "version": [1, 0, 21]
+      "version": [
+        1,
+        0,
+        22
+      ]
     }
   ]
 }

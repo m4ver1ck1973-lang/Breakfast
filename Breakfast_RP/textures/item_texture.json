@@ -45,7 +45,7 @@
       "textures": "textures/items/hash_browns"
     },
     "raw_hash_browns": {
-      "textures": "textures/items/raw_hash_browns"
+      "textures": "textures/items/hash_browns_raw"
     },
     "bread_slice": {
       "textures": "textures/items/bread_slice"
@@ -77,11 +77,14 @@
     "nether_fungi_omelet": {
       "textures": "textures/items/nether_fungi_omelet"
     },
-    "breakfast_sandwich": {
+    "toaster_sandwich": {
       "textures": "textures/items/breakfast_sandwich"
     },
-    "biscuits": {
-      "textures": "textures/items/biscuits"
+    "biscuit_sandwich": {
+      "textures": "textures/items/biscuit_sandwich"
+    },
+    "biscuit": {
+      "textures": "textures/items/biscuit"
     },
     "biscuits_and_gravy": {
       "textures": "textures/items/biscuits_and_gravy"
