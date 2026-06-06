@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Breakfast RP v1.0.23",
+    "name": "Breakfast RP v1.1.0",
     "description": "Expand early-game cooking, pig and egg utility resources.",
     "uuid": "ddcd3f13-18cb-4342-b2ae-fc7aacd9a897",
     "version": [
       1,
-      0,
-      23
+      1,
+      0
     ],
     "min_engine_version": [
       1,
@@ -22,8 +22,8 @@
       "uuid": "b01d2858-cb1f-4a08-b192-b6ff1ef32ea5",
       "version": [
         1,
-        0,
-        23
+        1,
+        0
       ]
     }
   ],
@@ -32,8 +32,8 @@
       "uuid": "e74904ac-43d1-4177-8522-67a689103a09",
       "version": [
         1,
-        0,
-        23
+        1,
+        0
       ]
     }
   ]
