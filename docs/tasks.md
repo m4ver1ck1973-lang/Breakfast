@@ -67,3 +67,6 @@ This file tracks the current state, next steps, and specific task checklist item
   - [ ] Verify advancements trigger (text chat broadcast, toast sound, screen subtitle)
   - [ ] Test consuming custom foods (eating animation, hunger restriction, and Miner's Skillet/Nether Fungi Omelet effects)
 
+- [ ] **Future Considerations**
+  - [ ] 3D Extrusion Modeling: Implement Blockbench-based 3D extruded models for placed food items (sausage, bacon, etc.) to give them realistic depth on workstations instead of flat planes.
+

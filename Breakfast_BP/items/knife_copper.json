@@ -11,6 +11,12 @@
       "minecraft:icon": "knife_copper",
       "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": true,
+      "minecraft:damage": 4,
+      "minecraft:cooldown": {
+        "category": "attack",
+        "duration": 0.3,
+        "type": "attack"
+      },
       "minecraft:durability": {
         "damage_chance": {
           "min": 1,
