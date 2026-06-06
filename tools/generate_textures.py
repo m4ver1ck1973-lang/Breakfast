@@ -643,6 +643,20 @@ def autocrop_and_pad(img, pad_percent=0.06):
     
     return padded
 
+def enforce_binary_alpha(img, threshold=128):
+    """Enforces binary alpha (0 or 255) to prevent Minecraft Bedrock transparency artifacts."""
+    img = img.convert("RGBA")
+    data = img.getdata()
+    new_data = []
+    for item in data:
+        r, g, b, a = item
+        if a < threshold:
+            new_data.append((0, 0, 0, 0)) # Fully transparent black
+        else:
+            new_data.append((r, g, b, 255)) # Fully opaque
+    img.putdata(new_data)
+    return img
+
 def quantize_retro(img, num_colors=16):
     """Reduces the color count of the image while maintaining transparency."""
     alpha = img.getchannel('A')
@@ -654,7 +668,7 @@ def quantize_retro(img, num_colors=16):
     
     # Re-apply transparency mask
     rgba_quantized.putalpha(alpha)
-    return rgba_quantized
+    return enforce_binary_alpha(rgba_quantized)
 
 def generate_texture_api(client, item_id, staging_dir):
     """Generates a texture using the Google GenAI API."""
@@ -708,6 +722,7 @@ def process_and_save(img, item_id, staging_dir):
     
     # Resize using Lanczos for high quality cohesiveness
     size_32 = img.resize((32, 32), Image.Resampling.LANCZOS)
+    size_32 = enforce_binary_alpha(size_32)
     
     # Save normal resized version
     size_32.save(os.path.join(staging_dir, "32x32", f"{item_id}.png"))
@@ -794,6 +809,7 @@ def main():
                 # Resize and save using LANCZOS for 32x32
                 os.makedirs(os.path.join(staging_dir, "32x32"), exist_ok=True)
                 size_32 = cropped.resize((32, 32), Image.Resampling.LANCZOS)
+                size_32 = enforce_binary_alpha(size_32)
                 size_32.save(os.path.join(staging_dir, "32x32", f"{item_id}.png"))
                 
                 # Quantized versions
