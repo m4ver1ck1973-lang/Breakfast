@@ -1,0 +1,20 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "breakfast:herb_pot_craft"
+    },
+    "tags": ["crafting_table"],
+    "pattern": [
+      "B B",
+      "BBB"
+    ],
+    "key": {
+      "B": { "item": "minecraft:brick" }
+    },
+    "result": {
+      "item": "breakfast:herb_pot",
+      "count": 1
+    }
+  }
+}

@@ -15,6 +15,108 @@
     },
     "griddle_side": {
       "textures": "textures/blocks/griddle_side"
+    },
+    "tomato_trellis": {
+      "textures": "textures/blocks/tomato_trellis"
+    },
+    "herb_pot": {
+      "textures": "textures/blocks/herb_pot"
+    },
+    "onion_crop_0": {
+      "textures": "textures/blocks/onion_crop_0"
+    },
+    "onion_crop_1": {
+      "textures": "textures/blocks/onion_crop_1"
+    },
+    "onion_crop_2": {
+      "textures": "textures/blocks/onion_crop_2"
+    },
+    "onion_crop_3": {
+      "textures": "textures/blocks/onion_crop_3"
+    },
+    "tomato_crop_0": {
+      "textures": "textures/blocks/tomato_crop_0"
+    },
+    "tomato_crop_1": {
+      "textures": "textures/blocks/tomato_crop_1"
+    },
+    "tomato_crop_2": {
+      "textures": "textures/blocks/tomato_crop_2"
+    },
+    "tomato_crop_3": {
+      "textures": "textures/blocks/tomato_crop_3"
+    },
+    "pepper_crop_0": {
+      "textures": "textures/blocks/pepper_crop_0"
+    },
+    "pepper_crop_1": {
+      "textures": "textures/blocks/pepper_crop_1"
+    },
+    "pepper_crop_2": {
+      "textures": "textures/blocks/pepper_crop_2"
+    },
+    "pepper_crop_3": {
+      "textures": "textures/blocks/pepper_crop_3"
+    },
+    "spinach_crop_0": {
+      "textures": "textures/blocks/spinach_crop_0"
+    },
+    "spinach_crop_1": {
+      "textures": "textures/blocks/spinach_crop_1"
+    },
+    "spinach_crop_2": {
+      "textures": "textures/blocks/spinach_crop_2"
+    },
+    "spinach_crop_3": {
+      "textures": "textures/blocks/spinach_crop_3"
+    },
+    "herb_crop_rosemary_0": {
+      "textures": "textures/blocks/herb_crop_rosemary_0"
+    },
+    "herb_crop_rosemary_1": {
+      "textures": "textures/blocks/herb_crop_rosemary_1"
+    },
+    "herb_crop_rosemary_2": {
+      "textures": "textures/blocks/herb_crop_rosemary_2"
+    },
+    "herb_crop_rosemary_3": {
+      "textures": "textures/blocks/herb_crop_rosemary_3"
+    },
+    "herb_crop_thyme_0": {
+      "textures": "textures/blocks/herb_crop_thyme_0"
+    },
+    "herb_crop_thyme_1": {
+      "textures": "textures/blocks/herb_crop_thyme_1"
+    },
+    "herb_crop_thyme_2": {
+      "textures": "textures/blocks/herb_crop_thyme_2"
+    },
+    "herb_crop_thyme_3": {
+      "textures": "textures/blocks/herb_crop_thyme_3"
+    },
+    "herb_crop_sage_0": {
+      "textures": "textures/blocks/herb_crop_sage_0"
+    },
+    "herb_crop_sage_1": {
+      "textures": "textures/blocks/herb_crop_sage_1"
+    },
+    "herb_crop_sage_2": {
+      "textures": "textures/blocks/herb_crop_sage_2"
+    },
+    "herb_crop_sage_3": {
+      "textures": "textures/blocks/herb_crop_sage_3"
+    },
+    "herb_crop_oregano_0": {
+      "textures": "textures/blocks/herb_crop_oregano_0"
+    },
+    "herb_crop_oregano_1": {
+      "textures": "textures/blocks/herb_crop_oregano_1"
+    },
+    "herb_crop_oregano_2": {
+      "textures": "textures/blocks/herb_crop_oregano_2"
+    },
+    "herb_crop_oregano_3": {
+      "textures": "textures/blocks/herb_crop_oregano_3"
     }
   }
 }

@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:spices_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      { "item": "breakfast:chopped_rosemary" },
+      { "item": "breakfast:chopped_thyme" },
+      { "item": "breakfast:chopped_sage" }
+    ],
+    "result": {
+      "item": "breakfast:spices",
+      "count": 3
+    }
+  }
+}

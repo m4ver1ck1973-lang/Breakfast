@@ -5,46 +5,92 @@
       "arrays": {
         "textures": {
           "Array.textures": [
-            "Texture.default",            // 0: fallback
-            "Texture.porkchop",           // 1
-            "Texture.potato",             // 2
-            "Texture.egg",                // 3
-            "Texture.bread",              // 4
-            "Texture.beef",               // 5
-            "Texture.chicken",            // 6
-            "Texture.mutton",             // 7
-            "Texture.rabbit",             // 8
-            "Texture.cod",                // 9
-            "Texture.salmon",             // 10
-            "Texture.kelp",               // 11
-            "Texture.cooked_beef",        // 12
-            "Texture.cooked_chicken",     // 13
-            "Texture.cooked_porkchop",     // 14
-            "Texture.cooked_mutton",      // 15
-            "Texture.cooked_rabbit",      // 16
-            "Texture.cooked_cod",         // 17
-            "Texture.cooked_salmon",      // 18
-            "Texture.dried_kelp",         // 19
-            "Texture.baked_potato",       // 20
-            "Texture.bacon",              // 21
-            "Texture.cooked_bacon",       // 22
-            "Texture.fried_egg",          // 23
-            "Texture.toast",              // 24
-            "Texture.hash_browns",        // 25
-            "Texture.raw_hash_browns",    // 26
-            "Texture.sausage",            // 27
-            "Texture.ham",                // 28
-            "Texture.pork_belly",         // 29
-            "Texture.ground_pork",        // 30
-            "Texture.lard",               // 31
-            "Texture.raw_sausage",         // 32
-            "Texture.bread_slice"          // 33
+            "Texture.default",
+            "Texture.porkchop",
+            "Texture.potato",
+            "Texture.egg",
+            "Texture.bread",
+            "Texture.beef",
+            "Texture.chicken",
+            "Texture.mutton",
+            "Texture.rabbit",
+            "Texture.cod",
+            "Texture.salmon",
+            "Texture.kelp",
+            "Texture.cooked_beef",
+            "Texture.cooked_chicken",
+            "Texture.cooked_porkchop",
+            "Texture.cooked_mutton",
+            "Texture.cooked_rabbit",
+            "Texture.cooked_cod",
+            "Texture.cooked_salmon",
+            "Texture.dried_kelp",
+            "Texture.baked_potato",
+            "Texture.bacon",
+            "Texture.cooked_bacon",
+            "Texture.fried_egg",
+            "Texture.toast",
+            "Texture.hash_browns",
+            "Texture.raw_hash_browns",
+            "Texture.sausage",
+            "Texture.ham",
+            "Texture.pork_belly",
+            "Texture.ground_pork",
+            "Texture.lard",
+            "Texture.raw_sausage",
+            "Texture.bread_slice",
+            "Texture.onion",
+            "Texture.onion_slices",
+            "Texture.onion_grilled",
+            "Texture.tomato",
+            "Texture.tomato_slice",
+            "Texture.tomato_grilled",
+            "Texture.pepper",
+            "Texture.pepper_slices",
+            "Texture.pepper_grilled",
+            "Texture.spinach",
+            "Texture.spinach_leaves",
+            "Texture.rosemary",
+            "Texture.rosemary_chopped",
+            "Texture.thyme",
+            "Texture.thyme_chopped",
+            "Texture.sage",
+            "Texture.sage_chopped",
+            "Texture.oregano",
+            "Texture.oregano_chopped",
+            "Texture.spices",
+            "Texture.salt",
+            "Texture.cheese_curds",
+            "Texture.cheese_wheel",
+            "Texture.cheese_slice",
+            "Texture.beef_flank",
+            "Texture.steak_strips_raw",
+            "Texture.steak_strips_cooked",
+            "Texture.suet",
+            "Texture.tallow",
+            "Texture.chicken_breast",
+            "Texture.mutton_ribs",
+            "Texture.mutton_strips_raw",
+            "Texture.mutton_strips_cooked",
+            "Texture.rabbit_backstrap",
+            "Texture.rabbit_sausage_raw",
+            "Texture.rabbit_sausage_cooked",
+            "Texture.onion_seeds",
+            "Texture.tomato_seeds",
+            "Texture.pepper_seeds",
+            "Texture.spinach_seeds",
+            "Texture.rosemary_seeds",
+            "Texture.thyme_seeds",
+            "Texture.sage_seeds",
+            "Texture.oregano_seeds"
           ]
         }
       },
       "geometry": "Geometry.default",
       "materials": [
-        { "*": "Material.default" }
+        {
+          "*": "Material.default"
+        }
       ],
       "textures": [
         "Array.textures[query.property('breakfast:item_variant')]"

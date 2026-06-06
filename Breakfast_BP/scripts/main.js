@@ -20,6 +20,30 @@ system.beforeEvents.startup.subscribe((event) => {
         handleGriddleStepOn(e);
       }
     });
+
+    event.blockComponentRegistry.registerCustomComponent("breakfast:herb_pot_component", {
+      onPlayerInteract: (e) => {
+        handleHerbPotInteract(e);
+      },
+      onTick: (e) => {
+        handleHerbPotTick(e);
+      }
+    });
+
+    const crops = [
+      "onion_crop", "tomato_crop", "pepper_crop", "spinach_crop",
+      "herb_crop_rosemary", "herb_crop_thyme", "herb_crop_sage", "herb_crop_oregano"
+    ];
+    for (const crop of crops) {
+      event.blockComponentRegistry.registerCustomComponent(`breakfast:${crop}_component`, {
+        onPlayerInteract: (e) => {
+          handleCropInteract(e);
+        },
+        onTick: (e) => {
+          handleCropTick(e);
+        }
+      });
+    }
   } catch (err) {
     console.warn("[Breakfast] Error registering block components: " + err);
   }
@@ -59,7 +83,51 @@ const ITEM_TO_VARIANT = {
   "breakfast:ground_pork": 30,
   "breakfast:lard": 31,
   "breakfast:raw_sausage": 32,
-  "breakfast:bread_slice": 33
+  "breakfast:bread_slice": 33,
+  "breakfast:onion": 34,
+  "breakfast:onion_slices": 35,
+  "breakfast:grilled_onion": 36,
+  "breakfast:tomato": 37,
+  "breakfast:tomato_slice": 38,
+  "breakfast:grilled_tomato": 39,
+  "breakfast:pepper": 40,
+  "breakfast:pepper_slices": 41,
+  "breakfast:grilled_pepper": 42,
+  "breakfast:spinach": 43,
+  "breakfast:spinach_leaves": 44,
+  "breakfast:herb_rosemary": 45,
+  "breakfast:chopped_rosemary": 46,
+  "breakfast:herb_thyme": 47,
+  "breakfast:chopped_thyme": 48,
+  "breakfast:herb_sage": 49,
+  "breakfast:chopped_sage": 50,
+  "breakfast:herb_oregano": 51,
+  "breakfast:chopped_oregano": 52,
+  "breakfast:spices": 53,
+  "breakfast:salt": 54,
+  "breakfast:cheese_curds": 55,
+  "breakfast:cheese_wheel": 56,
+  "breakfast:cheese_slice": 57,
+  "breakfast:beef_flank": 58,
+  "breakfast:steak_strips": 59,
+  "breakfast:cooked_steak_strips": 60,
+  "breakfast:suet": 61,
+  "breakfast:tallow": 62,
+  "breakfast:chicken_breast": 63,
+  "breakfast:mutton_ribs": 64,
+  "breakfast:mutton_strips": 65,
+  "breakfast:cooked_mutton_strips": 66,
+  "breakfast:rabbit_backstrap": 67,
+  "breakfast:rabbit_sausage_raw": 68,
+  "breakfast:rabbit_sausage": 69,
+  "breakfast:onion_seeds": 70,
+  "breakfast:tomato_seeds": 71,
+  "breakfast:pepper_seeds": 72,
+  "breakfast:spinach_seeds": 73,
+  "breakfast:rosemary_seeds": 74,
+  "breakfast:thyme_seeds": 75,
+  "breakfast:sage_seeds": 76,
+  "breakfast:oregano_seeds": 77
 };
 
 function getVariantFromItem(itemTypeId) {
@@ -136,7 +204,19 @@ const BUTCHER_RECIPES = {
     extraChance: 0.5 
   },
   "minecraft:potato": { output: "breakfast:raw_hash_browns", count: 1 },
-  "minecraft:bread": { output: "breakfast:bread_slice", count: 3 }
+  "minecraft:bread": { output: "breakfast:bread_slice", count: 3 },
+  "breakfast:onion": { output: "breakfast:onion_slices", count: 3 },
+  "breakfast:tomato": { output: "breakfast:tomato_slice", count: 3 },
+  "breakfast:pepper": { output: "breakfast:pepper_slices", count: 3 },
+  "breakfast:herb_rosemary": { output: "breakfast:chopped_rosemary", count: 2 },
+  "breakfast:herb_thyme": { output: "breakfast:chopped_thyme", count: 2 },
+  "breakfast:herb_sage": { output: "breakfast:chopped_sage", count: 2 },
+  "breakfast:herb_oregano": { output: "breakfast:chopped_oregano", count: 2 },
+  "breakfast:cheese_wheel": { output: "breakfast:cheese_slice", count: 4 },
+  "breakfast:beef_flank": { output: "breakfast:steak_strips", count: 2 },
+  "breakfast:suet": { output: "breakfast:tallow", count: 2 },
+  "breakfast:mutton_ribs": { output: "breakfast:mutton_strips", count: 2 },
+  "breakfast:rabbit_backstrap": { output: "breakfast:rabbit_sausage_raw", count: 2 }
 };
 
 const GRIDDLE_RECIPES = {
@@ -146,6 +226,14 @@ const GRIDDLE_RECIPES = {
   "breakfast:bread_slice": { output: "breakfast:toast", cookTime: 6 },
   "breakfast:raw_hash_browns": { output: "breakfast:hash_browns", cookTime: 12 },
   "breakfast:raw_sausage": { output: "breakfast:sausage", cookTime: 10 },
+  "breakfast:onion_slices": { output: "breakfast:grilled_onion", cookTime: 6 },
+  "breakfast:tomato_slice": { output: "breakfast:grilled_tomato", cookTime: 6 },
+  "breakfast:pepper_slices": { output: "breakfast:grilled_pepper", cookTime: 6 },
+  "breakfast:steak_strips": { output: "breakfast:cooked_steak_strips", cookTime: 10 },
+  "breakfast:mutton_strips": { output: "breakfast:cooked_mutton_strips", cookTime: 10 },
+  "breakfast:rabbit_sausage_raw": { output: "breakfast:rabbit_sausage", cookTime: 10 },
+  "minecraft:water_bucket": { output: "breakfast:salt", count: 3, cookTime: 15 },
+  "minecraft:milk_bucket": { output: "breakfast:cheese_curds", count: 1, cookTime: 15 },
 
   // Vanilla Campfire Cooking
   "minecraft:beef": { output: "minecraft:cooked_beef", cookTime: 30 },
@@ -379,8 +467,9 @@ function handleGriddleInteract(event) {
     for (let i = 0; i < 4; i++) {
       const slot = blockData.slots[i];
       if (slot) {
-        // Spawn item
-        const spawnStack = new ItemStack(slot.item, 1);
+        // Spawn item with correct count
+        const count = slot.count || 1;
+        const spawnStack = new ItemStack(slot.item, count);
         block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
 
         checkShortOrderCook(player, slot.item);
@@ -396,7 +485,7 @@ function handleGriddleInteract(event) {
         return;
       }
     }
-    player.onScreenDisplay.setActionBar("Griddle is empty. Hold bacon, egg, bread, or raw hash browns to cook");
+    player.onScreenDisplay.setActionBar("Griddle is empty. Hold cookable items to place.");
     return;
   }
 
@@ -414,19 +503,25 @@ function handleGriddleInteract(event) {
     if (placedIndex !== -1) {
       blockData.slots[placedIndex] = {
         item: itemInHand.typeId,
-        progress: 0
+        progress: 0,
+        count: 1
       };
       saveBlockData(block, blockData);
       
       const offsets = getGriddleSlotOffsets(placedIndex);
       updatePlacedEntity(block, "breakfast:slot_" + placedIndex, itemInHand.typeId, 1.01, offsets.x, offsets.z);
 
-      // Consume item from player
-      if (itemInHand.amount > 1) {
-        itemInHand.amount -= 1;
-        container.setItem(selectedIndex, itemInHand);
+      // Handle item consumption and returns
+      if (itemInHand.typeId === "minecraft:water_bucket" || itemInHand.typeId === "minecraft:milk_bucket") {
+        const emptyBucket = new ItemStack("minecraft:bucket", 1);
+        container.setItem(selectedIndex, emptyBucket);
       } else {
-        container.setItem(selectedIndex, undefined);
+        if (itemInHand.amount > 1) {
+          itemInHand.amount -= 1;
+          container.setItem(selectedIndex, itemInHand);
+        } else {
+          container.setItem(selectedIndex, undefined);
+        }
       }
 
       block.dimension.playSound("random.pop", block.location);
@@ -442,7 +537,8 @@ function handleGriddleInteract(event) {
     const slot = blockData.slots[i];
     if (slot && !GRIDDLE_RECIPES[slot.item]) {
       // Cooked item found -> retrieve it!
-      const spawnStack = new ItemStack(slot.item, 1);
+      const count = slot.count || 1;
+      const spawnStack = new ItemStack(slot.item, count);
       block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
 
       checkShortOrderCook(player, slot.item);
@@ -500,6 +596,7 @@ function handleGriddleTick(event) {
         // Cook completed
         if (slot.progress >= recipe.cookTime) {
           slot.item = recipe.output;
+          slot.count = recipe.count || 1;
           slot.progress = 0; // reset progress
           
           block.dimension.playSound("random.fizz", block.location);
@@ -617,7 +714,7 @@ world.afterEvents.itemCompleteUse.subscribe((event) => {
 });
 
 // Clean up and drop contents when Griddle or Butcher Block is broken
-function handleBlockBreak(location, dimension, blockTypeId) {
+function handleBlockBreak(location, dimension, blockTypeId, brokenBlockPermutation) {
   try {
     const key = `${dimension.id}:${location.x},${location.y},${location.z}`;
     const globalData = getGlobalData();
@@ -631,15 +728,74 @@ function handleBlockBreak(location, dimension, blockTypeId) {
         for (let i = 0; i < 4; i++) {
           const slot = blockData.slots[i];
           if (slot) {
-            const itemStack = new ItemStack(slot.item, 1);
+            const count = slot.count || 1;
+            const itemStack = new ItemStack(slot.item, count);
             dimension.spawnItem(itemStack, { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
           }
         }
+      } else if (blockTypeId === "breakfast:herb_pot" && blockData.herbType) {
+        let dropItem = "";
+        if (blockData.stage < 3) {
+          dropItem = `breakfast:${blockData.herbType}_seeds`;
+        } else {
+          dropItem = `breakfast:herb_${blockData.herbType}`;
+        }
+        dimension.spawnItem(new ItemStack(dropItem, 1), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
       }
       
       // Remove data
       delete globalData[key];
       saveGlobalData(globalData);
+    }
+    
+    // Crop block breaking drops
+    if (blockTypeId.startsWith("breakfast:") && blockTypeId.endsWith("_crop")) {
+      const stage = brokenBlockPermutation ? brokenBlockPermutation.getState("breakfast:growth_stage") : 0;
+      let seeds = "";
+      let cropItem = "";
+      let minCrop = 1, maxCrop = 1;
+      
+      if (blockTypeId === "breakfast:onion_crop") {
+        seeds = "breakfast:onion_seeds";
+        cropItem = "breakfast:onion";
+      } else if (blockTypeId === "breakfast:tomato_crop") {
+        seeds = "breakfast:tomato_seeds";
+        cropItem = "breakfast:tomato";
+        // Recover trellis
+        try {
+          const below = dimension.getBlock({ x: location.x, y: location.y - 1, z: location.z });
+          if (below && below.typeId === "breakfast:tomato_crop") {
+            const trellisStack = new ItemStack("breakfast:tomato_trellis", 1);
+            dimension.spawnItem(trellisStack, { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+          }
+        } catch (e) {}
+      } else if (blockTypeId === "breakfast:pepper_crop") {
+        seeds = "breakfast:pepper_seeds";
+        cropItem = "breakfast:pepper";
+      } else if (blockTypeId === "breakfast:spinach_crop") {
+        seeds = "breakfast:spinach_seeds";
+        cropItem = "breakfast:spinach";
+        minCrop = 1; maxCrop = 2;
+      } else if (blockTypeId.startsWith("breakfast:herb_crop_")) {
+        const herbType = blockTypeId.replace("breakfast:herb_crop_", "");
+        seeds = `breakfast:${herbType}_seeds`;
+        cropItem = `breakfast:herb_${herbType}`;
+      }
+      
+      if (stage < 3) {
+        if (seeds) {
+          dimension.spawnItem(new ItemStack(seeds, 1), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+        }
+      } else {
+        if (cropItem) {
+          const count = minCrop + Math.floor(Math.random() * (maxCrop - minCrop + 1));
+          dimension.spawnItem(new ItemStack(cropItem, count), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+        }
+        if (seeds) {
+          const seedCount = Math.random() < 0.5 ? 2 : 1;
+          dimension.spawnItem(new ItemStack(seeds, seedCount), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+        }
+      }
     }
     
     // Clean up entities
@@ -661,16 +817,16 @@ function handleBlockBreak(location, dimension, blockTypeId) {
 world.afterEvents.playerBreakBlock.subscribe((event) => {
   const { block, brokenBlockPermutation, dimension } = event;
   const blockId = brokenBlockPermutation.type.id;
-  if (blockId === "breakfast:butcher_block" || blockId === "breakfast:griddle") {
-    handleBlockBreak(block.location, dimension, blockId);
+  if (blockId.startsWith("breakfast:")) {
+    handleBlockBreak(block.location, dimension, blockId, brokenBlockPermutation);
   }
 });
 
 world.afterEvents.blockExplode.subscribe((event) => {
   const { block, explodedBlockPermutation, dimension } = event;
   const blockId = explodedBlockPermutation.type.id;
-  if (blockId === "breakfast:butcher_block" || blockId === "breakfast:griddle") {
-    handleBlockBreak(block.location, dimension, blockId);
+  if (blockId.startsWith("breakfast:")) {
+    handleBlockBreak(block.location, dimension, blockId, explodedBlockPermutation);
   }
 });
 
@@ -784,5 +940,190 @@ function checkShortOrderCook(player, itemTypeId) {
     }
   } catch (err) {
     console.warn("[Breakfast] Error in checkShortOrderCook: " + err);
+  }
+}
+
+// ----------------------------------------------------
+// Custom Crop and Herb Pot Logic
+// ----------------------------------------------------
+function handleCropTick(event) {
+  const { block } = event;
+  try {
+    const stage = block.permutation.getState("breakfast:growth_stage");
+    if (stage === undefined) return;
+
+    if (stage < 3) {
+      const nextPerm = block.permutation.withState("breakfast:growth_stage", stage + 1);
+      block.setPermutation(nextPerm);
+    } else if (stage === 3 && block.typeId === "breakfast:tomato_crop") {
+      const above = block.above();
+      if (above && above.typeId === "breakfast:tomato_trellis") {
+        above.setType("breakfast:tomato_crop");
+        const perm = above.permutation.withState("breakfast:growth_stage", 0);
+        above.setPermutation(perm);
+        block.dimension.playSound("dig.wood", above.location);
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in handleCropTick: " + err);
+  }
+}
+
+function handleCropInteract(event) {
+  const { block, player } = event;
+  if (!player) return;
+
+  try {
+    const stage = block.permutation.getState("breakfast:growth_stage");
+    if (stage === undefined) return;
+
+    if (stage === 3 && (block.typeId === "breakfast:tomato_crop" || block.typeId === "breakfast:pepper_crop")) {
+      const isTomato = block.typeId === "breakfast:tomato_crop";
+      const harvestItem = isTomato ? "breakfast:tomato" : "breakfast:pepper";
+      const count = 1 + Math.floor(Math.random() * 2);
+      
+      const stack = new ItemStack(harvestItem, count);
+      block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+      
+      const resetPerm = block.permutation.withState("breakfast:growth_stage", 1);
+      block.setPermutation(resetPerm);
+      
+      block.dimension.playSound("item.sweet_berries.pick", block.location);
+      player.onScreenDisplay.setActionBar("Harvested " + harvestItem.split(":")[1]);
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in handleCropInteract: " + err);
+  }
+}
+
+function handleHerbPotInteract(event) {
+  const { block, player } = event;
+  if (!player) return;
+
+  try {
+    const inventory = player.getComponent("minecraft:inventory");
+    if (!inventory || !inventory.container) return;
+
+    const container = inventory.container;
+    const selectedIndex = player.selectedSlotIndex;
+    const itemInHand = container.getItem(selectedIndex);
+    
+    const blockData = getBlockData(block) || { herbType: null, stage: 0 };
+
+    // Case 1: Empty hand -> Retrieve plant or seeds
+    if (!itemInHand) {
+      if (blockData.herbType) {
+        let dropItem = "";
+        if (blockData.stage < 3) {
+          dropItem = `breakfast:${blockData.herbType}_seeds`;
+        } else {
+          dropItem = `breakfast:herb_${blockData.herbType}`;
+        }
+        
+        const spawnStack = new ItemStack(dropItem, 1);
+        block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 0.9, z: block.location.z + 0.5 });
+        
+        removePlacedEntity(block, "breakfast:herb_pot_plant");
+        saveBlockData(block, null);
+        block.dimension.playSound("random.pop", block.location);
+        player.onScreenDisplay.setActionBar("Retrieved plant from pot");
+      } else {
+        player.onScreenDisplay.setActionBar("Pot is empty. Plant seeds to grow herbs!");
+      }
+      return;
+    }
+
+    // Case 2: Holding a Knife -> Shearing/harvesting mature herbs
+    if (KNIVES.includes(itemInHand.typeId)) {
+      if (!blockData.herbType) {
+        player.onScreenDisplay.setActionBar("Pot is empty");
+        return;
+      }
+      
+      if (blockData.stage < 3) {
+        player.onScreenDisplay.setActionBar("Herb is not fully grown yet");
+        return;
+      }
+
+      const choppedItem = `breakfast:chopped_${blockData.herbType}`;
+      const outputStack = new ItemStack(choppedItem, 2);
+      block.dimension.spawnItem(outputStack, { x: block.location.x + 0.5, y: block.location.y + 0.9, z: block.location.z + 0.5 });
+
+      const durability = itemInHand.getComponent("minecraft:durability");
+      if (durability) {
+        durability.damage += 1;
+        if (durability.damage >= durability.maxDurability) {
+          container.setItem(selectedIndex, undefined);
+          block.dimension.playSound("random.break", block.location);
+        } else {
+          container.setItem(selectedIndex, itemInHand);
+        }
+      }
+
+      blockData.stage = 1;
+      saveBlockData(block, blockData);
+      
+      updatePlacedEntity(block, "breakfast:herb_pot_plant", `breakfast:${blockData.herbType}_seeds`, 0.5);
+
+      block.dimension.playSound("mob.sheep.shear", block.location);
+      player.onScreenDisplay.setActionBar("Harvested " + blockData.herbType);
+      return;
+    }
+
+    // Case 3: Planting seeds
+    if (itemInHand.typeId.endsWith("_seeds")) {
+      const typeId = itemInHand.typeId;
+      if (typeId.includes("rosemary") || typeId.includes("thyme") || typeId.includes("sage") || typeId.includes("oregano")) {
+        if (blockData.herbType) {
+          player.onScreenDisplay.setActionBar("Pot is already occupied");
+          return;
+        }
+
+        const herbName = typeId.split(":")[1].replace("_seeds", "");
+        blockData.herbType = herbName;
+        blockData.stage = 0;
+        saveBlockData(block, blockData);
+
+        updatePlacedEntity(block, "breakfast:herb_pot_plant", typeId, 0.5);
+
+        if (itemInHand.amount > 1) {
+          itemInHand.amount -= 1;
+          container.setItem(selectedIndex, itemInHand);
+        } else {
+          container.setItem(selectedIndex, undefined);
+        }
+
+        block.dimension.playSound("dig.sand", block.location);
+        player.onScreenDisplay.setActionBar("Planted " + herbName + " seeds");
+        return;
+      }
+    }
+
+    player.onScreenDisplay.setActionBar("Hold seeds to plant, a knife to harvest, or use an empty hand.");
+  } catch (err) {
+    console.warn("[Breakfast] Error in handleHerbPotInteract: " + err);
+  }
+}
+
+function handleHerbPotTick(event) {
+  const { block } = event;
+  try {
+    const blockData = getBlockData(block);
+    if (!blockData || !blockData.herbType) return;
+
+    if (blockData.stage < 3) {
+      blockData.stage += 1;
+      saveBlockData(block, blockData);
+
+      const itemVisual = blockData.stage >= 2 ? `breakfast:herb_${blockData.herbType}` : `breakfast:${blockData.herbType}_seeds`;
+      updatePlacedEntity(block, "breakfast:herb_pot_plant", itemVisual, 0.5);
+
+      const pLoc = { x: block.location.x + 0.5, y: block.location.y + 0.8, z: block.location.z + 0.5 };
+      try {
+        block.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+      } catch (e) {}
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in handleHerbPotTick: " + err);
   }
 }

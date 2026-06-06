@@ -426,7 +426,7 @@ def draw_miners_skillet():
         img.putpixel((1, y), C_BLACK)
         img.putpixel((12, y), C_BLACK)
     # Handle
-    for i in range(5):
+    for i in range(4):
         img.putpixel((12 + i, 12 - i), C_BLACK)
     
     # Skillet contents (potatoes, eggs, bacon)
@@ -449,6 +449,427 @@ def draw_miners_skillet():
             if img.getpixel((x, y)) == C_TRANSPARENT:
                 img.putpixel((x, y), C_DARK_GRAY)
                 
+    return img
+
+def draw_onion(style):
+    img = create_canvas()
+    c_skin = (225, 160, 100, 255)
+    c_inside = (245, 240, 245, 255)
+    c_purple = (180, 70, 140, 255)
+    c_dark = C_BLACK
+    if style == "raw":
+        for x in range(3, 13):
+            for y in range(4, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 8.5)/4.0
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), c_skin if (x+y)%2 == 0 else c_purple)
+        img.putpixel((7, 13), c_dark)
+        img.putpixel((8, 13), c_dark)
+        img.putpixel((7, 3), (100, 180, 50, 255))
+    elif style == "seeds":
+        img.putpixel((5, 7), c_purple)
+        img.putpixel((6, 6), c_dark)
+        img.putpixel((9, 8), c_purple)
+        img.putpixel((8, 9), c_dark)
+    elif style == "slices":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/4.5
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    elif dist > 0.55:
+                        img.putpixel((x, y), c_purple)
+                    elif dist > 0.35:
+                        img.putpixel((x, y), c_inside)
+                    elif dist > 0.15:
+                        img.putpixel((x, y), c_purple)
+                    else:
+                        img.putpixel((x, y), c_inside)
+    elif style == "grilled":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/4.5
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    elif dist > 0.55:
+                        img.putpixel((x, y), (130, 90, 50, 255))
+                    elif dist > 0.35:
+                        img.putpixel((x, y), (210, 170, 120, 255))
+                    else:
+                        img.putpixel((x, y), (130, 90, 50, 255))
+    return img
+
+def draw_tomato(style):
+    img = create_canvas()
+    c_red = (230, 30, 20, 255)
+    c_dark_red = (160, 15, 10, 255)
+    c_green = (60, 160, 40, 255)
+    c_dark = C_BLACK
+    if style == "raw":
+        for x in range(3, 13):
+            for y in range(4, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 8.5)/4.0
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), c_red if x > 6 else c_dark_red)
+        img.putpixel((7, 3), c_green)
+        img.putpixel((6, 3), c_dark)
+        img.putpixel((8, 3), c_dark)
+        img.putpixel((7, 4), c_green)
+    elif style == "seeds":
+        img.putpixel((5, 7), (220, 160, 40, 255))
+        img.putpixel((6, 7), c_dark)
+        img.putpixel((9, 8), (220, 160, 40, 255))
+        img.putpixel((8, 8), c_dark)
+    elif style == "slice":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/4.5
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    elif dist > 0.70:
+                        img.putpixel((x, y), c_red)
+                    else:
+                        if abs(x - 7.5) < 1.0 or abs(y - 7.5) < 1.0:
+                            img.putpixel((x, y), c_red)
+                        else:
+                            img.putpixel((x, y), (200, 150, 30, 255))
+    elif style == "grilled":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/4.5
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        if (x+y)%4 == 0:
+                            img.putpixel((x, y), (50, 45, 45, 255))
+                        else:
+                            img.putpixel((x, y), c_dark_red)
+    return img
+
+def draw_pepper(style):
+    img = create_canvas()
+    c_green = (40, 160, 50, 255)
+    c_dark_green = (20, 95, 30, 255)
+    c_dark = C_BLACK
+    if style == "raw":
+        for x in range(3, 13):
+            for y in range(4, 13):
+                is_body = False
+                if 4 <= x <= 11 and 5 <= y <= 11:
+                    is_body = True
+                elif (x in (3, 12)) and 6 <= y <= 10:
+                    is_body = True
+                elif (y in (4, 12)) and 5 <= x <= 10:
+                    is_body = True
+                
+                if is_body:
+                    if x in (3, 12) or y in (4, 12) or (x==4 and y==5) or (x==11 and y==5):
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), c_green if x > 7 else c_dark_green)
+        img.putpixel((7, 3), (85, 120, 50, 255))
+        img.putpixel((7, 4), (85, 120, 50, 255))
+    elif style == "seeds":
+        img.putpixel((6, 7), (235, 235, 180, 255))
+        img.putpixel((7, 6), c_dark)
+        img.putpixel((8, 8), (235, 235, 180, 255))
+    elif style == "slices":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/4.5
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    elif dist > 0.55:
+                        img.putpixel((x, y), c_green)
+                    elif dist > 0.40:
+                        img.putpixel((x, y), c_dark)
+    elif style == "grilled":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/4.5
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    elif dist > 0.55:
+                        if (x+y)%3 == 0:
+                            img.putpixel((x, y), (50, 45, 40, 255))
+                        else:
+                            img.putpixel((x, y), c_dark_green)
+                    elif dist > 0.40:
+                        img.putpixel((x, y), c_dark)
+    return img
+
+def draw_spinach(style):
+    img = create_canvas()
+    c_leaf = (46, 139, 87, 255)
+    c_dark_leaf = (25, 90, 55, 255)
+    c_dark = C_BLACK
+    if style == "raw":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/5.0 - 0.1 * (x - 7.5)
+                dist = dx*dx + dy*dy
+                if dist <= 0.8:
+                    if dist > 0.65:
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), c_leaf if y < 8 else c_dark_leaf)
+        img.putpixel((7, 12), (100, 160, 80, 255))
+        img.putpixel((8, 12), c_dark)
+    elif style == "seeds":
+        img.putpixel((6, 7), (120, 110, 80, 255))
+        img.putpixel((7, 6), c_dark)
+        img.putpixel((8, 8), (120, 110, 80, 255))
+    elif style == "leaves":
+        for x in range(4, 12):
+            for y in range(5, 12):
+                if (x+y)%2 == 0:
+                    img.putpixel((x, y), c_leaf)
+                elif (x+y)%3 == 0:
+                    img.putpixel((x, y), c_dark_leaf)
+                else:
+                    img.putpixel((x, y), c_dark)
+    return img
+
+def draw_herb(herb_type, style):
+    img = create_canvas()
+    if herb_type == "rosemary":
+        c_green = (46, 125, 50, 255)
+        c_dark_green = (27, 94, 32, 255)
+    elif herb_type == "thyme":
+        c_green = (124, 179, 66, 255)
+        c_dark_green = (85, 139, 47, 255)
+    elif herb_type == "sage":
+        c_green = (120, 144, 156, 255)
+        c_dark_green = (84, 110, 122, 255)
+    else:
+        c_green = (104, 159, 56, 255)
+        c_dark_green = (68, 108, 33, 255)
+    c_dark = C_BLACK
+    if style == "raw":
+        for y in range(3, 13):
+            img.putpixel((7, y), (120, 90, 60, 255))
+            if y % 2 == 0:
+                img.putpixel((6, y), c_green)
+                img.putpixel((5, y), c_dark)
+                img.putpixel((8, y), c_green)
+                img.putpixel((9, y), c_dark)
+            else:
+                img.putpixel((6, y), c_dark)
+                img.putpixel((8, y), c_dark)
+        img.putpixel((7, 2), c_green)
+        img.putpixel((7, 1), c_dark)
+    elif style == "seeds":
+        img.putpixel((6, 7), (100, 75, 45, 255))
+        img.putpixel((7, 8), (100, 75, 45, 255))
+        img.putpixel((7, 6), c_dark)
+    elif style == "chopped":
+        import random
+        random.seed(len(herb_type))
+        for _ in range(15):
+            x = random.randint(3, 12)
+            y = random.randint(4, 12)
+            img.putpixel((x, y), c_green if random.random() < 0.6 else c_dark_green)
+            if random.random() < 0.4:
+                img.putpixel((x+1, y), c_dark)
+    return img
+
+def draw_spices():
+    img = create_canvas()
+    import random
+    random.seed(99)
+    colors = [
+        (210, 95, 30, 255),
+        (230, 145, 40, 255),
+        (130, 70, 30, 255),
+        (90, 45, 20, 255)
+    ]
+    for y in range(7, 13):
+        for x in range(3, 13):
+            dx = (x - 7.5)/4.5
+            dy = (y - 12.0)/4.5
+            dist = dx*dx + dy*dy
+            if dist <= 1.0:
+                if dist > 0.85:
+                    img.putpixel((x, y), C_BLACK)
+                else:
+                    img.putpixel((x, y), random.choice(colors))
+    return img
+
+def draw_salt():
+    img = create_canvas()
+    for y in range(8, 13):
+        for x in range(3, 13):
+            dx = (x - 7.5)/4.5
+            dy = (y - 12.0)/4.0
+            dist = dx*dx + dy*dy
+            if dist <= 1.0:
+                if dist > 0.85:
+                    img.putpixel((x, y), C_BLACK)
+                else:
+                    img.putpixel((x, y), C_WHITE if (x+y)%3 != 0 else C_LIGHT_GRAY)
+    return img
+
+def draw_cheese(style):
+    img = create_canvas()
+    c_yellow = (255, 210, 50, 255)
+    c_dark_yellow = (235, 175, 20, 255)
+    c_dark = C_BLACK
+    if style == "curds":
+        import random
+        random.seed(11)
+        for y in range(8, 13):
+            for x in range(3, 13):
+                dx = (x - 7.5)/4.5
+                dy = (y - 12.0)/4.0
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), (250, 240, 200, 255) if random.random() < 0.5 else (235, 215, 150, 255))
+    elif style == "wheel":
+        for y in range(5, 12):
+            for x in range(3, 13):
+                is_border = False
+                if x == 3 or x == 12 or y == 5 or y == 11:
+                    is_border = True
+                if is_border:
+                    img.putpixel((x, y), c_dark)
+                else:
+                    img.putpixel((x, y), c_yellow if y < 8 else c_dark_yellow)
+    elif style == "slice":
+        for x in range(3, 13):
+            for y in range(3, 13):
+                if x == 3 or x == 12 or y == 3 or y == 12:
+                    img.putpixel((x, y), c_dark)
+                else:
+                    if (x==5 and y==5) or (x==9 and y==6) or (x==6 and y==9):
+                        img.putpixel((x, y), C_TRANSPARENT)
+                    elif (x==6 and y==5) or (x==10 and y==6) or (x==7 and y==9) or (x==5 and y==6):
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), c_yellow)
+    return img
+
+def draw_meat_cut(meat_type, style):
+    img = create_canvas()
+    c_dark = C_BLACK
+    if meat_type == "beef":
+        c_meat = (165, 30, 30, 255)
+        c_cooked = (85, 35, 25, 255)
+        c_fat = (245, 225, 225, 255)
+    elif meat_type == "chicken":
+        c_meat = (245, 205, 195, 255)
+        c_fat = (255, 255, 255, 255)
+        c_cooked = (185, 140, 100, 255)
+    elif meat_type == "mutton":
+        c_meat = (150, 45, 60, 255)
+        c_cooked = (95, 45, 45, 255)
+        c_fat = (235, 220, 220, 255)
+    else:
+        c_meat = (195, 80, 75, 255)
+        c_cooked = (115, 65, 55, 255)
+        c_fat = (245, 225, 225, 255)
+
+    if style == "flank":
+        for y in range(4, 12):
+            for x in range(3, 13):
+                if x == 3 or x == 12 or y == 4 or y == 11:
+                    img.putpixel((x, y), c_dark)
+                else:
+                    img.putpixel((x, y), c_fat if (x+y)%4 == 0 else c_meat)
+    elif style == "strips_raw":
+        for x in range(4, 12):
+            y = int(8 + 1.5 * ((x-7.5)/3.5)**2)
+            img.putpixel((x, y), c_meat)
+            img.putpixel((x, y-1), c_dark)
+            img.putpixel((x, y+1), c_dark)
+    elif style == "strips_cooked":
+        for x in range(4, 12):
+            y = int(8 + 1.5 * ((x-7.5)/3.5)**2)
+            img.putpixel((x, y), c_cooked)
+            img.putpixel((x, y-1), c_dark)
+            img.putpixel((x, y+1), c_dark)
+    elif style == "suet":
+        for y in range(5, 12):
+            for x in range(3, 13):
+                if x == 3 or x == 12 or y == 5 or y == 11:
+                    img.putpixel((x, y), c_dark)
+                else:
+                    img.putpixel((x, y), (245, 240, 210, 255) if (x+y)%2 == 0 else (230, 225, 195, 255))
+    elif style == "tallow":
+        for y in range(7, 13):
+            for x in range(4, 12):
+                if x == 4 or x == 11 or y == 7 or y == 12:
+                    img.putpixel((x, y), c_dark)
+                else:
+                    img.putpixel((x, y), (250, 250, 245, 255))
+    elif style == "chicken_breast":
+        for x in range(3, 13):
+            for y in range(4, 12):
+                dx = (x - 7.5)/4.5
+                dy = (y - 7.5)/3.5
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), c_meat)
+    elif style == "mutton_ribs":
+        for y in range(5, 12):
+            for x in range(3, 13):
+                if x == 3 or x == 12 or y == 5 or y == 11:
+                    img.putpixel((x, y), c_dark)
+                else:
+                    img.putpixel((x, y), c_meat)
+        img.putpixel((5, 4), C_WHITE)
+        img.putpixel((5, 3), c_dark)
+        img.putpixel((8, 4), C_WHITE)
+        img.putpixel((8, 3), c_dark)
+    elif style == "rabbit_backstrap":
+        for x in range(3, 13):
+            for y in range(6, 11):
+                dx = (x - 7.5)/4.5
+                dy = (y - 8.0)/2.0
+                dist = dx*dx + dy*dy
+                if dist <= 1.0:
+                    if dist > 0.85:
+                        img.putpixel((x, y), c_dark)
+                    else:
+                        img.putpixel((x, y), c_meat)
+    elif style == "sausage_raw":
+        return draw_sausage(is_cooked=False)
+    elif style == "sausage_cooked":
+        return draw_sausage(is_cooked=True)
     return img
 
 def draw_procedural(item_id):
@@ -513,8 +934,95 @@ def draw_procedural(item_id):
         return draw_biscuits_and_gravy()
     elif "miners_skillet" in item_id:
         return draw_miners_skillet()
+    elif "onion_seeds" in item_id:
+        return draw_onion("seeds")
+    elif "onion_slices" in item_id:
+        return draw_onion("slices")
+    elif "onion_grilled" in item_id or "grilled_onion" in item_id:
+        return draw_onion("grilled")
+    elif "onion" in item_id:
+        return draw_onion("raw")
+    elif "tomato_seeds" in item_id:
+        return draw_tomato("seeds")
+    elif "tomato_slice" in item_id:
+        return draw_tomato("slice")
+    elif "tomato_grilled" in item_id or "grilled_tomato" in item_id:
+        return draw_tomato("grilled")
+    elif "tomato" in item_id:
+        return draw_tomato("raw")
+    elif "pepper_seeds" in item_id:
+        return draw_pepper("seeds")
+    elif "pepper_slices" in item_id:
+        return draw_pepper("slices")
+    elif "pepper_grilled" in item_id or "grilled_pepper" in item_id:
+        return draw_pepper("grilled")
+    elif "pepper" in item_id:
+        return draw_pepper("raw")
+    elif "spinach_seeds" in item_id:
+        return draw_spinach("seeds")
+    elif "spinach_leaves" in item_id:
+        return draw_spinach("leaves")
+    elif "spinach" in item_id:
+        return draw_spinach("raw")
+    elif "rosemary_seeds" in item_id:
+        return draw_herb("rosemary", "seeds")
+    elif "rosemary_chopped" in item_id or "chopped_rosemary" in item_id:
+        return draw_herb("rosemary", "chopped")
+    elif "rosemary" in item_id:
+        return draw_herb("rosemary", "raw")
+    elif "thyme_seeds" in item_id:
+        return draw_herb("thyme", "seeds")
+    elif "thyme_chopped" in item_id or "chopped_thyme" in item_id:
+        return draw_herb("thyme", "chopped")
+    elif "thyme" in item_id:
+        return draw_herb("thyme", "raw")
+    elif "sage_seeds" in item_id:
+        return draw_herb("sage", "seeds")
+    elif "sage_chopped" in item_id or "chopped_sage" in item_id:
+        return draw_herb("sage", "chopped")
+    elif "sage" in item_id:
+        return draw_herb("sage", "raw")
+    elif "oregano_seeds" in item_id:
+        return draw_herb("oregano", "seeds")
+    elif "oregano_chopped" in item_id or "chopped_oregano" in item_id:
+        return draw_herb("oregano", "chopped")
+    elif "oregano" in item_id:
+        return draw_herb("oregano", "raw")
+    elif "spices" in item_id:
+        return draw_spices()
+    elif "salt" in item_id:
+        return draw_salt()
+    elif "cheese_curds" in item_id:
+        return draw_cheese("curds")
+    elif "cheese_wheel" in item_id:
+        return draw_cheese("wheel")
+    elif "cheese_slice" in item_id:
+        return draw_cheese("slice")
+    elif "beef_flank" in item_id:
+        return draw_meat_cut("beef", "flank")
+    elif "steak_strips_raw" in item_id or "steak_strips" == item_id:
+        return draw_meat_cut("beef", "strips_raw")
+    elif "steak_strips_cooked" in item_id or "cooked_steak_strips" in item_id:
+        return draw_meat_cut("beef", "strips_cooked")
+    elif "suet" in item_id:
+        return draw_meat_cut("beef", "suet")
+    elif "tallow" in item_id:
+        return draw_meat_cut("beef", "tallow")
+    elif "chicken_breast" in item_id:
+        return draw_meat_cut("chicken", "chicken_breast")
+    elif "mutton_ribs" in item_id:
+        return draw_meat_cut("mutton", "mutton_ribs")
+    elif "mutton_strips_raw" in item_id or "mutton_strips" == item_id:
+        return draw_meat_cut("mutton", "strips_raw")
+    elif "mutton_strips_cooked" in item_id or "cooked_mutton_strips" in item_id:
+        return draw_meat_cut("mutton", "strips_cooked")
+    elif "rabbit_backstrap" in item_id:
+        return draw_meat_cut("rabbit", "rabbit_backstrap")
+    elif "rabbit_sausage_raw" in item_id:
+        return draw_meat_cut("rabbit", "sausage_raw")
+    elif "rabbit_sausage_cooked" in item_id or "rabbit_sausage" == item_id:
+        return draw_meat_cut("rabbit", "sausage_cooked")
     else:
-        # Generic color grid fallback
         img = create_canvas()
         for x in range(4, 12):
             for y in range(4, 12):
@@ -556,7 +1064,51 @@ PROMPT_MAP = {
     "biscuit_sandwich": "a flaky southern biscuit sliced open with a sausage patty and egg inside",
     "biscuit": "a single fluffy golden-brown southern biscuit",
     "biscuits_and_gravy": "two warm biscuits on a plate covered in thick white country gravy with sausage chunks",
-    "miners_skillet": "a small black cast iron skillet filled with scrambled eggs, cooked sausage, and cubed potatoes"
+    "miners_skillet": "a small black cast iron skillet filled with scrambled eggs, cooked sausage, and cubed potatoes",
+    "onion": "a raw purple red onion bulb",
+    "onion_seeds": "a few small black onion seeds",
+    "onion_slices": "raw concentric red onion ring slices",
+    "onion_grilled": "caramelized grilled onion slices",
+    "tomato": "a raw ripe red tomato",
+    "tomato_seeds": "yellowish tomato seeds",
+    "tomato_slice": "a clean slice of red tomato showing seeds",
+    "tomato_grilled": "a lightly charred grilled tomato slice",
+    "pepper": "a raw green bell pepper",
+    "pepper_seeds": "small white bell pepper seeds",
+    "pepper_slices": "hollow green bell pepper rings",
+    "pepper_grilled": "grilled charred green bell pepper rings",
+    "spinach": "a fresh green spinach leaf",
+    "spinach_seeds": "spinach crop seeds",
+    "spinach_leaves": "a heap of chopped green spinach leaves",
+    "rosemary": "a sprig of fresh green rosemary herb",
+    "rosemary_seeds": "rosemary herb seeds",
+    "rosemary_chopped": "chopped rosemary needles",
+    "thyme": "a sprig of fresh green thyme herb",
+    "thyme_seeds": "thyme herb seeds",
+    "thyme_chopped": "chopped green thyme leaves",
+    "sage": "broad oval fuzzy grey-green sage leaves",
+    "sage_seeds": "sage herb seeds",
+    "sage_chopped": "chopped sage leaves",
+    "oregano": "a sprig of fresh green oregano herb",
+    "oregano_seeds": "oregano herb seeds",
+    "oregano_chopped": "chopped green oregano leaves",
+    "spices": "a bowl of mixed ground spices powder",
+    "salt": "a pile of white salt crystals",
+    "cheese_curds": "fresh white and yellow cheese curds",
+    "cheese_wheel": "a round yellow cheese wheel block",
+    "cheese_slice": "a flat yellow cheese slice with holes",
+    "beef_flank": "a raw red beef flank steak marbled with fat",
+    "steak_strips_raw": "raw red steak meat strips",
+    "steak_strips_cooked": "cooked brown grilled steak strips",
+    "suet": "a block of solid raw white suet beef fat",
+    "tallow": "a jar of white rendered beef tallow fat",
+    "chicken_breast": "a raw boneless skinless chicken breast cut",
+    "mutton_ribs": "raw red mutton rib chops with exposed white bones",
+    "mutton_strips_raw": "raw red mutton strips",
+    "mutton_strips_cooked": "cooked brown grilled mutton strips",
+    "rabbit_backstrap": "a raw lean dark-red rabbit backstrap cut",
+    "rabbit_sausage_raw": "a raw pink rabbit sausage link",
+    "rabbit_sausage_cooked": "a cooked golden-brown rabbit sausage link"
 }
 
 def load_texture_list(rp_dir):

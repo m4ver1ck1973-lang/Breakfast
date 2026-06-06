@@ -1,0 +1,15 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "breakfast:rabbit_backstrap",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "rabbit_backstrap",
+      "minecraft:max_stack_size": 64
+    }
+  }
+}

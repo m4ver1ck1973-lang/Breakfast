@@ -1,0 +1,35 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.herb_pot",
+        "texture_width": 16,
+        "texture_height": 16,
+        "visible_bounds_width": 1,
+        "visible_bounds_height": 0.5,
+        "visible_bounds_offset": [0, 0.25, 0]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            {
+              "origin": [-5, 0, -5],
+              "size": [10, 8, 10],
+              "uv": {
+                "north": { "uv": [3, 4], "uv_size": [10, 8] },
+                "south": { "uv": [3, 4], "uv_size": [10, 8] },
+                "east": { "uv": [3, 4], "uv_size": [10, 8] },
+                "west": { "uv": [3, 4], "uv_size": [10, 8] },
+                "up": { "uv": [3, 3], "uv_size": [10, 10] },
+                "down": { "uv": [3, 3], "uv_size": [10, 10] }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -62,6 +62,29 @@
             }
           ]
         }
+      ],
+      "conditions": [
+        {
+          "condition": "alternative",
+          "terms": [
+            {
+              "condition": "match_tool",
+              "item": "breakfast:knife_flint"
+            },
+            {
+              "condition": "match_tool",
+              "item": "breakfast:knife_copper"
+            },
+            {
+              "condition": "match_tool",
+              "item": "breakfast:knife_iron"
+            },
+            {
+              "condition": "match_tool",
+              "item": "breakfast:knife_diamond"
+            }
+          ]
+        }
       ]
     }
   ]

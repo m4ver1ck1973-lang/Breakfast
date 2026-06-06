@@ -91,6 +91,138 @@
     },
     "miners_skillet": {
       "textures": "textures/items/miners_skillet"
+    },
+    "onion_seeds": {
+      "textures": "textures/items/onion_seeds"
+    },
+    "tomato_seeds": {
+      "textures": "textures/items/tomato_seeds"
+    },
+    "pepper_seeds": {
+      "textures": "textures/items/pepper_seeds"
+    },
+    "spinach_seeds": {
+      "textures": "textures/items/spinach_seeds"
+    },
+    "rosemary_seeds": {
+      "textures": "textures/items/rosemary_seeds"
+    },
+    "thyme_seeds": {
+      "textures": "textures/items/thyme_seeds"
+    },
+    "sage_seeds": {
+      "textures": "textures/items/sage_seeds"
+    },
+    "oregano_seeds": {
+      "textures": "textures/items/oregano_seeds"
+    },
+    "onion_slices": {
+      "textures": "textures/items/onion_slices"
+    },
+    "tomato_slice": {
+      "textures": "textures/items/tomato_slice"
+    },
+    "pepper_slices": {
+      "textures": "textures/items/pepper_slices"
+    },
+    "spinach_leaves": {
+      "textures": "textures/items/spinach_leaves"
+    },
+    "rosemary_chopped": {
+      "textures": "textures/items/rosemary_chopped"
+    },
+    "thyme_chopped": {
+      "textures": "textures/items/thyme_chopped"
+    },
+    "sage_chopped": {
+      "textures": "textures/items/sage_chopped"
+    },
+    "oregano_chopped": {
+      "textures": "textures/items/oregano_chopped"
+    },
+    "rosemary": {
+      "textures": "textures/items/rosemary"
+    },
+    "thyme": {
+      "textures": "textures/items/thyme"
+    },
+    "sage": {
+      "textures": "textures/items/sage"
+    },
+    "oregano": {
+      "textures": "textures/items/oregano"
+    },
+    "spices": {
+      "textures": "textures/items/spices"
+    },
+    "salt": {
+      "textures": "textures/items/salt"
+    },
+    "suet": {
+      "textures": "textures/items/suet"
+    },
+    "tallow": {
+      "textures": "textures/items/tallow"
+    },
+    "beef_flank": {
+      "textures": "textures/items/beef_flank"
+    },
+    "steak_strips_raw": {
+      "textures": "textures/items/steak_strips_raw"
+    },
+    "chicken_breast": {
+      "textures": "textures/items/chicken_breast"
+    },
+    "mutton_ribs": {
+      "textures": "textures/items/mutton_ribs"
+    },
+    "mutton_strips_raw": {
+      "textures": "textures/items/mutton_strips_raw"
+    },
+    "rabbit_backstrap": {
+      "textures": "textures/items/rabbit_backstrap"
+    },
+    "rabbit_sausage_raw": {
+      "textures": "textures/items/rabbit_sausage_raw"
+    },
+    "onion": {
+      "textures": "textures/items/onion"
+    },
+    "onion_grilled": {
+      "textures": "textures/items/onion_grilled"
+    },
+    "tomato": {
+      "textures": "textures/items/tomato"
+    },
+    "tomato_grilled": {
+      "textures": "textures/items/tomato_grilled"
+    },
+    "pepper": {
+      "textures": "textures/items/pepper"
+    },
+    "pepper_grilled": {
+      "textures": "textures/items/pepper_grilled"
+    },
+    "spinach": {
+      "textures": "textures/items/spinach"
+    },
+    "cheese_curds": {
+      "textures": "textures/items/cheese_curds"
+    },
+    "cheese_slice": {
+      "textures": "textures/items/cheese_slice"
+    },
+    "cheese_wheel": {
+      "textures": "textures/items/cheese_wheel"
+    },
+    "steak_strips_cooked": {
+      "textures": "textures/items/steak_strips_cooked"
+    },
+    "mutton_strips_cooked": {
+      "textures": "textures/items/mutton_strips_cooked"
+    },
+    "rabbit_sausage_cooked": {
+      "textures": "textures/items/rabbit_sausage_cooked"
     }
   }
 }

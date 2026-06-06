@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:rabbit_sausage_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      { "item": "breakfast:rabbit_backstrap" },
+      { "item": "breakfast:lard" },
+      { "item": "breakfast:spices" }
+    ],
+    "result": {
+      "item": "breakfast:rabbit_sausage_raw",
+      "count": 2
+    }
+  }
+}

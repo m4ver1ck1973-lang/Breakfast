@@ -1,0 +1,17 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "breakfast:cheese_wheel_craft"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      { "item": "breakfast:cheese_curds" },
+      { "item": "breakfast:salt" }
+    ],
+    "result": {
+      "item": "breakfast:cheese_wheel",
+      "count": 1
+    }
+  }
+}
