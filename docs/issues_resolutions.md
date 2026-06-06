@@ -149,7 +149,19 @@ The `minecraft:food` item component has an optional boolean parameter `can_alway
 * Updated the Node.js helper utility script [update_items.js](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/tools/update_items.js) to explicitly add `"can_always_eat": false` within the `"minecraft:food"` component of all 19 custom food item definitions. 
 * Re-ran the utility script to apply the changes across the behaviour pack items.
 
+---
 
+## Issue 11: Transparency and Edge Glitches in Item Textures (Multi-colored Artifacts)
 
+### Symptom
+After downscaling generated textures to 32x32, strange, multi-colored/magenta/purple artifacts or neon halos rendered around the edges of the items in-game.
 
+### Investigation
+1. Downscaling high-resolution images (which are generated on a solid background, like magenta `#FF00FF`) using scaling algorithms like Lanczos averages edge pixels, producing semi-transparent border pixels (with alpha values between 1 and 254).
+2. Minecraft Bedrock's item rendering shaders do not support semi-transparent pixels on items (binary alpha test only). When it encounters them, it fails to blend them properly with the environment, causing glitchy multi-colored halos.
+3. Additionally, during downscaling, the background color (magenta `#FF00FF`) bled into the border pixels, making them purple/magenta. Color quantization then mapped these to bright neon colors in the palette.
 
+### Resolution
+* Updated the post-processing script [generate_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/generate_textures.py) to add an `enforce_binary_alpha` function.
+* This function forces any pixel with alpha < 128 to be fully transparent black `(0, 0, 0, 0)` and alpha >= 128 to be fully opaque `(r, g, b, 255)`.
+* Regenerated and redeployed all 30 textures with this rule, removing all semi-transparency rendering glitches.

@@ -1,6 +1,6 @@
 # Handoff Summary - Breakfast Addon Development
 
-This document provides a clean handoff summary of the Breakfast Minecraft Bedrock Addon project at the end of the session ending on **June 5, 2026** (as of Version **1.0.21**).
+This document provides a clean handoff summary of the Breakfast Minecraft Bedrock Addon project at the end of the session ending on **June 6, 2026** (as of Version **1.0.22**).
 
 ---
 
@@ -8,31 +8,31 @@ This document provides a clean handoff summary of the Breakfast Minecraft Bedroc
 * **Addon Name**: Breakfast
 * **Target Version**: Minecraft Bedrock UWP client `1.26.x`
 * **Script API Module**: `@minecraft/server` v`2.7.0` (stable)
-* **Latest Pack Version**: `1.0.21`
-* **Build File**: [Breakfast_1.0.21.mcaddon](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_1.0.21.mcaddon)
-* **Status**: **All core mechanics, visual renderings, hazard damage, tool progression, and advancement tracking are fully operational.** Custom blocks are craftable, right-click interactions place/retrieve items, foods render flat on cooktops, cooktops emit smoke/crackle sounds, players can achieve advancements, knives are tiered, and bread slicing yields individual slice items that must be cooked on the griddle to make toast.
+* **Latest Pack Version**: `1.0.22`
+* **Build File**: [Breakfast_1.0.22.mcaddon](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_1.0.22.mcaddon)
+* **Status**: **All core mechanics, visual renderings, item texture bindings, and packing/deployment systems are fully operational.** Custom blocks are craftable, right-click interactions place/retrieve items, foods render flat on workstations with smoke/crackle effects, tiered knives have unique slicing rules on the Butcher Block, and all 30 custom item textures have been upgraded to 32x32 quantized retro vector art with strict binary transparency.
 
 ---
 
 ## 2. Key Directories & Core Files
 
 ### Behavior Pack (`Breakfast_BP`)
-* [manifest.json](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_BP/manifest.json) — Version `1.0.21` with fresh UUIDs and stable `@minecraft/server` v`2.7.0` mappings.
-* [blocks/](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_BP/blocks) — Custom blocks: `butcher_block.json` and `griddle.json` (format version `"1.21.0"`) mapping custom components.
-* [items/](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_BP/items) — Includes raw, processed, and cooked food items, plus 4 tiered knives (Flint, Copper, Iron, Diamond). Added `bread_slice.json` in v1.0.21.
-* [recipes/](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_BP/recipes) — Crafting and cooking recipes. Tiered knives use a 2x2 diagonal pattern, and Breakfast Sandwich requires toast.
-* [scripts/main.js](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_BP/scripts/main.js) — Main controller logic:
-  * **Interactions**: Placing/retrieving items, cutting on the Butcher Block with a Knife ( Flint fails 20%, Iron has mutual exclusivity rolls, Diamond has bonus count and bones/poisonous potato scraps).
-  * **Griddle Tick Mechanics**: Sizzling, particles, and fire damage (1 HP / tick) to entities standing on top.
-  * **Workstation Recipes**: Bread loaf cuts to 3 bread slices; bread slice cooks on griddle to toast.
-  * **Hunger Workaround**: Enforces hunger bar constraints for custom food items.
-  * **Custom Advancements**: Announcement/toast framework for in-game achievements.
+* [manifest.json](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/manifest.json) — Version `1.0.22` with fresh UUIDs and stable `@minecraft/server` v`2.7.0` mappings.
+* [blocks/](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/blocks) — Custom blocks: `butcher_block.json` and `griddle.json` mapping inline custom components.
+* [items/](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/items) — Includes raw, processed, and cooked food items, plus 4 tiered knives (Flint, Copper, Iron, Diamond).
+* [recipes/](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/recipes) — Crafting and cooking recipes.
 
 ### Resource Pack (`Breakfast_RP`)
-* [manifest.json](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_RP/manifest.json) — Version `1.0.21` with matching dependencies.
-* [entity/placed_item.entity.json](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_RP/entity/placed_item.entity.json) — Maps visual helper entities to dynamic textures (including bread slice variant Y=33).
-* [models/blocks/griddle.geo.json](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_RP/models/blocks/griddle.geo.json) — Updated 3D geometry with 4-pixel tall plate and detailed UV maps.
-* [textures/items/](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/Breakfast_RP/textures/items) — Holds custom item pixel art (including bread slice, tiered knives, and raw meats).
+* [manifest.json](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_RP/manifest.json) — Version `1.0.22` with matching dependencies.
+* [textures/items/](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_RP/textures/items) — Holds custom item 32x32 textures (quantized, transparent, and outline-free).
+* [textures/item_texture.json](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_RP/textures/item_texture.json) — Maps item texture identifiers to PNG files.
+
+### Developer Tools (`Breakfast/tools/`)
+* [generate_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/generate_textures.py) — Custom pipeline script for background removal, Lanczos 32x32 downscaling, and binary alpha enforcement.
+* [audit_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/audit_textures.py) — Validates that all Behavior Pack items have matching Resource Pack texture definitions and existing PNG files.
+* [increment_version.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/increment_version.py) — Synchronizes version bumps across Behavior/Resource Pack manifest files.
+* [pack_addon.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/pack_addon.py) — Compiles and zips Behavior/Resource Pack folders into the final `.mcaddon` archive.
+* [deploy_addon.ps1](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/deploy_addon.ps1) — Direct development folder deployment utility for local live testing.
 
 ---
 
@@ -45,19 +45,19 @@ This document provides a clean handoff summary of the Breakfast Minecraft Bedroc
 
 ---
 
-## 4. Key Resolutions & Learnings (v1.0.15 - v1.0.21)
-* **Tiered Knives & Diagonal Recipes**: Implemented Flint, Copper, Iron, and Diamond knives with distinct durabilities and diagonal 2x2 recipes enabling personal inventory grid crafting.
-* **Knife Effectiveness**: Programmed Flint to fail 20% of the time, Iron to trigger either double slices or guaranteed byproducts, and Diamond to always double slice, guarantee byproducts, and yield bones/poisonous potato scraps.
-* **Bread Slicing Progression**: Shifted `minecraft:bread` from cooking directly on the griddle to processing into 3 `breakfast:bread_slice` items on the Butcher Block. Slices are then cooked on the griddle into Toast.
+## 4. Key Resolutions & Learnings (v1.0.22)
+* **32x32 Resolution Upgrade**: Switched from 16x16 to 32x32 resolution for item assets to capture proper shading and detail.
+* **Outline-Free Flat Vector Style**: Found that dark borders cause high-frequency aliasing and visual noise when downscaled, replacing them with borderless flat vector art.
+* **Binary Transparency Enforcement**: Prevented in-game UWP shader artifacts (neon dots/halos) by stripping out semi-transparent boundary pixels and forcing them to either alpha `0` or `255`.
+* **Automated Manifest Synchronization**: Standardized increments using `increment_version.py` to prevent duplicate import errors and links.
 
 ---
 
 ## 5. Recommended Roadmap for Next Session
+1. **Verify Blocks & Textures Visual Sync**:
+   - Ensure the placed 3D items render correctly on the Butcher Block and Griddle with the new 32x32 assets.
+2. **Add Placement Variants**:
+   - Verify placed food entities align perfectly with the updated bounding sizes.
 
-1. **Verify Bread Slice & Knife Effectiveness Mechanics**:
-   - Verify bread slices drop from loaves and render properly when placed to cook on the griddle.
-   - Verify Flint/Iron/Diamond knife slice mechanics and outputs.
-2. **Implement Remaining espec texture assets**:
-   - Integrate other untracked textures inside `Breakfast_RP/textures/items/` (e.g., `glowberry_pancakes.png`, `pancakes.png`, raw/cooked bacons, and biscuits) into items and recipes.
 
 
