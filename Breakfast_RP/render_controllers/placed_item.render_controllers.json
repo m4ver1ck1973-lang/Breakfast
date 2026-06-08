@@ -95,7 +95,21 @@
             "Texture.crimson_fungus",
             "Texture.warped_fungus",
             "Texture.skillet",
-            "Texture.miners_skillet"
+            "Texture.miners_skillet",
+            "Texture.carrot_slices",
+            "Texture.grilled_carrot",
+            "Texture.beetroot_slices",
+            "Texture.grilled_beetroot",
+            "Texture.brown_mushroom_slices",
+            "Texture.grilled_brown_mushroom",
+            "Texture.red_mushroom_slices",
+            "Texture.grilled_red_mushroom",
+            "Texture.crimson_fungus_slices",
+            "Texture.grilled_crimson_fungus",
+            "Texture.warped_fungus_slices",
+            "Texture.grilled_warped_fungus",
+            "Texture.carrot",
+            "Texture.beetroot"
           ]
         }
       },

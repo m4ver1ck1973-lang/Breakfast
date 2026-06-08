@@ -97,7 +97,21 @@
         "crimson_fungus": "textures/blocks/crimson_fungus",
         "warped_fungus": "textures/blocks/warped_fungus",
         "skillet": "textures/items/skillet",
-        "miners_skillet": "textures/items/miners_skillet"
+        "miners_skillet": "textures/items/miners_skillet",
+        "carrot_slices": "textures/items/carrot_slices",
+        "grilled_carrot": "textures/items/grilled_carrot",
+        "beetroot_slices": "textures/items/beetroot_slices",
+        "grilled_beetroot": "textures/items/grilled_beetroot",
+        "brown_mushroom_slices": "textures/items/brown_mushroom_slices",
+        "grilled_brown_mushroom": "textures/items/grilled_brown_mushroom",
+        "red_mushroom_slices": "textures/items/red_mushroom_slices",
+        "grilled_red_mushroom": "textures/items/grilled_red_mushroom",
+        "crimson_fungus_slices": "textures/items/crimson_fungus_slices",
+        "grilled_crimson_fungus": "textures/items/grilled_crimson_fungus",
+        "warped_fungus_slices": "textures/items/warped_fungus_slices",
+        "grilled_warped_fungus": "textures/items/grilled_warped_fungus",
+        "carrot": "textures/items/carrot",
+        "beetroot": "textures/items/beetroot"
       },
       "geometry": {
         "default": "geometry.placed_item"

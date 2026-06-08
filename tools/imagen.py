@@ -14,6 +14,23 @@ items_to_generate = {
     "waffle": "A 16-bit pixel art sprite of a golden waffle, 16x16 grid canvas, clean dark outline, flat lighting, retro game asset, isolated on a solid white background"
 }
 
+# WARNING: This script is part of the deprecated Python image generation toolchain.
+# Do NOT use this script or the generated assets for release-quality textures.
+# It is only suitable for generating placeholders for new implementations.
+
+import sys
+print("="*75)
+print("DEPRECATION WARNING: This script (imagen.py) is part of the deprecated")
+print("Python image generation toolchain and is NOT allowed for release textures.")
+print("Proceed only if you are generating placeholders for a new implementation.")
+print("="*75)
+
+# Optional prompt to continue
+response = input("Do you want to continue generating placeholder textures? (y/N): ").strip().lower()
+if response not in ('y', 'yes'):
+    print("Execution aborted.")
+    sys.exit(0)
+
 output_dir = "./addon_textures"
 os.makedirs(output_dir, exist_ok=True)
 

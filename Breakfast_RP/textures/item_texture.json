@@ -226,6 +226,42 @@
     },
     "rabbit_sausage_cooked": {
       "textures": "textures/items/rabbit_sausage_cooked"
+    },
+    "carrot_slices": {
+      "textures": "textures/items/carrot_slices"
+    },
+    "carrot_grilled": {
+      "textures": "textures/items/grilled_carrot"
+    },
+    "beetroot_slices": {
+      "textures": "textures/items/beetroot_slices"
+    },
+    "beetroot_grilled": {
+      "textures": "textures/items/grilled_beetroot"
+    },
+    "brown_mushroom_slices": {
+      "textures": "textures/items/brown_mushroom_slices"
+    },
+    "brown_mushroom_grilled": {
+      "textures": "textures/items/grilled_brown_mushroom"
+    },
+    "red_mushroom_slices": {
+      "textures": "textures/items/red_mushroom_slices"
+    },
+    "red_mushroom_grilled": {
+      "textures": "textures/items/grilled_red_mushroom"
+    },
+    "crimson_fungus_slices": {
+      "textures": "textures/items/crimson_fungus_slices"
+    },
+    "crimson_fungus_grilled": {
+      "textures": "textures/items/grilled_crimson_fungus"
+    },
+    "warped_fungus_slices": {
+      "textures": "textures/items/warped_fungus_slices"
+    },
+    "warped_fungus_grilled": {
+      "textures": "textures/items/grilled_warped_fungus"
     }
   }
 }

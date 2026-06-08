@@ -158,7 +158,9 @@ const ITEM_TO_VARIANT = {
   "breakfast:crimson_fungus_slices": 99,
   "breakfast:grilled_crimson_fungus": 100,
   "breakfast:warped_fungus_slices": 101,
-  "breakfast:grilled_warped_fungus": 102
+  "breakfast:grilled_warped_fungus": 102,
+  "minecraft:carrot": 103,
+  "minecraft:beetroot": 104
 };
 
 function getVariantFromItem(itemTypeId) {
@@ -613,12 +615,12 @@ function checkGriddleRecipes(block, blockData) {
     const meatsCount = presentItems.filter(item => MEATS.includes(item)).length;
     const veggiesCount = presentItems.filter(item => VEGGIES.includes(item)).length;
 
-    // 1. Nether Fungi Omelet: Egg + Crimson + Warped
-    if (eggsCount === 1 && presentItems.includes("minecraft:crimson_fungus") && presentItems.includes("minecraft:warped_fungus")) {
+    // 1. Nether Fungi Omelet: Egg + Crimson Slices + Warped Slices
+    if (eggsCount === 1 && presentItems.includes("breakfast:crimson_fungus_slices") && presentItems.includes("breakfast:warped_fungus_slices")) {
       outputOmelet = "breakfast:nether_fungi_omelet";
     }
-    // 2. Mushroom Omelet: Egg + Brown + Red
-    else if (eggsCount === 1 && presentItems.includes("minecraft:brown_mushroom") && presentItems.includes("minecraft:red_mushroom")) {
+    // 2. Mushroom Omelet: Egg + Brown Slices + Red Slices
+    else if (eggsCount === 1 && presentItems.includes("breakfast:brown_mushroom_slices") && presentItems.includes("breakfast:red_mushroom_slices")) {
       outputOmelet = "breakfast:mushroom_omelet";
     }
     // 3. Egg + Meat + Veggie/Mushroom/Berry combo

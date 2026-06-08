@@ -9,7 +9,8 @@ This document outlines the workflow and standing rules for producing and modifyi
 > [!IMPORTANT]
 > **All item textures must be generated via Gemini Web UI (or Google GenAI API when quotas allow) and processed using the project's post-processing script.**
 > 
-> * Do **not** run the procedural image generator (i.e. `--procedural`) unless explicitly requested. Running procedural drawing will overwrite customized hand-tuned assets.
+> * Do **not** use the previous Python image generation toolchain (procedural or API generation) for release textures. It is strictly reserved for generating temporary placeholders for new implementations.
+> * Existing resource pack textures are protected by default and cannot be overwritten by the Python generator scripts unless using the `--force-placeholder` override flag.
 > * All item textures must use **32x32 pixel resolution** (downscaled from high-resolution generations).
 > * All textures must have **binary transparency** (fully opaque `255` or fully transparent `0` on the alpha channel) to avoid magenta/neon rendering halos in Minecraft Bedrock.
 
@@ -71,3 +72,30 @@ After adding or processing new items, run the dependency audit script to ensure 
 ```bash
 python tools/audit_textures.py
 ```
+
+---
+
+## Herb Texture Automation (Aseprite)
+
+For generating consistent, release-quality textures for the herb garden crops and items (rosemary, oregano, thyme, sage), you can use the Aseprite automation script:
+[herb_generator.lua](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/tools/herb_generator.lua).
+
+### How to Install the Script in Aseprite
+1. Open Aseprite.
+2. Go to **File > Scripts > Open Scripts Folder**.
+3. Copy the [herb_generator.lua](file:///c:/Users/brett/Code/2026/Antigravity/Breakfast/tools/herb_generator.lua) file into that folder.
+4. Go to **File > Scripts > Rescan Scripts Folder**.
+
+### How to Use the Script
+1. Create or open your **grayscale template canvas** (32x32 size).
+   - Draw the shape using the four template shades:
+     - `#000000` (Dark Shadow)
+     - `#555555` (Base Leaf)
+     - `#aaaaaa` (Mid-Tone)
+     - `#ffffff` (Highlight)
+   - Stems or other details painted in non-grayscale colors (e.g. brown stems `#543D2B`) will be automatically preserved.
+2. Run the script: **File > Scripts > herb_generator**.
+3. Select the export mode in the dialog:
+   - **Crops (4 Frames -> 16 Block Textures)**: Expects a 4-frame sprite. Color-swaps and exports to `Breakfast_RP/textures/blocks/` as `herb_crop_<herb>_<0-3>.png`.
+   - **Items (3 Frames -> 12 Item Textures)**: Expects a 3-frame sprite (Frame 1: Raw, Frame 2: Seeds, Frame 3: Chopped). Color-swaps and exports to `Breakfast_RP/textures/items/` as `<herb>.png`, `<herb>_seeds.png`, and `<herb>_chopped.png`.
+   - **Single Item (Active Frame -> 4 Item Textures)**: Takes the current frame and exports it for the chosen item type (Raw, Seeds, or Chopped) for all 4 herbs.

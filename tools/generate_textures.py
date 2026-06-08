@@ -873,8 +873,160 @@ def draw_meat_cut(meat_type, style):
         return draw_sausage(is_cooked=True)
     return img
 
+def draw_carrot_slices(style="raw"):
+    img = create_canvas()
+    c_orange = (235, 120, 20, 255)
+    c_dark_orange = (195, 90, 10, 255)
+    c_black = C_BLACK
+    
+    # Draw two sliced circles
+    slices_data = [
+        (6, 6, 3), # x, y, radius
+        (10, 10, 3)
+    ]
+    for cx, cy, r in slices_data:
+        for x in range(cx - r, cx + r + 1):
+            for y in range(cy - r, cy + r + 1):
+                dx = x - cx
+                dy = y - cy
+                dist = dx*dx + dy*dy
+                if dist <= r*r:
+                    if dist > (r-1)*(r-1) + 1:
+                        img.putpixel((x, y), c_black)
+                    else:
+                        img.putpixel((x, y), c_orange if (x+y)%2 == 0 else c_dark_orange)
+                        
+    if style == "grilled":
+        # Add grill char marks
+        img.putpixel((5, 5), (60, 45, 35, 255))
+        img.putpixel((9, 10), (60, 45, 35, 255))
+        img.putpixel((10, 9), (60, 45, 35, 255))
+    return img
+
+def draw_beetroot_slices(style="raw"):
+    img = create_canvas()
+    c_dark_red = (140, 20, 40, 255)
+    c_light_red = (195, 55, 80, 255)
+    c_black = C_BLACK
+    
+    # Draw two sliced circles with rings
+    slices_data = [
+        (6, 9, 4),
+        (11, 5, 3)
+    ]
+    for cx, cy, r in slices_data:
+        for x in range(cx - r, cx + r + 1):
+            for y in range(cy - r, cy + r + 1):
+                dx = x - cx
+                dy = y - cy
+                dist = dx*dx + dy*dy
+                if dist <= r*r:
+                    if dist > (r-1)*(r-1) + 0.5:
+                        img.putpixel((x, y), c_black)
+                    elif dist > (r-2)*(r-2) + 0.5:
+                        img.putpixel((x, y), c_light_red)
+                    else:
+                        img.putpixel((x, y), c_dark_red)
+                        
+    if style == "grilled":
+        img.putpixel((5, 9), (50, 30, 35, 255))
+        img.putpixel((11, 4), (50, 30, 35, 255))
+    return img
+
+def draw_mushroom_slice(mush_type, style="raw"):
+    img = create_canvas()
+    c_black = C_BLACK
+    c_stem = (235, 225, 205, 255)
+    
+    if mush_type == "brown":
+        c_cap = (145, 110, 85, 255)
+        c_spots = None
+    elif mush_type == "red":
+        c_cap = (215, 35, 35, 255)
+        c_spots = (245, 245, 245, 255)
+    elif mush_type == "crimson":
+        c_cap = (155, 25, 45, 255)
+        c_stem = (10, 115, 105, 255) # cyan warped stem
+        c_spots = (210, 50, 90, 255) # light red spots
+    else: # warped
+        c_cap = (15, 125, 115, 255)
+        c_stem = (125, 25, 45, 255) # crimson stem
+        c_spots = (25, 190, 175, 255) # bright teal spots
+        
+    # Draw Cap (x:3-12, y:4-7)
+    for x in range(3, 13):
+        for y in range(4, 8):
+            dx = (x - 7.5)/4.5
+            dy = (y - 7.5)/3.5
+            if dx*dx + dy*dy <= 1.0:
+                img.putpixel((x, y), c_cap)
+                
+    # Draw Stem (x:7-8, y:7-12)
+    for x in range(7, 9):
+        for y in range(7, 13):
+            img.putpixel((x, y), c_stem)
+            
+    # Add outlines
+    # Cap outline
+    for x in range(3, 13):
+        for y in range(3, 8):
+            if img.getpixel((x, y)) == c_cap:
+                # Check neighbors
+                for nx, ny in [(x-1,y), (x+1,y), (x,y-1), (x,y+1)]:
+                    if 0 <= nx < 16 and 0 <= ny < 16:
+                        if img.getpixel((nx, ny)) == C_TRANSPARENT:
+                            img.putpixel((nx, ny), c_black)
+                            
+    # Stem outline
+    for x in range(6, 10):
+        for y in range(7, 14):
+            if x in (6, 9) or y == 13:
+                if y >= 7 and img.getpixel((x, y)) == C_TRANSPARENT:
+                    # check if next to stem
+                    for nx in (7, 8):
+                        if abs(x - nx) <= 1:
+                            img.putpixel((x, y), c_black)
+                            break
+                            
+    # Spots on cap
+    if c_spots:
+        img.putpixel((5, 5), c_spots)
+        img.putpixel((9, 4), c_spots)
+        img.putpixel((10, 6), c_spots)
+        
+    if style == "grilled":
+        img.putpixel((5, 6), (55, 45, 40, 255))
+        img.putpixel((9, 5), (55, 45, 40, 255))
+        img.putpixel((7, 9), (55, 45, 40, 255))
+        
+    return img
+
 def draw_procedural(item_id):
     """Draws a procedurally generated pixel art representation of the item."""
+    if "carrot_slices" in item_id:
+        return draw_carrot_slices(style="raw")
+    elif "grilled_carrot" in item_id:
+        return draw_carrot_slices(style="grilled")
+    elif "beetroot_slices" in item_id:
+        return draw_beetroot_slices(style="raw")
+    elif "grilled_beetroot" in item_id:
+        return draw_beetroot_slices(style="grilled")
+    elif "brown_mushroom_slices" in item_id:
+        return draw_mushroom_slice("brown", style="raw")
+    elif "grilled_brown_mushroom" in item_id:
+        return draw_mushroom_slice("brown", style="grilled")
+    elif "red_mushroom_slices" in item_id:
+        return draw_mushroom_slice("red", style="raw")
+    elif "grilled_red_mushroom" in item_id:
+        return draw_mushroom_slice("red", style="grilled")
+    elif "crimson_fungus_slices" in item_id:
+        return draw_mushroom_slice("crimson", style="raw")
+    elif "grilled_crimson_fungus" in item_id:
+        return draw_mushroom_slice("crimson", style="grilled")
+    elif "warped_fungus_slices" in item_id:
+        return draw_mushroom_slice("warped", style="raw")
+    elif "grilled_warped_fungus" in item_id:
+        return draw_mushroom_slice("warped", style="grilled")
     if "knife_flint" in item_id:
         return draw_knife(C_MED_GRAY, C_LIGHT_GRAY)
     elif "knife_copper" in item_id:
@@ -1109,7 +1261,19 @@ PROMPT_MAP = {
     "mutton_strips_cooked": "cooked brown grilled mutton strips",
     "rabbit_backstrap": "a raw lean dark-red rabbit backstrap cut",
     "rabbit_sausage_raw": "a raw pink rabbit sausage link",
-    "rabbit_sausage_cooked": "a cooked golden-brown rabbit sausage link"
+    "rabbit_sausage_cooked": "a cooked golden-brown rabbit sausage link",
+    "carrot_slices": "a neat pile of raw orange carrot slices",
+    "grilled_carrot": "crispy charred grilled carrot slices",
+    "beetroot_slices": "raw sliced beetroot displaying concentric red rings",
+    "grilled_beetroot": "lightly charred grilled beetroot slices",
+    "brown_mushroom_slices": "raw sliced brown mushroom pieces",
+    "grilled_brown_mushroom": "grilled sliced brown mushrooms with char marks",
+    "red_mushroom_slices": "raw sliced red mushroom cap pieces with white spots",
+    "grilled_red_mushroom": "grilled sliced red mushrooms with char marks",
+    "crimson_fungus_slices": "raw sliced red nether crimson fungus mushrooms",
+    "grilled_crimson_fungus": "grilled sliced crimson fungus mushrooms with char marks",
+    "warped_fungus_slices": "raw sliced teal nether warped fungus mushrooms",
+    "grilled_warped_fungus": "grilled sliced warped fungus mushrooms with char marks"
 }
 
 def load_texture_list(rp_dir):
@@ -1302,6 +1466,7 @@ def main():
     parser.add_argument("--api", action="store_true", help="Use Google GenAI API instead of procedural PIL generator.")
     parser.add_argument("--post-process-only", action="store_true", help="Post-process raw images already in the raw staging folder.")
     parser.add_argument("--procedural", action="store_true", help="Use procedural PIL generator to draw placeholder textures.")
+    parser.add_argument("--force-placeholder", action="store_true", help="Force overwrite existing release textures with procedural/API generated placeholders (use with caution).")
     
     args = parser.parse_args()
     
@@ -1440,7 +1605,20 @@ def main():
         print(f"Starting batch generation of {len(target_textures)} textures...")
         
     success_count = 0
+    skipped_count = 0
     for item_id in target_textures:
+        # Check if texture already exists in Resource Pack items directory
+        rp_item_path = os.path.join(rp_dir, "textures", "items", f"{item_id}.png")
+        if os.path.exists(rp_item_path) and (args.procedural or args.api):
+            if not args.force_placeholder:
+                print(f"  [SKIPPED] '{item_id}' already has an existing texture in the Resource Pack.")
+                print(f"            Hard Rule: Existing release textures cannot be overwritten by procedural/API tools.")
+                print(f"            (Use --force-placeholder to override this safety skip.)")
+                skipped_count += 1
+                continue
+            else:
+                print(f"  [OVERWRITE] Overwriting existing texture for '{item_id}' due to --force-placeholder.")
+
         if args.api:
             img = generate_texture_api(client, item_id, staging_dir)
         elif args.procedural:
@@ -1455,7 +1633,10 @@ def main():
         else:
             print(f"Failed to generate texture for {item_id}")
             
-    print(f"Generation finished. Successfully generated {success_count}/{len(target_textures)} textures.")
+    if skipped_count > 0:
+        print(f"Generation finished. Successfully generated {success_count} textures. Skipped {skipped_count} existing textures.")
+    else:
+        print(f"Generation finished. Successfully generated {success_count}/{len(target_textures)} textures.")
 
 if __name__ == "__main__":
     main()
