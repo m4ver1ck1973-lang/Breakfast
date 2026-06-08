@@ -1,30 +1,104 @@
 pack.name=Breakfast RP
 pack.description=Expand early-game cooking, pig and egg utility resources.
 
+# --- Items ---
+# Knives & Skillet
 item.breakfast:knife_flint=Flint Knife
 item.breakfast:knife_copper=Copper Knife
 item.breakfast:knife_iron=Iron Knife
 item.breakfast:knife_diamond=Diamond Knife
 item.breakfast:skillet=Cast Iron Skillet
+
+# Bread & Toast
 item.breakfast:bread_slice=Bread Slice
-item.breakfast:bacon=Bacon
-item.breakfast:cooked_bacon=Cooked Bacon
-item.breakfast:fried_egg=Fried Egg
 item.breakfast:toast=Toast
+item.breakfast:toast_jam=Toast with Jam
+item.breakfast:glowberry_toast=Glowberry Toast
+
+# Egg & Dairy
+item.breakfast:fried_egg=Fried Egg
+item.breakfast:cheese_curds=Cheese Curds
+item.breakfast:cheese_wheel=Cheese Wheel
+item.breakfast:cheese_slice=Cheese Slice
 item.breakfast:hash_browns=Hash Browns
 item.breakfast:raw_hash_browns=Raw Hash Browns
-item.breakfast:sausage=Sausage
-item.breakfast:raw_sausage=Raw Sausage
+
+
+# Pork & Bacon
+item.breakfast:bacon=Bacon
+item.breakfast:cooked_bacon=Cooked Bacon
 item.breakfast:ham=Ham
 item.breakfast:pork_belly=Pork Belly
 item.breakfast:ground_pork=Ground Pork
 item.breakfast:lard=Lard
+item.breakfast:sausage=Sausage
+item.breakfast:raw_sausage=Raw Sausage
+
+# Beef
+item.breakfast:beef_flank=Beef Flank
+item.breakfast:steak_strips=Steak Strips
+item.breakfast:cooked_steak_strips=Cooked Steak Strips
+item.breakfast:suet=Suet
+item.breakfast:tallow=Tallow
+
+# Mutton
+item.breakfast:mutton_ribs=Mutton Ribs
+item.breakfast:mutton_strips=Mutton Strips
+item.breakfast:cooked_mutton_strips=Cooked Mutton Strips
+
+# Chicken
+item.breakfast:chicken_breast=Chicken Breast
+
+# Rabbit
+item.breakfast:rabbit_backstrap=Rabbit Backstrap
+item.breakfast:rabbit_sausage_raw=Raw Rabbit Sausage
+item.breakfast:rabbit_sausage=Rabbit Sausage
+
+# Crops, Veggies & Seeds
+item.breakfast:onion=Onion
+item.breakfast:onion_slices=Onion Slices
+item.breakfast:grilled_onion=Grilled Onion
+item.breakfast:onion_seeds=Onion Seeds
+
+item.breakfast:tomato=Tomato
+item.breakfast:tomato_slice=Tomato Slice
+item.breakfast:grilled_tomato=Grilled Tomato
+item.breakfast:tomato_seeds=Tomato Seeds
+
+item.breakfast:pepper=Bell Pepper
+item.breakfast:pepper_slices=Pepper Slices
+item.breakfast:grilled_pepper=Grilled Pepper
+item.breakfast:pepper_seeds=Pepper Seeds
+
+item.breakfast:spinach=Spinach
+item.breakfast:spinach_leaves=Spinach Leaves
+item.breakfast:spinach_seeds=Spinach Seeds
+
+# Herbs
+item.breakfast:herb_rosemary=Rosemary
+item.breakfast:chopped_rosemary=Chopped Rosemary
+item.breakfast:rosemary_seeds=Rosemary Seeds
+
+item.breakfast:herb_thyme=Thyme
+item.breakfast:chopped_thyme=Chopped Thyme
+item.breakfast:thyme_seeds=Thyme Seeds
+
+item.breakfast:herb_sage=Sage
+item.breakfast:chopped_sage=Chopped Sage
+item.breakfast:sage_seeds=Sage Seeds
+
+item.breakfast:herb_oregano=Oregano
+item.breakfast:chopped_oregano=Chopped Oregano
+item.breakfast:oregano_seeds=Oregano Seeds
+
+item.breakfast:spices=Spices
+item.breakfast:salt=Salt
+
+# Prepared Dishes (Omelets, Biscuits, Plates)
 item.breakfast:biscuit=Biscuit
 item.breakfast:biscuits_and_gravy=Biscuits & Gravy
 item.breakfast:biscuit_sandwich=Biscuit Sandwich
 item.breakfast:toaster_sandwich=Toaster Sandwich
-item.breakfast:toast_jam=Toast with Jam
-item.breakfast:glowberry_toast=Glowberry Toast
 item.breakfast:berry_pancakes=Berry Pancakes
 item.breakfast:omelet=Omelet
 item.breakfast:mushroom_omelet=Mushroom Omelet
@@ -33,5 +107,17 @@ item.breakfast:ham_omelet=Ham Omelet
 item.breakfast:nether_fungi_omelet=Nether Fungi Omelet
 item.breakfast:miners_skillet=Miner's Skillet
 
-tile.breakfast:griddle=Griddle
-tile.breakfast:butcher_block=Butcher Block
+# --- Blocks ---
+tile.breakfast:griddle.name=Griddle
+tile.breakfast:butcher_block.name=Butcher Block
+tile.breakfast:herb_pot.name=Herb Pot
+tile.breakfast:tomato_trellis.name=Tomato Trellis
+
+tile.breakfast:tomato_crop.name=Tomato Crop
+tile.breakfast:onion_crop.name=Onion Crop
+tile.breakfast:pepper_crop.name=Pepper Crop
+tile.breakfast:spinach_crop.name=Spinach Crop
+tile.breakfast:herb_crop_rosemary.name=Rosemary Crop
+tile.breakfast:herb_crop_thyme.name=Thyme Crop
+tile.breakfast:herb_crop_sage.name=Sage Crop
+tile.breakfast:herb_crop_oregano.name=Oregano Crop

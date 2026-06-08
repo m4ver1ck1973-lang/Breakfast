@@ -8,7 +8,7 @@
       "properties": {
         "breakfast:item_variant": {
           "type": "int",
-          "range": [0, 100],
+          "range": [0, 150],
           "default": 0,
           "client_sync": true
         }

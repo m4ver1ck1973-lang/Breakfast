@@ -27,6 +27,12 @@ def generate_items(bp_dir):
         "onion_slices": {"icon": "onion_slices"},
         "tomato_slice": {"icon": "tomato_slice"},
         "pepper_slices": {"icon": "pepper_slices"},
+        "carrot_slices": {"icon": "carrot_slices"},
+        "beetroot_slices": {"icon": "beetroot_slices"},
+        "brown_mushroom_slices": {"icon": "brown_mushroom_slices"},
+        "red_mushroom_slices": {"icon": "red_mushroom_slices"},
+        "crimson_fungus_slices": {"icon": "crimson_fungus_slices"},
+        "warped_fungus_slices": {"icon": "warped_fungus_slices"},
         "spinach_leaves": {"icon": "spinach_leaves"},
         "chopped_rosemary": {"icon": "rosemary_chopped"},
         "chopped_thyme": {"icon": "thyme_chopped"},
@@ -61,7 +67,9 @@ def generate_items(bp_dir):
         if item_name.endswith("_seeds"):
             compost_chance = 30
         elif item_name in ["onion_slices", "tomato_slice", "pepper_slices", "spinach_leaves", 
-                           "herb_rosemary", "herb_thyme", "herb_sage", "herb_oregano"]:
+                           "herb_rosemary", "herb_thyme", "herb_sage", "herb_oregano",
+                           "carrot_slices", "beetroot_slices", "brown_mushroom_slices",
+                           "red_mushroom_slices", "crimson_fungus_slices", "warped_fungus_slices"]:
             compost_chance = 65
         elif item_name in ["chopped_rosemary", "chopped_thyme", "chopped_sage", "chopped_oregano"]:
             compost_chance = 50
@@ -105,6 +113,12 @@ def generate_items(bp_dir):
         "grilled_tomato": {"icon": "tomato_grilled", "nut": 3, "sat": 0.4},
         "pepper": {"icon": "pepper", "nut": 2, "sat": 0.2},
         "grilled_pepper": {"icon": "pepper_grilled", "nut": 3, "sat": 0.4},
+        "grilled_carrot": {"icon": "carrot_grilled", "nut": 3, "sat": 0.4},
+        "grilled_beetroot": {"icon": "beetroot_grilled", "nut": 3, "sat": 0.4},
+        "grilled_brown_mushroom": {"icon": "brown_mushroom_grilled", "nut": 3, "sat": 0.4},
+        "grilled_red_mushroom": {"icon": "red_mushroom_grilled", "nut": 3, "sat": 0.4},
+        "grilled_crimson_fungus": {"icon": "crimson_fungus_grilled", "nut": 3, "sat": 0.4},
+        "grilled_warped_fungus": {"icon": "warped_fungus_grilled", "nut": 3, "sat": 0.4},
         "spinach": {"icon": "spinach", "nut": 1, "sat": 0.1},
         "cheese_curds": {"icon": "cheese_curds", "nut": 2, "sat": 0.3},
         "cheese_slice": {"icon": "cheese_slice", "nut": 1, "sat": 0.2},

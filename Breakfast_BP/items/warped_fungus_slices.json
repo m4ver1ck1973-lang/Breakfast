@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "breakfast:warped_fungus_slices",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": "warped_fungus_slices",
+      "minecraft:max_stack_size": 64,
+      "minecraft:compostable": {
+        "composting_chance": 65
+      }
+    }
+  }
+}

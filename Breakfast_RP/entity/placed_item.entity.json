@@ -84,7 +84,20 @@
         "rosemary_seeds": "textures/items/rosemary_seeds",
         "thyme_seeds": "textures/items/thyme_seeds",
         "sage_seeds": "textures/items/sage_seeds",
-        "oregano_seeds": "textures/items/oregano_seeds"
+        "oregano_seeds": "textures/items/oregano_seeds",
+        "omelet": "textures/items/omelet",
+        "bacon_omelet": "textures/items/bacon_omelet",
+        "ham_omelet": "textures/items/ham_omelet",
+        "mushroom_omelet": "textures/items/mushroom_omelet",
+        "nether_fungi_omelet": "textures/items/nether_fungi_omelet",
+        "sweet_berries": "textures/items/sweet_berries",
+        "glow_berries": "textures/items/glow_berries",
+        "brown_mushroom": "textures/blocks/mushroom_brown",
+        "red_mushroom": "textures/blocks/mushroom_red",
+        "crimson_fungus": "textures/blocks/crimson_fungus",
+        "warped_fungus": "textures/blocks/warped_fungus",
+        "skillet": "textures/items/skillet",
+        "miners_skillet": "textures/items/miners_skillet"
       },
       "geometry": {
         "default": "geometry.placed_item"

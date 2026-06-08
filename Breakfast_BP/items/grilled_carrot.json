@@ -2,19 +2,18 @@
   "format_version": "1.21.0",
   "minecraft:item": {
     "description": {
-      "identifier": "breakfast:miners_skillet",
+      "identifier": "breakfast:grilled_carrot",
       "menu_category": {
         "category": "items"
       }
     },
     "components": {
-      "minecraft:icon": "miners_skillet",
+      "minecraft:icon": "carrot_grilled",
       "minecraft:max_stack_size": 64,
       "minecraft:food": {
-        "nutrition": 12,
-        "saturation_modifier": 1.2,
-        "can_always_eat": false,
-        "using_converts_to": "breakfast:skillet"
+        "nutrition": 3,
+        "saturation_modifier": 0.4,
+        "can_always_eat": false
       },
       "minecraft:use_animation": "eat",
       "minecraft:use_modifiers": {

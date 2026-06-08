@@ -133,7 +133,32 @@ const ITEM_TO_VARIANT = {
   "breakfast:rosemary_seeds": 74,
   "breakfast:thyme_seeds": 75,
   "breakfast:sage_seeds": 76,
-  "breakfast:oregano_seeds": 77
+  "breakfast:oregano_seeds": 77,
+  "breakfast:omelet": 78,
+  "breakfast:bacon_omelet": 79,
+  "breakfast:ham_omelet": 80,
+  "breakfast:mushroom_omelet": 81,
+  "breakfast:nether_fungi_omelet": 82,
+  "minecraft:sweet_berries": 83,
+  "minecraft:glow_berries": 84,
+  "minecraft:brown_mushroom": 85,
+  "minecraft:red_mushroom": 86,
+  "minecraft:crimson_fungus": 87,
+  "minecraft:warped_fungus": 88,
+  "breakfast:skillet": 89,
+  "breakfast:miners_skillet": 90,
+  "breakfast:carrot_slices": 91,
+  "breakfast:grilled_carrot": 92,
+  "breakfast:beetroot_slices": 93,
+  "breakfast:grilled_beetroot": 94,
+  "breakfast:brown_mushroom_slices": 95,
+  "breakfast:grilled_brown_mushroom": 96,
+  "breakfast:red_mushroom_slices": 97,
+  "breakfast:grilled_red_mushroom": 98,
+  "breakfast:crimson_fungus_slices": 99,
+  "breakfast:grilled_crimson_fungus": 100,
+  "breakfast:warped_fungus_slices": 101,
+  "breakfast:grilled_warped_fungus": 102
 };
 
 function getVariantFromItem(itemTypeId) {
@@ -142,10 +167,10 @@ function getVariantFromItem(itemTypeId) {
 
 function getGriddleSlotOffsets(index) {
   switch (index) {
-    case 0: return { x: -0.25, z: -0.25 };
-    case 1: return { x: 0.25, z: -0.25 };
-    case 2: return { x: -0.25, z: 0.25 };
-    case 3: return { x: 0.25, z: 0.25 };
+    case 0: return { x: 0.25, z: 0.25 };    // Slot 1 (SE)
+    case 1: return { x: -0.25, z: 0.25 };   // Slot 2 (SW)
+    case 2: return { x: 0.25, z: -0.25 };   // Slot 3 (NE)
+    case 3: return { x: -0.25, z: -0.25 };  // Slot 4 (NW)
     default: return { x: 0, z: 0 };
   }
 }
@@ -176,10 +201,18 @@ function updatePlacedEntity(block, slotTag, itemTypeId, yOffset, xOffset = 0, zO
     removePlacedEntity(block, slotTag);
     
     // Spawn new entity
+    let zShift = zOffset;
+    if (itemTypeId === "minecraft:brown_mushroom" ||
+        itemTypeId === "minecraft:red_mushroom" ||
+        itemTypeId === "minecraft:crimson_fungus" ||
+        itemTypeId === "minecraft:warped_fungus") {
+      zShift -= 0.08;
+    }
+
     const spawnLoc = {
       x: block.location.x + 0.5 + xOffset,
       y: block.location.y + yOffset,
-      z: block.location.z + 0.5 + zOffset
+      z: block.location.z + 0.5 + zShift
     };
     
     const entity = block.dimension.spawnEntity("breakfast:placed_item", spawnLoc);
@@ -222,7 +255,13 @@ const BUTCHER_RECIPES = {
   "breakfast:beef_flank": { output: "breakfast:steak_strips", count: 2 },
   "breakfast:suet": { output: "breakfast:tallow", count: 2 },
   "breakfast:mutton_ribs": { output: "breakfast:mutton_strips", count: 2 },
-  "breakfast:rabbit_backstrap": { output: "breakfast:rabbit_sausage_raw", count: 2 }
+  "breakfast:rabbit_backstrap": { output: "breakfast:rabbit_sausage_raw", count: 2 },
+  "minecraft:carrot": { output: "breakfast:carrot_slices", count: 3 },
+  "minecraft:beetroot": { output: "breakfast:beetroot_slices", count: 3 },
+  "minecraft:brown_mushroom": { output: "breakfast:brown_mushroom_slices", count: 3 },
+  "minecraft:red_mushroom": { output: "breakfast:red_mushroom_slices", count: 3 },
+  "minecraft:crimson_fungus": { output: "breakfast:crimson_fungus_slices", count: 3 },
+  "minecraft:warped_fungus": { output: "breakfast:warped_fungus_slices", count: 3 }
 };
 
 const GRIDDLE_RECIPES = {
@@ -240,6 +279,12 @@ const GRIDDLE_RECIPES = {
   "breakfast:rabbit_sausage_raw": { output: "breakfast:rabbit_sausage", cookTime: 15 },
   "minecraft:water_bucket": { output: "breakfast:salt", count: 3, cookTime: 15 },
   "minecraft:milk_bucket": { output: "breakfast:cheese_curds", count: 1, cookTime: 15 },
+  "breakfast:carrot_slices": { output: "breakfast:grilled_carrot", cookTime: 12 },
+  "breakfast:beetroot_slices": { output: "breakfast:grilled_beetroot", cookTime: 12 },
+  "breakfast:brown_mushroom_slices": { output: "breakfast:grilled_brown_mushroom", cookTime: 12 },
+  "breakfast:red_mushroom_slices": { output: "breakfast:grilled_red_mushroom", cookTime: 12 },
+  "breakfast:crimson_fungus_slices": { output: "breakfast:grilled_crimson_fungus", cookTime: 12 },
+  "breakfast:warped_fungus_slices": { output: "breakfast:grilled_warped_fungus", cookTime: 12 },
 
   // Omelet Fusion Outputs
   "breakfast:omelet": { output: "breakfast:omelet", cookTime: 30 },
@@ -247,6 +292,7 @@ const GRIDDLE_RECIPES = {
   "breakfast:ham_omelet": { output: "breakfast:ham_omelet", cookTime: 30 },
   "breakfast:mushroom_omelet": { output: "breakfast:mushroom_omelet", cookTime: 30 },
   "breakfast:nether_fungi_omelet": { output: "breakfast:nether_fungi_omelet", cookTime: 30 },
+  "breakfast:miners_skillet": { output: "breakfast:miners_skillet", cookTime: 30 },
 
   // Vanilla Campfire Cooking
   "minecraft:beef": { output: "minecraft:cooked_beef", cookTime: 30 },
@@ -475,14 +521,19 @@ const VEGGIES = [
   "breakfast:spinach", "breakfast:spinach_leaves", "minecraft:sweet_berries", "minecraft:glow_berries",
   "minecraft:brown_mushroom", "minecraft:red_mushroom", "breakfast:herb_rosemary",
   "breakfast:herb_thyme", "breakfast:herb_sage", "breakfast:herb_oregano",
-  "minecraft:crimson_fungus", "minecraft:warped_fungus"
+  "minecraft:crimson_fungus", "minecraft:warped_fungus",
+  "breakfast:carrot_slices", "breakfast:grilled_carrot", "breakfast:beetroot_slices", "breakfast:grilled_beetroot",
+  "breakfast:brown_mushroom_slices", "breakfast:grilled_brown_mushroom", "breakfast:red_mushroom_slices", "breakfast:grilled_red_mushroom",
+  "breakfast:crimson_fungus_slices", "breakfast:grilled_crimson_fungus", "breakfast:warped_fungus_slices", "breakfast:grilled_warped_fungus"
 ];
 
 function isPlaceableOnGriddle(itemTypeId) {
   return GRIDDLE_RECIPES[itemTypeId] !== undefined ||
          EGGS.includes(itemTypeId) ||
          MEATS.includes(itemTypeId) ||
-         VEGGIES.includes(itemTypeId);
+         VEGGIES.includes(itemTypeId) ||
+         itemTypeId === "breakfast:skillet" ||
+         itemTypeId === "breakfast:miners_skillet";
 }
 
 function placeItemInSlot(player, block, blockData, slotIndex, itemInHand, container, selectedIndex) {
@@ -545,33 +596,44 @@ function checkGriddleRecipes(block, blockData) {
     }
   }
 
-  // We need exactly 3 items for a recipe
-  if (presentItems.length !== 3) return;
-
-  const eggsCount = presentItems.filter(item => EGGS.includes(item)).length;
-  const meatsCount = presentItems.filter(item => MEATS.includes(item)).length;
-  const veggiesCount = presentItems.filter(item => VEGGIES.includes(item)).length;
-
   let outputOmelet = null;
 
-  // 1. Nether Fungi Omelet: Egg + Crimson + Warped
-  if (eggsCount === 1 && presentItems.includes("minecraft:crimson_fungus") && presentItems.includes("minecraft:warped_fungus")) {
-    outputOmelet = "breakfast:nether_fungi_omelet";
-  }
-  // 2. Mushroom Omelet: Egg + Brown + Red (or Egg + Meat + Brown/Red Mushroom)
-  else if (eggsCount === 1 && presentItems.includes("minecraft:brown_mushroom") && presentItems.includes("minecraft:red_mushroom")) {
-    outputOmelet = "breakfast:mushroom_omelet";
-  }
-  // 3. Egg + Meat + Veggie/Mushroom/Berry combo
-  else if (eggsCount === 1 && meatsCount === 1 && veggiesCount === 1) {
-    const meat = presentItems.find(item => MEATS.includes(item));
-    if (meat === "breakfast:bacon" || meat === "breakfast:cooked_bacon") {
-      outputOmelet = "breakfast:bacon_omelet";
-    } else if (meat === "breakfast:ham") {
-      outputOmelet = "breakfast:ham_omelet";
-    } else {
-      outputOmelet = "breakfast:omelet";
+  if (presentItems.length === 4) {
+    // Check Miner's Skillet fusion: skillet + egg + bacon + potato/hash brown
+    const hasSkillet = presentItems.includes("breakfast:skillet");
+    const hasEgg = presentItems.includes("minecraft:egg") || presentItems.includes("breakfast:fried_egg");
+    const hasBacon = presentItems.includes("breakfast:bacon") || presentItems.includes("breakfast:cooked_bacon");
+    const hasPotato = presentItems.includes("breakfast:raw_hash_browns") || presentItems.includes("breakfast:hash_browns");
+    
+    if (hasSkillet && hasEgg && hasBacon && hasPotato) {
+      outputOmelet = "breakfast:miners_skillet";
     }
+  } else if (presentItems.length === 3) {
+    const eggsCount = presentItems.filter(item => EGGS.includes(item)).length;
+    const meatsCount = presentItems.filter(item => MEATS.includes(item)).length;
+    const veggiesCount = presentItems.filter(item => VEGGIES.includes(item)).length;
+
+    // 1. Nether Fungi Omelet: Egg + Crimson + Warped
+    if (eggsCount === 1 && presentItems.includes("minecraft:crimson_fungus") && presentItems.includes("minecraft:warped_fungus")) {
+      outputOmelet = "breakfast:nether_fungi_omelet";
+    }
+    // 2. Mushroom Omelet: Egg + Brown + Red
+    else if (eggsCount === 1 && presentItems.includes("minecraft:brown_mushroom") && presentItems.includes("minecraft:red_mushroom")) {
+      outputOmelet = "breakfast:mushroom_omelet";
+    }
+    // 3. Egg + Meat + Veggie/Mushroom/Berry combo
+    else if (eggsCount === 1 && meatsCount === 1 && veggiesCount === 1) {
+      const meat = presentItems.find(item => MEATS.includes(item));
+      if (meat === "breakfast:bacon" || meat === "breakfast:cooked_bacon") {
+        outputOmelet = "breakfast:bacon_omelet";
+      } else if (meat === "breakfast:ham") {
+        outputOmelet = "breakfast:ham_omelet";
+      } else {
+        outputOmelet = "breakfast:omelet";
+      }
+    }
+  } else {
+    return;
   }
 
   if (outputOmelet) {
@@ -616,33 +678,20 @@ function handleGriddleInteract(event) {
   const faceLoc = event.faceLocation;
   
   let clickedSlot = -1;
-  if (face === "Up" && faceLoc) {
+  const faceStr = String(face);
+  if ((faceStr === "Up" || faceStr === "up") && faceLoc) {
     const clickX = faceLoc.x;
     const clickZ = faceLoc.z;
-    const pDirection = player.cardinalDirection;
-
-    // Perspective mapping based on player's cardinal facing direction
-    if (pDirection === "North" || pDirection === "north") {
-      if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 0;      // NW
-      else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 1; // NE
-      else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 2; // SW
-      else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 3;// SE
-    } else if (pDirection === "South" || pDirection === "south") {
-      if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 0;      // NW
-      else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 1;  // NE
-      else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 2;  // SW
-      else if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 3;   // SE
-    } else if (pDirection === "East" || pDirection === "east") {
-      if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 0;      // NW
-      else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 1; // NE
-      else if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 2;  // SW
-      else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 3;  // SE
-    } else if (pDirection === "West" || pDirection === "west") {
-      if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 0;      // NW
-      else if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 1;   // NE
-      else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 2; // SW
-      else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 3;  // SE
-    }
+    
+    // Absolute coordinate mapping relative to block space:
+    // NW corner is at x < 0.5, z < 0.5
+    // NE corner is at x >= 0.5, z < 0.5
+    // SW corner is at x < 0.5, z >= 0.5
+    // SE corner is at x >= 0.5, z >= 0.5
+    if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 0;        // NW
+    else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 1;  // NE
+    else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 2;  // SW
+    else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 3; // SE
   }
 
   if (itemInHand && isPlaceableOnGriddle(itemInHand.typeId)) {

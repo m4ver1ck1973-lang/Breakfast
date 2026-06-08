@@ -82,7 +82,20 @@
             "Texture.rosemary_seeds",
             "Texture.thyme_seeds",
             "Texture.sage_seeds",
-            "Texture.oregano_seeds"
+            "Texture.oregano_seeds",
+            "Texture.omelet",
+            "Texture.bacon_omelet",
+            "Texture.ham_omelet",
+            "Texture.mushroom_omelet",
+            "Texture.nether_fungi_omelet",
+            "Texture.sweet_berries",
+            "Texture.glow_berries",
+            "Texture.brown_mushroom",
+            "Texture.red_mushroom",
+            "Texture.crimson_fungus",
+            "Texture.warped_fungus",
+            "Texture.skillet",
+            "Texture.miners_skillet"
           ]
         }
       },
