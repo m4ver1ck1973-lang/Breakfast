@@ -1,0 +1,134 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "minecraft:wheat_seeds",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 0,
+                "max": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "random_chance",
+          "chance": 0.20
+        }
+      ],
+      "entries": [
+        { "type": "item", "name": "breakfast:onion_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:tomato_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:pepper_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:spinach_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:rosemary_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:thyme_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:sage_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:oregano_seeds", "weight": 1 }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "match_tool",
+          "item": "breakfast:knife_flint"
+        },
+        {
+          "condition": "random_chance",
+          "chance": 0.10
+        }
+      ],
+      "entries": [
+        { "type": "item", "name": "breakfast:onion_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:tomato_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:pepper_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:spinach_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:rosemary_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:thyme_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:sage_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:oregano_seeds", "weight": 1 }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "match_tool",
+          "item": "breakfast:knife_copper"
+        },
+        {
+          "condition": "random_chance",
+          "chance": 0.20
+        }
+      ],
+      "entries": [
+        { "type": "item", "name": "breakfast:onion_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:tomato_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:pepper_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:spinach_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:rosemary_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:thyme_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:sage_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:oregano_seeds", "weight": 1 }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "match_tool",
+          "item": "breakfast:knife_iron"
+        },
+        {
+          "condition": "random_chance",
+          "chance": 0.30
+        }
+      ],
+      "entries": [
+        { "type": "item", "name": "breakfast:onion_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:tomato_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:pepper_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:spinach_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:rosemary_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:thyme_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:sage_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:oregano_seeds", "weight": 1 }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {
+          "condition": "match_tool",
+          "item": "breakfast:knife_diamond"
+        },
+        {
+          "condition": "random_chance",
+          "chance": 0.50
+        }
+      ],
+      "entries": [
+        { "type": "item", "name": "breakfast:onion_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:tomato_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:pepper_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:spinach_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:rosemary_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:thyme_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:sage_seeds", "weight": 1 },
+        { "type": "item", "name": "breakfast:oregano_seeds", "weight": 1 }
+      ]
+    }
+  ]
+}

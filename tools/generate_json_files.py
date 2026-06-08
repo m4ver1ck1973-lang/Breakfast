@@ -55,8 +55,30 @@ def generate_items(bp_dir):
     
     for item_name, config in basic_items.items():
         item_id = f"breakfast:{item_name}"
+        format_version = "1.21.0"
+        
+        compost_chance = None
+        if item_name.endswith("_seeds"):
+            compost_chance = 30
+        elif item_name in ["onion_slices", "tomato_slice", "pepper_slices", "spinach_leaves", 
+                           "herb_rosemary", "herb_thyme", "herb_sage", "herb_oregano"]:
+            compost_chance = 65
+        elif item_name in ["chopped_rosemary", "chopped_thyme", "chopped_sage", "chopped_oregano"]:
+            compost_chance = 50
+            
+        components = {
+            "minecraft:icon": config["icon"],
+            "minecraft:max_stack_size": 64
+        }
+        
+        if compost_chance is not None:
+            format_version = "1.21.60"
+            components["minecraft:compostable"] = {
+                "composting_chance": compost_chance
+            }
+            
         data = {
-            "format_version": "1.21.0",
+            "format_version": format_version,
             "minecraft:item": {
                 "description": {
                     "identifier": item_id,
@@ -64,10 +86,7 @@ def generate_items(bp_dir):
                         "category": "items"
                     }
                 },
-                "components": {
-                    "minecraft:icon": config["icon"],
-                    "minecraft:max_stack_size": 64
-                }
+                "components": components
             }
         }
         if "block" in config:
@@ -97,8 +116,35 @@ def generate_items(bp_dir):
     
     for item_name, config in food_items.items():
         item_id = f"breakfast:{item_name}"
+        format_version = "1.21.0"
+        
+        compost_chance = None
+        if item_name in ["onion", "tomato", "pepper", "spinach"]:
+            compost_chance = 65
+            
+        components = {
+            "minecraft:icon": config["icon"],
+            "minecraft:max_stack_size": 64,
+            "minecraft:food": {
+                "nutrition": config["nut"],
+                "saturation_modifier": config["sat"],
+                "can_always_eat": False
+            },
+            "minecraft:use_animation": "eat",
+            "minecraft:use_modifiers": {
+                "use_duration": config.get("dur", 1.6),
+                "movement_modifier": 0.35
+            }
+        }
+        
+        if compost_chance is not None:
+            format_version = "1.21.60"
+            components["minecraft:compostable"] = {
+                "composting_chance": compost_chance
+            }
+            
         data = {
-            "format_version": "1.21.0",
+            "format_version": format_version,
             "minecraft:item": {
                 "description": {
                     "identifier": item_id,
@@ -106,20 +152,7 @@ def generate_items(bp_dir):
                         "category": "items"
                     }
                 },
-                "components": {
-                    "minecraft:icon": config["icon"],
-                    "minecraft:max_stack_size": 64,
-                    "minecraft:food": {
-                        "nutrition": config["nut"],
-                        "saturation_modifier": config["sat"],
-                        "can_always_eat": False
-                    },
-                    "minecraft:use_animation": "eat",
-                    "minecraft:use_modifiers": {
-                        "use_duration": config.get("dur", 1.6),
-                        "movement_modifier": 0.35
-                    }
-                }
+                "components": components
             }
         }
         write_json(os.path.join(items_dir, f"{item_name}.json"), data)
@@ -208,15 +241,111 @@ def generate_blocks(bp_dir):
         "herb_crop_oregano"
     ]
     
+    crop_heights = {
+        "onion_crop": [3, 6, 9, 12],
+        "tomato_crop": [4, 8, 16, 16],
+        "pepper_crop": [4, 8, 16, 16],
+        "spinach_crop": [3, 5, 8, 10],
+        "herb_crop_rosemary": [3, 5, 7, 9],
+        "herb_crop_thyme": [3, 5, 7, 9],
+        "herb_crop_sage": [3, 5, 7, 9],
+        "herb_crop_oregano": [3, 5, 7, 9]
+    }
+    
     for crop_name in crops:
+        allowed_blocks = ["minecraft:farmland"]
+        if crop_name == "tomato_crop":
+            allowed_blocks.append("breakfast:tomato_crop")
+        elif crop_name == "spinach_crop":
+            allowed_blocks.append("breakfast:spinach_crop")
+
+        states = {
+            "breakfast:growth_stage": [0, 1, 2, 3]
+        }
+        if crop_name == "tomato_crop":
+            states["breakfast:is_climbing"] = [False, True]
+
+        permutations = []
+        if crop_name == "tomato_crop":
+            for stage in range(4):
+                # 1. Non-climbing permutations (on farmland)
+                permutations.append({
+                    "condition": f"q.block_state('breakfast:growth_stage') == {stage} && !q.block_state('breakfast:is_climbing')",
+                    "components": {
+                        "minecraft:geometry": "minecraft:geometry.cross",
+                        "minecraft:selection_box": {
+                            "origin": [-8, 0, -8],
+                            "size": [16, crop_heights[crop_name][stage], 16]
+                        },
+                        "minecraft:material_instances": {
+                            "*": {
+                                "texture": f"tomato_crop_{stage}",
+                                "render_method": "alpha_test"
+                            }
+                        }
+                    }
+                })
+                # 2. Climbing permutations (on trellis)
+                permutations.append({
+                    "condition": f"q.block_state('breakfast:growth_stage') == {stage} && q.block_state('breakfast:is_climbing')",
+                    "components": {
+                        "minecraft:geometry": "geometry.tomato_crop_trellis",
+                        "minecraft:selection_box": {
+                            "origin": [-8, 0, -8],
+                            "size": [16, 16, 16]
+                        },
+                        "minecraft:material_instances": {
+                            "trellis": {
+                                "texture": "tomato_trellis",
+                                "render_method": "alpha_test"
+                            },
+                            "crop": {
+                                "texture": f"tomato_crop_{stage}",
+                                "render_method": "alpha_test"
+                            }
+                        }
+                    }
+                })
+        else:
+            for stage in range(4):
+                permutations.append({
+                    "condition": f"q.block_state('breakfast:growth_stage') == {stage}",
+                    "components": {
+                        "minecraft:selection_box": {
+                            "origin": [-8, 0, -8],
+                            "size": [16, crop_heights[crop_name][stage], 16]
+                        },
+                        "minecraft:material_instances": {
+                            "*": {
+                                "texture": f"{crop_name}_{stage}",
+                                "render_method": "alpha_test"
+                            }
+                        }
+                    }
+                })
+
+        material_instances = {
+            "*": {
+                "texture": f"{crop_name}_0",
+                "render_method": "alpha_test"
+            }
+        }
+        if crop_name == "tomato_crop":
+            material_instances["trellis"] = {
+                "texture": "tomato_trellis",
+                "render_method": "alpha_test"
+            }
+            material_instances["crop"] = {
+                "texture": "tomato_crop_0",
+                "render_method": "alpha_test"
+            }
+
         crop_data = {
             "format_version": "1.26.0",
             "minecraft:block": {
                 "description": {
                     "identifier": f"breakfast:{crop_name}",
-                    "properties": {
-                        "breakfast:growth_stage": [0, 1, 2, 3]
-                    },
+                    "states": states,
                     "menu_category": {
                         "category": "commands"
                     }
@@ -224,12 +353,7 @@ def generate_blocks(bp_dir):
                 "components": {
                     f"breakfast:{crop_name}_component": {},
                     "minecraft:geometry": "minecraft:geometry.cross",
-                    "minecraft:material_instances": {
-                        "*": {
-                            "texture": f"{crop_name}_0",
-                            "render_method": "alpha_test"
-                        }
-                    },
+                    "minecraft:material_instances": material_instances,
                     "minecraft:destructible_by_mining": {
                         "seconds_to_destroy": 0.1
                     },
@@ -241,22 +365,18 @@ def generate_blocks(bp_dir):
                     "minecraft:tick": {
                         "interval_range": [200, 400],
                         "looping": True
+                    },
+                    "minecraft:loot": "loot_tables/empty.json",
+                    "minecraft:placement_filter": {
+                        "conditions": [
+                            {
+                                "allowed_faces": ["up"],
+                                "block_filter": allowed_blocks
+                            }
+                        ]
                     }
                 },
-                "permutations": [
-                    {
-                        "condition": f"q.block_state('breakfast:growth_stage') == {stage}",
-                        "components": {
-                            "minecraft:material_instances": {
-                                "*": {
-                                    "texture": f"{crop_name}_{stage}",
-                                    "render_method": "alpha_test"
-                                }
-                            }
-                        }
-                    }
-                    for stage in range(4)
-                ]
+                "permutations": permutations
             }
         }
         write_json(os.path.join(blocks_dir, f"{crop_name}.json"), crop_data)

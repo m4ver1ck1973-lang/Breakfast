@@ -1,0 +1,101 @@
+In [Minecraft Bedrock Edition](https://www.google.com/search?q=Minecraft+Bedrock+Edition&kgmid=/hkb/Cg4KCGxhbmd1YWdlEgJlbgoSCgR0eXBlEgpWSURFT19HQU1FCigKC2VudGl0eV9uYW1lEhltaW5lY3JhZnQgYmVkcm9jayBlZGl0aW9u#sv=CBwS9QYKzwUSzAUKjAVBTW4zLXlSX1hEdUFtQVpEeVVUd2tuSjNPZmlxRkkyTXVabnRsckNkRDUxTVFfQjE3WlRzS1IwQkNfeWN1aXlSWDVqczFBb0pqRnhNTHhYUGNFTmdVaHJXYzNZVTZIcmQ4T3U3Z1dvSktEZ05IUGdkaGt2aTM2a3hDdVhucW0ta2V6VFFyOEl5ZEsyZTB3WnoxSjh2UVUwU3RBYmNFVk9rQ0xBLXZrQUM5cFZtQzFaZTBORTZQWXRZb09rbzBaa0dCZldlbThSODhHUkNabjVkWGNLMDNGOUloU1NLLXg4cU5FNm8weWR4VHo5S1pIQlhCdzV1bThsNTJMRm14UW9fdEJIWHJSZ21kbjlURnpsMmJhZ1FmLWVPS1B2ai1ZTU5SUHhUeDlWX0lMaFJPUVNsc0hpRFd0R0txRDVFNUVHRXlVY1NuMUkyTEthSTJMaDZqZFoySlBYSXNudHlCUkpvaHJEc3Rta1JoZjhtTlljX21Wd2k4SDZGbFJkRmY5QjRvblllR1hPRHlQdFNrMXZGV0lvcjZZZlZETnE4ZmxLYUpVM0U2N09jYTRzTTRHOHV6UWtabFplTXQ4cjd3Y3BWMTBrSXBhaWVZc1hhVzJ4V0RDbFU1Y3plM0dKOUFTVnhubmZ0dDRtSnJ5T28xbGhBc3hMOXJwZUd4enp0LWFPUTE5RU5vbUFUcG9aV3dBbEJfTWc0ajBXMXRPaGJYcEQydU9zMTl3QkFtMlRZTHBOb2xyakxaOGROQW1BUmtmb0dNakxtQVBhZW5xYVhzS0NvV1VHOVdacjJpbnNGSlJIakFybHhsMEtXeVhIbElBQmRyeWVudXpTWVJTc2MwWG5mOG1NSWZQR0RpN3R4Ehd3Y0FsYXVyX01PMm1tdGtQdExlU21RRRoiQUpLTEZtTHZEV203amdQWkFUSFdEQ19HN1hUWk85SDdFdxIENzg1NBoBMyIeCgFxEhlNaW5lY3JhZnQgQmVkcm9jayBFZGl0aW9uInYKBWtnbWlkEm0vaGtiL0NnNEtDR3hoYm1kMVlXZGxFZ0psYmdvU0NnUjBlWEJsRWdwV1NVUkZUMTlIUVUxRkNpZ0tDMlZ1ZEdsMGVWOXVZVzFsRWhsdGFXNWxZM0poWm5RZ1ltVmtjbTlqYXlCbFpHbDBhVzl1KAAYRSCMu4GHAQ) (v26.x and higher), creator Moaswies implements custom crop growth and bonemeal mechanics primarily by leveraging Block JSON components combined with a custom GameTest / Script API framework. [1] 
+Because Bedrock's data-driven components alone cannot perfectly emulate vanilla crop behavior (like the organic, stage-by-stage growth triggered by item interaction), a script-driven approach is the standard for high-fidelity ports like Farmer's Delight. [2, 3] 
+------------------------------
+## 1. The Core Growth Mechanic (JSON + Server Scripting)
+Instead of forcing vanilla tick-growth directly inside the JSON via components that can be unstable for complex modded behavior, standard Bedrock crop development is achieved using a dual system:
+
+* Block Definitions (JSON): Each growth stage of a crop (e.g., tomato_stage_0 to tomato_stage_3) is treated as a separate block ID or a single block utilizing integer block properties ("mod:growth_stage": [0, 1, 2, 3]). [4, 5, 6] 
+* The Random Tick Listener (Script API): A server-side script registers a random tick event loop. When a random tick hits the custom crop block, the script checks neighboring light levels and soil types. If conditions are met, the script changes the block property or swaps the block ID to the next stage using world.getDimension().setBlock().
+
+## 2. Bonemeal Interaction (Item Use Trigger)
+To override the default behavior where clicking a custom block with an item doesn't trigger vanilla logic natively, the implementation relies on the @minecraft/server Script API's world.beforeEvents.itemUseOn or world.afterEvents.itemUseOn events. [2] 
+## The Script logic flow:
+
+   1. Detecting the Interaction: The script listens for a player right-clicking a block.
+   2. Item and Block Check: It validates if the item in the player's hand is minecraft:bone_meal and if the block clicked is one of the custom crops (like farmersdelight:cabbage_stage_1).
+   3. The Growth Logic:
+   * If the crop isn't fully grown, the script calculates a random chance to progress the crop by 1 or more stages (matching vanilla's random growth burst).
+      * It plays the vanilla particle (minecraft:crop_growth_emitter) and sound effects at the block's coordinates.
+   4. Inventory Deduction: If the player is in Survival mode, the script decrements the bonemeal stack count by 1.
+
+------------------------------
+## 3. Quick Implementation Blueprint for Your v26.x Addon
+To implement this functionality in your own addon, use the template below.
+## Step A: Configure Your Block JSON (blocks/my_crop.json)
+Ensure your custom block supports a custom property for aging and allows players to interact with it.
+
+{
+  "format_version": "1.20.80",
+  "minecraft:block": {
+    "description": {
+      "identifier": "myaddon:custom_crop",
+      "properties": {
+        "myaddon:growth_stage": [0, 1, 2, 3]
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.crop",
+      "minecraft:custom_components": ["myaddon:crop_component"],
+      "minecraft:selection_box": { "origin": [-4, 0, -4], "size": [8, 8, 8] }
+    }
+  }
+}
+
+## Step B: Write the Script Logic (scripts/main.js)
+Register a system component or event listener that captures the player interacting with your crop while holding bonemeal:
+
+import { world, ItemStack, GameMode } from "@minecraft/server";
+
+world.afterEvents.itemUseOn.subscribe((event) => {
+    const player = event.source;
+    const block = event.block;
+    const item = event.itemStack;
+
+    // 1. Verify if the target block is your custom crop
+    if (block.typeId === "myaddon:custom_crop") {
+        const permutation = block.permutation;
+        const currentStage = permutation.getState("myaddon:growth_stage");
+
+        // 2. Check if the player is holding bone meal and the crop is not fully grown
+        if (item.typeId === "minecraft:bone_meal" && currentStage < 3) {
+            
+            // 3. Update the crop block to the next growth stage
+            const nextPermutation = permutation.withState("myaddon:growth_stage", currentStage + 1);
+            block.setPermutation(nextPermutation);
+
+            // 4. Trigger immersive vanilla visual and audio cues
+            const dimension = world.getDimension(block.dimension.id);
+            dimension.runCommand(`particle minecraft:crop_growth_emitter ${block.location.x} ${block.location.y} ${block.location.z}`);
+            dimension.runCommand(`playsound item.bone_meal.use @a ${block.location.x} ${block.location.y} ${block.location.z}`);
+
+            // 5. Consume one item if the player is in survival mode
+            if (player.getGameMode() !== GameMode.creative) {
+                const inventory = player.getComponent("inventory").container;
+                if (item.amount > 1) {
+                    item.amount -= 1;
+                    inventory.setItem(player.selectedSlotIndex, item);
+                } else {
+                    inventory.setItem(player.selectedSlotIndex, undefined);
+                }
+            }
+        }
+    }
+});
+
+## 💡 Why this approach works flawlessly in v26.x
+Handling bonemeal entirely via the Script API bypasses the historic Bedrock limitations where custom blocks wouldn't properly consume items or update components. It provides precise programmatic control over the growth mechanics, allowing you to easily integrate advanced features like Farmer's Delight's Rich Soil modifier (simply add a line in your script checking if the block under the crop is your custom soil type, and double the growth tick odds if true)! [2, 7] 
+------------------------------
+If you hit any bugs while setting this up, let me know:
+
+* Are you getting any Script API errors in your content log?
+* Do you want to see how to implement the random block ticking side of the growth mechanics?
+* Are you managing your stages via separate block IDs or a single Block Permutation?
+
+
+[1] [https://www.curseforge.com](https://www.curseforge.com/minecraft-bedrock/addons/farmer-s-delight-bedrock-unofficial/files/7609518)
+[2] [https://wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/custom-crops)
+[3] [https://www.curseforge.com](https://www.curseforge.com/minecraft-bedrock/addons/farmer-s-delight-bedrock-unofficial)
+[4] [https://www.youtube.com](https://www.youtube.com/watch?v=KPN_69BHxtc)
+[5] [https://www.youtube.com](https://www.youtube.com/watch?v=doUsuDiaH3g&t=19)
+[6] [https://www.youtube.com](https://www.youtube.com/watch?v=KCZusBRpeMM)
+[7] [https://create-above-and-beyond.fandom.com](https://create-above-and-beyond.fandom.com/wiki/Farmer%27s_Delight)

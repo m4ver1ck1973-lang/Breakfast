@@ -3,12 +3,16 @@
   "minecraft:block": {
     "description": {
       "identifier": "breakfast:tomato_crop",
-      "properties": {
+      "states": {
         "breakfast:growth_stage": [
           0,
           1,
           2,
           3
+        ],
+        "breakfast:is_climbing": [
+          false,
+          true
         ]
       },
       "menu_category": {
@@ -20,6 +24,14 @@
       "minecraft:geometry": "minecraft:geometry.cross",
       "minecraft:material_instances": {
         "*": {
+          "texture": "tomato_crop_0",
+          "render_method": "alpha_test"
+        },
+        "trellis": {
+          "texture": "tomato_trellis",
+          "render_method": "alpha_test"
+        },
+        "crop": {
           "texture": "tomato_crop_0",
           "render_method": "alpha_test"
         }
@@ -46,12 +58,39 @@
           400
         ],
         "looping": true
+      },
+      "minecraft:loot": "loot_tables/empty.json",
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ],
+            "block_filter": [
+              "minecraft:farmland",
+              "breakfast:tomato_crop"
+            ]
+          }
+        ]
       }
     },
     "permutations": [
       {
-        "condition": "q.block_state('breakfast:growth_stage') == 0",
+        "condition": "q.block_state('breakfast:growth_stage') == 0 && !q.block_state('breakfast:is_climbing')",
         "components": {
+          "minecraft:geometry": "minecraft:geometry.cross",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              4,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "tomato_crop_0",
@@ -61,8 +100,49 @@
         }
       },
       {
-        "condition": "q.block_state('breakfast:growth_stage') == 1",
+        "condition": "q.block_state('breakfast:growth_stage') == 0 && q.block_state('breakfast:is_climbing')",
         "components": {
+          "minecraft:geometry": "geometry.tomato_crop_trellis",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              16,
+              16
+            ]
+          },
+          "minecraft:material_instances": {
+            "trellis": {
+              "texture": "tomato_trellis",
+              "render_method": "alpha_test"
+            },
+            "crop": {
+              "texture": "tomato_crop_0",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('breakfast:growth_stage') == 1 && !q.block_state('breakfast:is_climbing')",
+        "components": {
+          "minecraft:geometry": "minecraft:geometry.cross",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              8,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "tomato_crop_1",
@@ -72,8 +152,49 @@
         }
       },
       {
-        "condition": "q.block_state('breakfast:growth_stage') == 2",
+        "condition": "q.block_state('breakfast:growth_stage') == 1 && q.block_state('breakfast:is_climbing')",
         "components": {
+          "minecraft:geometry": "geometry.tomato_crop_trellis",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              16,
+              16
+            ]
+          },
+          "minecraft:material_instances": {
+            "trellis": {
+              "texture": "tomato_trellis",
+              "render_method": "alpha_test"
+            },
+            "crop": {
+              "texture": "tomato_crop_1",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('breakfast:growth_stage') == 2 && !q.block_state('breakfast:is_climbing')",
+        "components": {
+          "minecraft:geometry": "minecraft:geometry.cross",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              16,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "tomato_crop_2",
@@ -83,10 +204,79 @@
         }
       },
       {
-        "condition": "q.block_state('breakfast:growth_stage') == 3",
+        "condition": "q.block_state('breakfast:growth_stage') == 2 && q.block_state('breakfast:is_climbing')",
         "components": {
+          "minecraft:geometry": "geometry.tomato_crop_trellis",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              16,
+              16
+            ]
+          },
+          "minecraft:material_instances": {
+            "trellis": {
+              "texture": "tomato_trellis",
+              "render_method": "alpha_test"
+            },
+            "crop": {
+              "texture": "tomato_crop_2",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('breakfast:growth_stage') == 3 && !q.block_state('breakfast:is_climbing')",
+        "components": {
+          "minecraft:geometry": "minecraft:geometry.cross",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              16,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
+              "texture": "tomato_crop_3",
+              "render_method": "alpha_test"
+            }
+          }
+        }
+      },
+      {
+        "condition": "q.block_state('breakfast:growth_stage') == 3 && q.block_state('breakfast:is_climbing')",
+        "components": {
+          "minecraft:geometry": "geometry.tomato_crop_trellis",
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              16,
+              16
+            ]
+          },
+          "minecraft:material_instances": {
+            "trellis": {
+              "texture": "tomato_trellis",
+              "render_method": "alpha_test"
+            },
+            "crop": {
               "texture": "tomato_crop_3",
               "render_method": "alpha_test"
             }

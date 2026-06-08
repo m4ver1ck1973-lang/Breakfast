@@ -52,6 +52,7 @@ This file tracks the current state, next steps, and specific task checklist item
 - [x] **Develop Tools & Packaging**
   - [x] Write `pack_addon.py` / `pack_addon.ps1` supporting standard zip folder separators (`/`)
   - [x] Create direct dev folder copy script `deploy_addon.ps1` to handle live reload testing
+  - [x] Implement texture pipeline with standing rule checks, auto-deployment to RP, and timestamped raw archiving in `generate_textures.py`
 - [x] **Implement Advanced Mechanics (v1.0.15 - v1.0.19)**
   - [x] Add raw sausage item, furnace recipe, and griddle cooking support
   - [x] Implement Griddle burn damage physical hazards (standing/stepping)

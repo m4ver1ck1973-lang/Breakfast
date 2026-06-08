@@ -10,6 +10,7 @@
     "components": {
       "minecraft:icon": "miners_skillet",
       "minecraft:max_stack_size": 64,
+      "minecraft:using_converts_to": "breakfast:skillet",
       "minecraft:food": {
         "nutrition": 12,
         "saturation_modifier": 1.2,

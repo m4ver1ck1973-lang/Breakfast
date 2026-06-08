@@ -3,7 +3,7 @@
   "minecraft:block": {
     "description": {
       "identifier": "breakfast:spinach_crop",
-      "properties": {
+      "states": {
         "breakfast:growth_stage": [
           0,
           1,
@@ -46,12 +46,38 @@
           400
         ],
         "looping": true
+      },
+      "minecraft:loot": "loot_tables/empty.json",
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ],
+            "block_filter": [
+              "minecraft:farmland",
+              "breakfast:spinach_crop"
+            ]
+          }
+        ]
       }
     },
     "permutations": [
       {
         "condition": "q.block_state('breakfast:growth_stage') == 0",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              3,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "spinach_crop_0",
@@ -63,6 +89,18 @@
       {
         "condition": "q.block_state('breakfast:growth_stage') == 1",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              5,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "spinach_crop_1",
@@ -74,6 +112,18 @@
       {
         "condition": "q.block_state('breakfast:growth_stage') == 2",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              8,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "spinach_crop_2",
@@ -85,6 +135,18 @@
       {
         "condition": "q.block_state('breakfast:growth_stage') == 3",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              10,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "spinach_crop_3",

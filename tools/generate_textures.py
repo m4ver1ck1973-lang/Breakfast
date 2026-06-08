@@ -3,6 +3,7 @@ import io
 import json
 import shutil
 import argparse
+from datetime import datetime
 from PIL import Image
 
 # ==========================================
@@ -1267,8 +1268,8 @@ def generate_texture_api(client, item_id, staging_dir):
         print(f"Error generating texture via API for {item_id}: {e}")
         return None
 
-def process_and_save(img, item_id, staging_dir):
-    """Resizes and saves processed images in staging folders."""
+def process_and_save(img, item_id, staging_dir, rp_dir=None):
+    """Resizes and saves processed images in staging folders, and optionally copies to RP."""
     os.makedirs(os.path.join(staging_dir, "32x32"), exist_ok=True)
     os.makedirs(os.path.join(staging_dir, "32x32_quantized"), exist_ok=True)
     
@@ -1284,6 +1285,12 @@ def process_and_save(img, item_id, staging_dir):
     quant_32.save(os.path.join(staging_dir, "32x32_quantized", f"{item_id}.png"))
     print(f"Saved staged textures for {item_id} (32x32).")
 
+    if rp_dir:
+        rp_items_dir = os.path.join(rp_dir, "textures", "items")
+        os.makedirs(rp_items_dir, exist_ok=True)
+        quant_32.save(os.path.join(rp_items_dir, f"{item_id}.png"))
+        print(f"Deployed quantized 32x32 texture to Resource Pack: {item_id}.png")
+
 def main():
     parser = argparse.ArgumentParser(description="Batch generate item textures using PIL or Gemini Imagen API.")
     parser.add_argument("--rp-dir", default="../Breakfast_RP", help="Path to Resource Pack directory.")
@@ -1294,6 +1301,7 @@ def main():
     parser.add_argument("--item-list", action="store_true", help="Print all registered item texture IDs and exit.")
     parser.add_argument("--api", action="store_true", help="Use Google GenAI API instead of procedural PIL generator.")
     parser.add_argument("--post-process-only", action="store_true", help="Post-process raw images already in the raw staging folder.")
+    parser.add_argument("--procedural", action="store_true", help="Use procedural PIL generator to draw placeholder textures.")
     
     args = parser.parse_args()
     
@@ -1313,6 +1321,19 @@ def main():
             print(f"  - {t}")
         return
         
+    # Standing rule check to prevent accidental overwrites
+    if not (args.post_process_only or args.api or args.procedural or args.backup_only or args.item_list):
+        print("="*75)
+        print("STANDING RULE WARNING: Procedural/API batch generation is disabled by default.")
+        print("Item textures must be generated via Gemini Web and post-processed.")
+        print("This prevents overwriting hand-crafted custom textures.")
+        print("\nTo post-process raw images currently in staging/textures/items/raw/:")
+        print("  python tools/generate_textures.py --post-process-only")
+        print("\nTo explicitly generate procedural placeholders:")
+        print("  python tools/generate_textures.py --procedural")
+        print("="*75)
+        return
+
     # 1. Backup phase
     backup_textures(rp_dir, backup_dir)
     if args.backup_only:
@@ -1326,53 +1347,82 @@ def main():
             return
             
         print("Running post-processing on raw images in staging...")
+        
+        # Prepare timestamped archive folder for raw files
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        archive_dir = os.path.join(raw_dir, "processed", timestamp)
+        
+        # Determine items to process: if --test is specified, limit to that single item.
+        # Otherwise, process whatever matches textures.
+        items_to_process = [args.test] if args.test else textures
         success_count = 0
-        for item_id in textures:
+        
+        for item_id in items_to_process:
             raw_path = os.path.join(raw_dir, f"{item_id}.png")
             if os.path.exists(raw_path):
                 print(f"Post-processing: {item_id}...")
-                img = Image.open(raw_path).convert("RGBA")
-                # Auto-detect background color from the four corners of the image
-                corners = [
-                    img.getpixel((0, 0)),
-                    img.getpixel((0, img.height - 1)),
-                    img.getpixel((img.width - 1, 0)),
-                    img.getpixel((img.width - 1, img.height - 1))
-                ]
-                # Find the most common RGB color in corners
-                from collections import Counter
-                bg_color = Counter([c[:3] for c in corners]).most_common(1)[0][0]
                 
-                # Chroma key out detected background color
-                data = img.getdata()
-                new_data = []
-                for item in data:
-                    r, g, b, a = item
-                    dist = ((r - bg_color[0]) ** 2 + (g - bg_color[1]) ** 2 + (b - bg_color[2]) ** 2) ** 0.5
-                    if dist < 45: # Chroma-key threshold
-                        new_data.append((0, 0, 0, 0))
-                    else:
-                        new_data.append(item)
-                img.putdata(new_data)
+                # Use context manager to ensure Windows releases file lock
+                with Image.open(raw_path) as raw_img:
+                    img = raw_img.convert("RGBA")
+                    
+                    # Auto-detect background color from the four corners of the image
+                    corners = [
+                        img.getpixel((0, 0)),
+                        img.getpixel((0, img.height - 1)),
+                        img.getpixel((img.width - 1, 0)),
+                        img.getpixel((img.width - 1, img.height - 1))
+                    ]
+                    # Find the most common RGB color in corners
+                    from collections import Counter
+                    bg_color = Counter([c[:3] for c in corners]).most_common(1)[0][0]
+                    
+                    # Chroma key out detected background color
+                    data = img.getdata()
+                    new_data = []
+                    for item in data:
+                        r, g, b, a = item
+                        dist = ((r - bg_color[0]) ** 2 + (g - bg_color[1]) ** 2 + (b - bg_color[2]) ** 2) ** 0.5
+                        if dist < 45: # Chroma-key threshold
+                            new_data.append((0, 0, 0, 0))
+                        else:
+                            new_data.append(item)
+                    img.putdata(new_data)
+                    
+                    # Crop and pad
+                    cropped = autocrop_and_pad(img)
+                    
+                    # Resize and save using LANCZOS for 32x32
+                    os.makedirs(os.path.join(staging_dir, "32x32"), exist_ok=True)
+                    size_32 = cropped.resize((32, 32), Image.Resampling.LANCZOS)
+                    size_32 = enforce_binary_alpha(size_32)
+                    size_32.save(os.path.join(staging_dir, "32x32", f"{item_id}.png"))
+                    
+                    # Quantized versions
+                    os.makedirs(os.path.join(staging_dir, "32x32_quantized"), exist_ok=True)
+                    quant_32 = quantize_retro(size_32, num_colors=24)
+                    quant_32.save(os.path.join(staging_dir, "32x32_quantized", f"{item_id}.png"))
+                    
+                    # Automatically copy quantized 32x32 output directly to active Resource Pack
+                    rp_items_dir = os.path.join(rp_dir, "textures", "items")
+                    os.makedirs(rp_items_dir, exist_ok=True)
+                    quant_32.save(os.path.join(rp_items_dir, f"{item_id}.png"))
+                    print(f"Deployed quantized 32x32 texture to Resource Pack: {item_id}.png")
                 
-                # Crop and pad
-                cropped = autocrop_and_pad(img)
-                
-                # Resize and save using LANCZOS for 32x32
-                os.makedirs(os.path.join(staging_dir, "32x32"), exist_ok=True)
-                size_32 = cropped.resize((32, 32), Image.Resampling.LANCZOS)
-                size_32 = enforce_binary_alpha(size_32)
-                size_32.save(os.path.join(staging_dir, "32x32", f"{item_id}.png"))
-                
-                # Quantized versions
-                os.makedirs(os.path.join(staging_dir, "32x32_quantized"), exist_ok=True)
-                quant_32 = quantize_retro(size_32, num_colors=24)
-                quant_32.save(os.path.join(staging_dir, "32x32_quantized", f"{item_id}.png"))
+                # Move raw source file to processed archive history folder to clean raw/ root
+                os.makedirs(archive_dir, exist_ok=True)
+                shutil.move(raw_path, os.path.join(archive_dir, f"{item_id}.png"))
+                print(f"Archived raw texture to: {os.path.join(archive_dir, f'{item_id}.png')}")
                 
                 success_count += 1
             else:
-                print(f"Skipping: {item_id}.png not found in {raw_dir}")
-        print(f"Finished. Successfully processed {success_count}/{len(textures)} textures.")
+                if args.test:
+                    print(f"Error: Single-item test target '{args.test}.png' not found in {raw_dir}")
+                else:
+                    # Silent skip for batch processing if file isn't present in raw
+                    pass
+                    
+        print(f"Finished. Successfully processed and archived {success_count} textures.")
         return
 
     # Initialize API client if needed
@@ -1393,12 +1443,14 @@ def main():
     for item_id in target_textures:
         if args.api:
             img = generate_texture_api(client, item_id, staging_dir)
-        else:
+        elif args.procedural:
             print(f"Procedurally drawing: {item_id}...")
             img = draw_procedural(item_id)
+        else:
+            img = None
             
         if img:
-            process_and_save(img, item_id, staging_dir)
+            process_and_save(img, item_id, staging_dir, rp_dir=rp_dir)
             success_count += 1
         else:
             print(f"Failed to generate texture for {item_id}")

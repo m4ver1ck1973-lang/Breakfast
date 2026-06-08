@@ -1,4 +1,10 @@
-import { world, system, ItemStack } from "@minecraft/server";
+import { world, system, ItemStack, GameMode } from "@minecraft/server";
+
+// Crop Growth Balancing Configuration
+const CROP_GROWTH_CHANCE = 0.05;      // 5% chance to advance growing stage (stages 0 -> 1 -> 2)
+const FRUIT_REGROWTH_CHANCE = 0.03;   // 3% chance to regrow fruit (stage 2 -> 3)
+const SPINACH_GROWTH_CHANCE = 0.02;   // 2% chance for spinach to grow onto second block
+const TRELLIS_GROWTH_CHANCE = 0.02;   // 2% chance for tomato to grow onto trellis
 
 // Register the block custom components
 system.beforeEvents.startup.subscribe((event) => {
@@ -221,19 +227,26 @@ const BUTCHER_RECIPES = {
 
 const GRIDDLE_RECIPES = {
   // Custom Add-on Cooking
-  "breakfast:bacon": { output: "breakfast:cooked_bacon", cookTime: 10 },
-  "minecraft:egg": { output: "breakfast:fried_egg", cookTime: 8 },
-  "breakfast:bread_slice": { output: "breakfast:toast", cookTime: 6 },
+  "breakfast:bacon": { output: "breakfast:cooked_bacon", cookTime: 15 },
+  "minecraft:egg": { output: "breakfast:fried_egg", cookTime: 12 },
+  "breakfast:bread_slice": { output: "breakfast:toast", cookTime: 12 },
   "breakfast:raw_hash_browns": { output: "breakfast:hash_browns", cookTime: 12 },
-  "breakfast:raw_sausage": { output: "breakfast:sausage", cookTime: 10 },
-  "breakfast:onion_slices": { output: "breakfast:grilled_onion", cookTime: 6 },
-  "breakfast:tomato_slice": { output: "breakfast:grilled_tomato", cookTime: 6 },
-  "breakfast:pepper_slices": { output: "breakfast:grilled_pepper", cookTime: 6 },
-  "breakfast:steak_strips": { output: "breakfast:cooked_steak_strips", cookTime: 10 },
-  "breakfast:mutton_strips": { output: "breakfast:cooked_mutton_strips", cookTime: 10 },
-  "breakfast:rabbit_sausage_raw": { output: "breakfast:rabbit_sausage", cookTime: 10 },
+  "breakfast:raw_sausage": { output: "breakfast:sausage", cookTime: 15 },
+  "breakfast:onion_slices": { output: "breakfast:grilled_onion", cookTime: 12 },
+  "breakfast:tomato_slice": { output: "breakfast:grilled_tomato", cookTime: 12 },
+  "breakfast:pepper_slices": { output: "breakfast:grilled_pepper", cookTime: 12 },
+  "breakfast:steak_strips": { output: "breakfast:cooked_steak_strips", cookTime: 15 },
+  "breakfast:mutton_strips": { output: "breakfast:cooked_mutton_strips", cookTime: 15 },
+  "breakfast:rabbit_sausage_raw": { output: "breakfast:rabbit_sausage", cookTime: 15 },
   "minecraft:water_bucket": { output: "breakfast:salt", count: 3, cookTime: 15 },
   "minecraft:milk_bucket": { output: "breakfast:cheese_curds", count: 1, cookTime: 15 },
+
+  // Omelet Fusion Outputs
+  "breakfast:omelet": { output: "breakfast:omelet", cookTime: 30 },
+  "breakfast:bacon_omelet": { output: "breakfast:bacon_omelet", cookTime: 30 },
+  "breakfast:ham_omelet": { output: "breakfast:ham_omelet", cookTime: 30 },
+  "breakfast:mushroom_omelet": { output: "breakfast:mushroom_omelet", cookTime: 30 },
+  "breakfast:nether_fungi_omelet": { output: "breakfast:nether_fungi_omelet", cookTime: 30 },
 
   // Vanilla Campfire Cooking
   "minecraft:beef": { output: "minecraft:cooked_beef", cookTime: 30 },
@@ -450,6 +463,143 @@ function handleButcherBlockInteract(event) {
 // ----------------------------------------------------
 // Griddle Logic
 // ----------------------------------------------------
+const EGGS = ["minecraft:egg"];
+const MEATS = [
+  "breakfast:bacon", "breakfast:cooked_bacon", "breakfast:ham", "breakfast:sausage", "breakfast:raw_sausage",
+  "minecraft:porkchop", "minecraft:cooked_porkchop", "minecraft:beef", "minecraft:cooked_beef",
+  "minecraft:chicken", "minecraft:cooked_chicken", "minecraft:mutton", "minecraft:cooked_mutton",
+  "minecraft:rabbit", "minecraft:cooked_rabbit"
+];
+const VEGGIES = [
+  "breakfast:onion", "breakfast:onion_slices", "breakfast:pepper", "breakfast:pepper_slices",
+  "breakfast:spinach", "breakfast:spinach_leaves", "minecraft:sweet_berries", "minecraft:glow_berries",
+  "minecraft:brown_mushroom", "minecraft:red_mushroom", "breakfast:herb_rosemary",
+  "breakfast:herb_thyme", "breakfast:herb_sage", "breakfast:herb_oregano",
+  "minecraft:crimson_fungus", "minecraft:warped_fungus"
+];
+
+function isPlaceableOnGriddle(itemTypeId) {
+  return GRIDDLE_RECIPES[itemTypeId] !== undefined ||
+         EGGS.includes(itemTypeId) ||
+         MEATS.includes(itemTypeId) ||
+         VEGGIES.includes(itemTypeId);
+}
+
+function placeItemInSlot(player, block, blockData, slotIndex, itemInHand, container, selectedIndex) {
+  blockData.slots[slotIndex] = {
+    item: itemInHand.typeId,
+    progress: 0,
+    count: 1
+  };
+  saveBlockData(block, blockData);
+  
+  const offsets = getGriddleSlotOffsets(slotIndex);
+  updatePlacedEntity(block, "breakfast:slot_" + slotIndex, itemInHand.typeId, 1.01, offsets.x, offsets.z);
+
+  // Handle item consumption and returns
+  if (itemInHand.typeId === "minecraft:water_bucket" || itemInHand.typeId === "minecraft:milk_bucket") {
+    const emptyBucket = new ItemStack("minecraft:bucket", 1);
+    container.setItem(selectedIndex, emptyBucket);
+  } else {
+    if (itemInHand.amount > 1) {
+      itemInHand.amount -= 1;
+      container.setItem(selectedIndex, itemInHand);
+    } else {
+      container.setItem(selectedIndex, undefined);
+    }
+  }
+
+  block.dimension.playSound("random.pop", block.location);
+  player.onScreenDisplay.setActionBar("Placed " + itemInHand.typeId.split(":")[1] + " in slot " + (slotIndex + 1));
+
+  // Check griddle recipe fusion
+  checkGriddleRecipes(block, blockData);
+}
+
+function retrieveSlotItem(player, block, blockData, slotIndex) {
+  const slot = blockData.slots[slotIndex];
+  if (!slot) return;
+
+  const count = slot.count || 1;
+  const spawnStack = new ItemStack(slot.item, count);
+  block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
+
+  checkShortOrderCook(player, slot.item);
+  removePlacedEntity(block, "breakfast:slot_" + slotIndex);
+  blockData.slots[slotIndex] = null;
+  
+  // Clean up block data if completely empty
+  const isStillOccupied = blockData.slots.some(s => s !== null);
+  saveBlockData(block, isStillOccupied ? blockData : null);
+
+  block.dimension.playSound("random.pop", block.location);
+  player.onScreenDisplay.setActionBar("Retrieved item from slot " + (slotIndex + 1));
+}
+
+function checkGriddleRecipes(block, blockData) {
+  // Collect all non-null items on the griddle
+  const presentItems = [];
+  for (let i = 0; i < 4; i++) {
+    if (blockData.slots[i]) {
+      presentItems.push(blockData.slots[i].item);
+    }
+  }
+
+  // We need exactly 3 items for a recipe
+  if (presentItems.length !== 3) return;
+
+  const eggsCount = presentItems.filter(item => EGGS.includes(item)).length;
+  const meatsCount = presentItems.filter(item => MEATS.includes(item)).length;
+  const veggiesCount = presentItems.filter(item => VEGGIES.includes(item)).length;
+
+  let outputOmelet = null;
+
+  // 1. Nether Fungi Omelet: Egg + Crimson + Warped
+  if (eggsCount === 1 && presentItems.includes("minecraft:crimson_fungus") && presentItems.includes("minecraft:warped_fungus")) {
+    outputOmelet = "breakfast:nether_fungi_omelet";
+  }
+  // 2. Mushroom Omelet: Egg + Brown + Red (or Egg + Meat + Brown/Red Mushroom)
+  else if (eggsCount === 1 && presentItems.includes("minecraft:brown_mushroom") && presentItems.includes("minecraft:red_mushroom")) {
+    outputOmelet = "breakfast:mushroom_omelet";
+  }
+  // 3. Egg + Meat + Veggie/Mushroom/Berry combo
+  else if (eggsCount === 1 && meatsCount === 1 && veggiesCount === 1) {
+    const meat = presentItems.find(item => MEATS.includes(item));
+    if (meat === "breakfast:bacon" || meat === "breakfast:cooked_bacon") {
+      outputOmelet = "breakfast:bacon_omelet";
+    } else if (meat === "breakfast:ham") {
+      outputOmelet = "breakfast:ham_omelet";
+    } else {
+      outputOmelet = "breakfast:omelet";
+    }
+  }
+
+  if (outputOmelet) {
+    // Fuse ingredients!
+    for (let i = 0; i < 4; i++) {
+      blockData.slots[i] = null;
+      removePlacedEntity(block, "breakfast:slot_" + i);
+    }
+
+    blockData.slots[0] = {
+      item: outputOmelet,
+      progress: 0,
+      count: 1,
+      isFusedCook: true
+    };
+    saveBlockData(block, blockData);
+
+    // Render output visual in the center of the griddle
+    updatePlacedEntity(block, "breakfast:slot_0", outputOmelet, 1.01, 0, 0);
+
+    block.dimension.playSound("random.fizz", block.location);
+    const pLoc = { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 };
+    try {
+      block.dimension.spawnParticle("minecraft:campfire_smoke_particle", pLoc);
+    } catch (e) {}
+  }
+}
+
 function handleGriddleInteract(event) {
   const { block, player } = event;
   if (!player) return;
@@ -462,100 +612,88 @@ function handleGriddleInteract(event) {
   const itemInHand = container.getItem(selectedIndex);
   const blockData = getBlockData(block) || { slots: [null, null, null, null] };
 
-  // Case 1: Player interacts with empty hand -> Retrieve first item (cooked or raw)
-  if (!itemInHand) {
-    for (let i = 0; i < 4; i++) {
-      const slot = blockData.slots[i];
-      if (slot) {
-        // Spawn item with correct count
-        const count = slot.count || 1;
-        const spawnStack = new ItemStack(slot.item, count);
-        block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
+  const face = event.face;
+  const faceLoc = event.faceLocation;
+  
+  let clickedSlot = -1;
+  if (face === "Up" && faceLoc) {
+    const clickX = faceLoc.x;
+    const clickZ = faceLoc.z;
+    const pDirection = player.cardinalDirection;
 
-        checkShortOrderCook(player, slot.item);
-        removePlacedEntity(block, "breakfast:slot_" + i);
-        blockData.slots[i] = null;
-        
-        // Clean up block data if completely empty
-        const isStillOccupied = blockData.slots.some(s => s !== null);
-        saveBlockData(block, isStillOccupied ? blockData : null);
-
-        block.dimension.playSound("random.pop", block.location);
-        player.onScreenDisplay.setActionBar("Retrieved item from slot " + (i + 1));
-        return;
-      }
+    // Perspective mapping based on player's cardinal facing direction
+    if (pDirection === "North" || pDirection === "north") {
+      if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 0;      // NW
+      else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 1; // NE
+      else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 2; // SW
+      else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 3;// SE
+    } else if (pDirection === "South" || pDirection === "south") {
+      if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 0;      // NW
+      else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 1;  // NE
+      else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 2;  // SW
+      else if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 3;   // SE
+    } else if (pDirection === "East" || pDirection === "east") {
+      if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 0;      // NW
+      else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 1; // NE
+      else if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 2;  // SW
+      else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 3;  // SE
+    } else if (pDirection === "West" || pDirection === "west") {
+      if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 0;      // NW
+      else if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 1;   // NE
+      else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 2; // SW
+      else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 3;  // SE
     }
-    player.onScreenDisplay.setActionBar("Griddle is empty. Hold cookable items to place.");
-    return;
   }
 
-  // Case 2: Holding a cookable item -> Place it on the griddle
-  if (itemInHand && GRIDDLE_RECIPES[itemInHand.typeId]) {
-    // Find first empty slot
-    let placedIndex = -1;
-    for (let i = 0; i < 4; i++) {
-      if (!blockData.slots[i]) {
-        placedIndex = i;
-        break;
-      }
-    }
-
-    if (placedIndex !== -1) {
-      blockData.slots[placedIndex] = {
-        item: itemInHand.typeId,
-        progress: 0,
-        count: 1
-      };
-      saveBlockData(block, blockData);
-      
-      const offsets = getGriddleSlotOffsets(placedIndex);
-      updatePlacedEntity(block, "breakfast:slot_" + placedIndex, itemInHand.typeId, 1.01, offsets.x, offsets.z);
-
-      // Handle item consumption and returns
-      if (itemInHand.typeId === "minecraft:water_bucket" || itemInHand.typeId === "minecraft:milk_bucket") {
-        const emptyBucket = new ItemStack("minecraft:bucket", 1);
-        container.setItem(selectedIndex, emptyBucket);
+  if (itemInHand && isPlaceableOnGriddle(itemInHand.typeId)) {
+    // Player is holding a griddle-placeable item
+    if (clickedSlot === -1 || blockData.slots[clickedSlot] !== null) {
+      if (clickedSlot !== -1 && blockData.slots[clickedSlot] !== null) {
+        // Retrieve from the clicked slot
+        retrieveSlotItem(player, block, blockData, clickedSlot);
       } else {
-        if (itemInHand.amount > 1) {
-          itemInHand.amount -= 1;
-          container.setItem(selectedIndex, itemInHand);
+        // Fallback: place in first empty slot
+        let emptyIndex = -1;
+        for (let i = 0; i < 4; i++) {
+          if (!blockData.slots[i]) {
+            emptyIndex = i;
+            break;
+          }
+        }
+        if (emptyIndex !== -1) {
+          placeItemInSlot(player, block, blockData, emptyIndex, itemInHand, container, selectedIndex);
         } else {
-          container.setItem(selectedIndex, undefined);
+          player.onScreenDisplay.setActionBar("Griddle is full!");
         }
       }
-
-      block.dimension.playSound("random.pop", block.location);
-      player.onScreenDisplay.setActionBar("Placed " + itemInHand.typeId.split(":")[1] + " in slot " + (placedIndex + 1));
     } else {
-      player.onScreenDisplay.setActionBar("Griddle is full!");
+      // Place in targeted slot
+      placeItemInSlot(player, block, blockData, clickedSlot, itemInHand, container, selectedIndex);
     }
-    return;
-  }
-
-  // Case 3: Holding a non-cookable item -> Retrieve first COOKED item if any exists
-  for (let i = 0; i < 4; i++) {
-    const slot = blockData.slots[i];
-    if (slot && !GRIDDLE_RECIPES[slot.item]) {
-      // Cooked item found -> retrieve it!
-      const count = slot.count || 1;
-      const spawnStack = new ItemStack(slot.item, count);
-      block.dimension.spawnItem(spawnStack, { x: block.location.x + 0.5, y: block.location.y + 1.1, z: block.location.z + 0.5 });
-
-      checkShortOrderCook(player, slot.item);
-      removePlacedEntity(block, "breakfast:slot_" + i);
-      blockData.slots[i] = null;
-      
-      const isStillOccupied = blockData.slots.some(s => s !== null);
-      saveBlockData(block, isStillOccupied ? blockData : null);
-
-      block.dimension.playSound("random.pop", block.location);
-      player.onScreenDisplay.setActionBar("Retrieved cooked " + slot.item.split(":")[1] + " from slot " + (i + 1));
-      return;
+  } else {
+    // Player holding non-cookable item or empty hand -> Retrieve
+    if (clickedSlot === -1) {
+      // Fallback: retrieve first occupied slot
+      let occupiedIndex = -1;
+      for (let i = 0; i < 4; i++) {
+        if (blockData.slots[i]) {
+          occupiedIndex = i;
+          break;
+        }
+      }
+      if (occupiedIndex !== -1) {
+        retrieveSlotItem(player, block, blockData, occupiedIndex);
+      } else {
+        player.onScreenDisplay.setActionBar("Griddle is empty. Hold cookable items to place.");
+      }
+    } else {
+      if (blockData.slots[clickedSlot]) {
+        retrieveSlotItem(player, block, blockData, clickedSlot);
+      } else {
+        player.onScreenDisplay.setActionBar("Slot " + (clickedSlot + 1) + " is empty.");
+      }
     }
   }
-
-  // Case 4: Holding a non-cookable item and no cooked items exist -> Show warning
-  player.onScreenDisplay.setActionBar("Cannot cook this item on the griddle");
 }
 
 // Tick handler to cook items on Griddle
@@ -583,40 +721,40 @@ function handleGriddleTick(event) {
         // Spawn cooking steam/smoke particle
         if (Math.random() < 0.4) {
           const offsets = getGriddleSlotOffsets(i);
+          const isOmelet = slot.item.includes("omelet");
+          const xOff = isOmelet ? 0 : offsets.x;
+          const zOff = isOmelet ? 0 : offsets.z;
           const pLoc = {
-            x: block.location.x + 0.5 + offsets.x,
+            x: block.location.x + 0.5 + xOff,
             y: block.location.y + 1.1,
-            z: block.location.z + 0.5 + offsets.z
+            z: block.location.z + 0.5 + zOff
           };
           try {
             block.dimension.spawnParticle("minecraft:campfire_smoke_particle", pLoc);
           } catch (pe) {}
         }
 
-        // Cook completed
+        // Cook completed -> Campfire-style eject!
         if (slot.progress >= recipe.cookTime) {
-          slot.item = recipe.output;
-          slot.count = recipe.count || 1;
-          slot.progress = 0; // reset progress
-          
+          const count = slot.count || 1;
+          const spawnLoc = {
+            x: block.location.x + 0.5 + (Math.random() * 0.2 - 0.1),
+            y: block.location.y + 1.2,
+            z: block.location.z + 0.5 + (Math.random() * 0.2 - 0.1)
+          };
+          try {
+            const cookedStack = new ItemStack(recipe.output, count);
+            block.dimension.spawnItem(cookedStack, spawnLoc);
+          } catch (err) {
+            console.warn("[Breakfast] Error spawning cooked item: " + err);
+          }
+
+          block.dimension.playSound("random.pop", block.location);
           block.dimension.playSound("random.fizz", block.location);
 
-          // Update texture on the visual entity
-          try {
-            const entities = block.dimension.getEntities({
-              type: "breakfast:placed_item",
-              location: { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 },
-              maxDistance: 1.2
-            });
-            for (const ent of entities) {
-              if (ent.hasTag("breakfast:slot_" + i)) {
-                ent.setProperty("breakfast:item_variant", getVariantFromItem(recipe.output));
-                break;
-              }
-            }
-          } catch (e) {
-            console.warn("[Breakfast] Error updating griddle item texture: " + e);
-          }
+          // Clear visual placed item and slot data
+          removePlacedEntity(block, "breakfast:slot_" + i);
+          blockData.slots[i] = null;
         } else {
           // Play crackle sound occasionally
           if (Math.random() < 0.6) {
@@ -713,6 +851,108 @@ world.afterEvents.itemCompleteUse.subscribe((event) => {
   }
 });
 
+// Helper to drop items for a crop block based on its permutation
+function dropCropItems(dimension, location, blockTypeId, permutation) {
+  try {
+    const stageState = permutation ? permutation.getState("breakfast:growth_stage") : undefined;
+    const stage = (typeof stageState === "number") ? stageState : 0;
+    let seeds = "";
+    let cropItem = "";
+    let minCrop = 1, maxCrop = 1;
+    
+    if (blockTypeId === "breakfast:onion_crop") {
+      seeds = "breakfast:onion_seeds";
+      cropItem = "breakfast:onion";
+    } else if (blockTypeId === "breakfast:tomato_crop") {
+      seeds = "breakfast:tomato_seeds";
+      cropItem = "breakfast:tomato";
+      // Recover trellis if it was climbing
+      const isClimbingState = permutation ? permutation.getState("breakfast:is_climbing") : undefined;
+      if (isClimbingState === true) {
+        const trellisStack = new ItemStack("breakfast:tomato_trellis", 1);
+        dimension.spawnItem(trellisStack, { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+      }
+    } else if (blockTypeId === "breakfast:pepper_crop") {
+      seeds = "breakfast:pepper_seeds";
+      cropItem = "breakfast:pepper";
+    } else if (blockTypeId === "breakfast:spinach_crop") {
+      let isTop = false;
+      try {
+        const below = dimension.getBlock({ x: location.x, y: location.y - 1, z: location.z });
+        if (below && below.typeId === "breakfast:spinach_crop") {
+          isTop = true;
+        }
+      } catch (e) {}
+      
+      if (isTop) {
+        seeds = "";
+      } else {
+        seeds = "breakfast:spinach_seeds";
+      }
+      cropItem = "breakfast:spinach";
+      minCrop = 1; maxCrop = 2;
+    } else if (blockTypeId.startsWith("breakfast:herb_crop_")) {
+      const herbType = blockTypeId.replace("breakfast:herb_crop_", "");
+      seeds = `breakfast:${herbType}_seeds`;
+      cropItem = `breakfast:herb_${herbType}`;
+    }
+    
+    if (stage < 3) {
+      if (seeds) {
+        dimension.spawnItem(new ItemStack(seeds, 1), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+      }
+    } else {
+      if (cropItem) {
+        const count = minCrop + Math.floor(Math.random() * (maxCrop - minCrop + 1));
+        dimension.spawnItem(new ItemStack(cropItem, count), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+      }
+      if (seeds) {
+        const seedCount = Math.random() < 0.5 ? 2 : 1;
+        dimension.spawnItem(new ItemStack(seeds, seedCount), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in dropCropItems: " + err);
+  }
+}
+
+// Helper to recursively break crops and drop items above a given location
+function checkAndBreakCropAbove(location, dimension) {
+  try {
+    let currentLoc = { x: location.x, y: location.y + 1, z: location.z };
+    while (true) {
+      const blockAbove = dimension.getBlock(currentLoc);
+      if (!blockAbove) break;
+      
+      const blockAboveId = blockAbove.typeId;
+      if (blockAboveId.startsWith("breakfast:") && (blockAboveId.endsWith("_crop") || blockAboveId.startsWith("breakfast:herb_crop_"))) {
+        const perm = blockAbove.permutation;
+        // Break the crop block and drop its items
+        dropCropItems(dimension, currentLoc, blockAboveId, perm);
+        blockAbove.setType("minecraft:air");
+        
+        // Clean up entities at that location
+        const searchLoc = { x: currentLoc.x + 0.5, y: currentLoc.y + 0.5, z: currentLoc.z + 0.5 };
+        const entities = dimension.getEntities({
+          type: "breakfast:placed_item",
+          location: searchLoc,
+          maxDistance: 1.2
+        });
+        for (const ent of entities) {
+          ent.remove();
+        }
+        
+        // Move Y up
+        currentLoc.y += 1;
+      } else {
+        break;
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in checkAndBreakCropAbove: " + err);
+  }
+}
+
 // Clean up and drop contents when Griddle or Butcher Block is broken
 function handleBlockBreak(location, dimension, blockTypeId, brokenBlockPermutation) {
   try {
@@ -749,53 +989,8 @@ function handleBlockBreak(location, dimension, blockTypeId, brokenBlockPermutati
     }
     
     // Crop block breaking drops
-    if (blockTypeId.startsWith("breakfast:") && blockTypeId.endsWith("_crop")) {
-      const stage = brokenBlockPermutation ? brokenBlockPermutation.getState("breakfast:growth_stage") : 0;
-      let seeds = "";
-      let cropItem = "";
-      let minCrop = 1, maxCrop = 1;
-      
-      if (blockTypeId === "breakfast:onion_crop") {
-        seeds = "breakfast:onion_seeds";
-        cropItem = "breakfast:onion";
-      } else if (blockTypeId === "breakfast:tomato_crop") {
-        seeds = "breakfast:tomato_seeds";
-        cropItem = "breakfast:tomato";
-        // Recover trellis
-        try {
-          const below = dimension.getBlock({ x: location.x, y: location.y - 1, z: location.z });
-          if (below && below.typeId === "breakfast:tomato_crop") {
-            const trellisStack = new ItemStack("breakfast:tomato_trellis", 1);
-            dimension.spawnItem(trellisStack, { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
-          }
-        } catch (e) {}
-      } else if (blockTypeId === "breakfast:pepper_crop") {
-        seeds = "breakfast:pepper_seeds";
-        cropItem = "breakfast:pepper";
-      } else if (blockTypeId === "breakfast:spinach_crop") {
-        seeds = "breakfast:spinach_seeds";
-        cropItem = "breakfast:spinach";
-        minCrop = 1; maxCrop = 2;
-      } else if (blockTypeId.startsWith("breakfast:herb_crop_")) {
-        const herbType = blockTypeId.replace("breakfast:herb_crop_", "");
-        seeds = `breakfast:${herbType}_seeds`;
-        cropItem = `breakfast:herb_${herbType}`;
-      }
-      
-      if (stage < 3) {
-        if (seeds) {
-          dimension.spawnItem(new ItemStack(seeds, 1), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
-        }
-      } else {
-        if (cropItem) {
-          const count = minCrop + Math.floor(Math.random() * (maxCrop - minCrop + 1));
-          dimension.spawnItem(new ItemStack(cropItem, count), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
-        }
-        if (seeds) {
-          const seedCount = Math.random() < 0.5 ? 2 : 1;
-          dimension.spawnItem(new ItemStack(seeds, seedCount), { x: location.x + 0.5, y: location.y + 0.5, z: location.z + 0.5 });
-        }
-      }
+    if (blockTypeId.startsWith("breakfast:") && (blockTypeId.endsWith("_crop") || blockTypeId.startsWith("breakfast:herb_crop_"))) {
+      dropCropItems(dimension, location, blockTypeId, brokenBlockPermutation);
     }
     
     // Clean up entities
@@ -813,14 +1008,108 @@ function handleBlockBreak(location, dimension, blockTypeId, brokenBlockPermutati
   }
 }
 
+const CUSTOM_SEEDS = [
+  "breakfast:onion_seeds",
+  "breakfast:tomato_seeds",
+  "breakfast:pepper_seeds",
+  "breakfast:spinach_seeds",
+  "breakfast:rosemary_seeds",
+  "breakfast:thyme_seeds",
+  "breakfast:sage_seeds",
+  "breakfast:oregano_seeds"
+];
+
+// Helper to determine drop chance based on tool
+function getSeedDropChance(toolTypeId) {
+  if (!KNIVES.includes(toolTypeId)) {
+    return 0.0;
+  }
+  // Boosted rates for testing (temporary)
+  const isBoosted = true;
+  if (isBoosted) {
+    if (toolTypeId === "breakfast:knife_diamond") return 0.70;
+    if (toolTypeId === "breakfast:knife_iron") return 0.50;
+    if (toolTypeId === "breakfast:knife_copper") return 0.40;
+    if (toolTypeId === "breakfast:knife_flint") return 0.30;
+    return 0.0;
+  } else {
+    // Normal rates
+    if (toolTypeId === "breakfast:knife_diamond") return 0.30;
+    if (toolTypeId === "breakfast:knife_iron") return 0.20;
+    if (toolTypeId === "breakfast:knife_copper") return 0.15;
+    if (toolTypeId === "breakfast:knife_flint") return 0.10;
+    return 0.0;
+  }
+}
+
+function handleGrassBreak(event) {
+  const { block, dimension, player } = event;
+  if (!player) return;
+
+  const tool = event.itemStackBeforeBreak;
+  const toolTypeId = tool ? tool.typeId : "";
+  
+  // Calculate drop chance
+  const chance = getSeedDropChance(toolTypeId);
+  
+  if (Math.random() < chance) {
+    const seedId = CUSTOM_SEEDS[Math.floor(Math.random() * CUSTOM_SEEDS.length)];
+    const spawnLoc = {
+      x: block.location.x + 0.5,
+      y: block.location.y + 0.5,
+      z: block.location.z + 0.5
+    };
+    try {
+      dimension.spawnItem(new ItemStack(seedId, 1), spawnLoc);
+    } catch (err) {
+      console.warn("[Breakfast] Error spawning custom seed drop: " + err);
+    }
+  }
+
+  // Handle knife durability damage
+  if (tool && KNIVES.includes(toolTypeId)) {
+    const durability = tool.getComponent("minecraft:durability");
+    if (durability) {
+      durability.damage += 1;
+      
+      const inventory = player.getComponent("minecraft:inventory");
+      if (inventory && inventory.container) {
+        const container = inventory.container;
+        const selectedIndex = player.selectedSlotIndex;
+        
+        if (durability.damage >= durability.maxDurability) {
+          container.setItem(selectedIndex, undefined);
+          dimension.playSound("random.break", block.location);
+        } else {
+          container.setItem(selectedIndex, tool);
+        }
+      }
+    }
+  }
+}
+
 // Global after events for block breaks
 world.afterEvents.playerBreakBlock.subscribe((event) => {
-  const { block, brokenBlockPermutation, dimension } = event;
+  const { block, brokenBlockPermutation, dimension, player } = event;
   const blockId = brokenBlockPermutation.type.id;
   if (blockId.startsWith("breakfast:")) {
     handleBlockBreak(block.location, dimension, blockId, brokenBlockPermutation);
   }
+  
+  // Trigger cascading crop breaks above
+  checkAndBreakCropAbove(block.location, dimension);
+
+  if (player && (
+    blockId === "minecraft:short_grass" ||
+    blockId === "minecraft:tallgrass" ||
+    blockId === "minecraft:tall_grass" ||
+    blockId === "minecraft:fern" ||
+    blockId === "minecraft:large_fern"
+  )) {
+    handleGrassBreak(event);
+  }
 });
+
 
 world.afterEvents.blockExplode.subscribe((event) => {
   const { block, explodedBlockPermutation, dimension } = event;
@@ -828,36 +1117,9 @@ world.afterEvents.blockExplode.subscribe((event) => {
   if (blockId.startsWith("breakfast:")) {
     handleBlockBreak(block.location, dimension, blockId, explodedBlockPermutation);
   }
+  checkAndBreakCropAbove(block.location, dimension);
 });
 
-// Workaround for Bedrock bug MCPE-188410 where custom foods ignore can_always_eat: false
-world.beforeEvents.itemUse.subscribe((event) => {
-  const { itemStack, source: player } = event;
-  if (!player || !itemStack) return;
-
-  const typeId = itemStack.typeId;
-  if (typeId.startsWith("breakfast:")) {
-    const nonFoods = [
-      "breakfast:knife_flint",
-      "breakfast:knife_copper",
-      "breakfast:knife_iron",
-      "breakfast:knife_diamond",
-      "breakfast:lard",
-      "breakfast:griddle",
-      "breakfast:butcher_block"
-    ];
-    if (nonFoods.includes(typeId)) return;
-
-    try {
-      const hunger = player.getComponent("minecraft:player.hunger");
-      if (hunger && hunger.currentValue >= 20) {
-        event.cancel = true;
-      }
-    } catch (e) {
-      console.warn("[Breakfast] Error in itemUse hunger check: " + e);
-    }
-  }
-});
 
 // ----------------------------------------------------
 // Custom Achievements / Advancements System
@@ -893,7 +1155,7 @@ world.afterEvents.playerPlaceBlock.subscribe((event) => {
   }
 });
 
-// 2. Most Important Meal (Obtain Berry Pancakes)
+// 2. Most Important Meal (Obtain Berry Pancakes) & Short Order Cook
 system.runInterval(() => {
   try {
     for (const player of world.getAllPlayers()) {
@@ -902,15 +1164,19 @@ system.runInterval(() => {
         const container = inventory.container;
         for (let i = 0; i < container.size; i++) {
           const item = container.getItem(i);
-          if (item && item.typeId === "breakfast:berry_pancakes") {
-            awardAchievement(player, "most_important_meal", "Most Important Meal", "Obtain Berry Pancakes");
-            break;
+          if (item) {
+            if (item.typeId === "breakfast:berry_pancakes") {
+              awardAchievement(player, "most_important_meal", "Most Important Meal", "Obtain Berry Pancakes");
+            }
+            if (COOKED_INGREDIENTS.includes(item.typeId)) {
+              checkShortOrderCook(player, item.typeId);
+            }
           }
         }
       }
     }
   } catch (err) {
-    console.warn("[Breakfast] Error in pancakes achievement scan: " + err);
+    console.warn("[Breakfast] Error in pancakes/short-order achievement scan: " + err);
   }
 }, 20);
 
@@ -952,16 +1218,54 @@ function handleCropTick(event) {
     const stage = block.permutation.getState("breakfast:growth_stage");
     if (stage === undefined) return;
 
-    if (stage < 3) {
-      const nextPerm = block.permutation.withState("breakfast:growth_stage", stage + 1);
-      block.setPermutation(nextPerm);
-    } else if (stage === 3 && block.typeId === "breakfast:tomato_crop") {
-      const above = block.above();
-      if (above && above.typeId === "breakfast:tomato_trellis") {
-        above.setType("breakfast:tomato_crop");
-        const perm = above.permutation.withState("breakfast:growth_stage", 0);
-        above.setPermutation(perm);
-        block.dimension.playSound("dig.wood", above.location);
+    if (stage < 2) {
+      // Growing plant structure
+      if (Math.random() < CROP_GROWTH_CHANCE) {
+        const nextPerm = block.permutation.withState("breakfast:growth_stage", stage + 1);
+        block.setPermutation(nextPerm);
+      }
+    } else if (stage === 2) {
+      // Regrowing fruit / mature stage
+      if (Math.random() < FRUIT_REGROWTH_CHANCE) {
+        const nextPerm = block.permutation.withState("breakfast:growth_stage", 3);
+        block.setPermutation(nextPerm);
+      }
+    } else if (stage === 3) {
+      if (block.typeId === "breakfast:tomato_crop") {
+        // Enforce 3-block max height limit (base + 2 climbing blocks)
+        let height = 1;
+        let current = block.below();
+        while (current && current.typeId === "breakfast:tomato_crop") {
+          height++;
+          current = current.below();
+        }
+        
+        if (height < 3) {
+          const above = block.above();
+          if (above && above.typeId === "breakfast:tomato_trellis") {
+            if (Math.random() < TRELLIS_GROWTH_CHANCE) {
+              above.setType("breakfast:tomato_crop");
+              const perm = above.permutation
+                .withState("breakfast:growth_stage", 0)
+                .withState("breakfast:is_climbing", true);
+              above.setPermutation(perm);
+              block.dimension.playSound("dig.wood", above.location);
+            }
+          }
+        }
+      } else if (block.typeId === "breakfast:spinach_crop") {
+        const below = block.below();
+        if (below && below.typeId === "minecraft:farmland") {
+          const above = block.above();
+          if (above && above.typeId === "minecraft:air") {
+            if (Math.random() < SPINACH_GROWTH_CHANCE) {
+              above.setType("breakfast:spinach_crop");
+              const perm = above.permutation.withState("breakfast:growth_stage", 0);
+              above.setPermutation(perm);
+              block.dimension.playSound("dig.grass", above.location);
+            }
+          }
+        }
       }
     }
   } catch (err) {
@@ -977,6 +1281,18 @@ function handleCropInteract(event) {
     const stage = block.permutation.getState("breakfast:growth_stage");
     if (stage === undefined) return;
 
+    let heldItem = undefined;
+    const inventory = player.getComponent("minecraft:inventory");
+    if (inventory && inventory.container) {
+      heldItem = inventory.container.getItem(player.selectedSlotIndex);
+    }
+    
+    // 1. Prevent harvest when holding bone meal
+    if (heldItem && heldItem.typeId === "minecraft:bone_meal") {
+      return;
+    }
+    
+    // 2. Tomato and Pepper harvest: drops fruit and resets stage to 2
     if (stage === 3 && (block.typeId === "breakfast:tomato_crop" || block.typeId === "breakfast:pepper_crop")) {
       const isTomato = block.typeId === "breakfast:tomato_crop";
       const harvestItem = isTomato ? "breakfast:tomato" : "breakfast:pepper";
@@ -985,11 +1301,111 @@ function handleCropInteract(event) {
       const stack = new ItemStack(harvestItem, count);
       block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
       
-      const resetPerm = block.permutation.withState("breakfast:growth_stage", 1);
+      const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
       block.setPermutation(resetPerm);
       
       block.dimension.playSound("item.sweet_berries.pick", block.location);
       player.onScreenDisplay.setActionBar("Harvested " + harvestItem.split(":")[1]);
+      return;
+    }
+
+    // 2.2 Onion harvest: drops onion and resets stage to 0 (replants)
+    if (stage === 3 && block.typeId === "breakfast:onion_crop") {
+      const harvestItem = "breakfast:onion";
+      const stack = new ItemStack(harvestItem, 1);
+      block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+      
+      const resetPerm = block.permutation.withState("breakfast:growth_stage", 0);
+      block.setPermutation(resetPerm);
+      
+      if (Math.random() < 0.5) {
+        const seedStack = new ItemStack("breakfast:onion_seeds", 1);
+        block.dimension.spawnItem(seedStack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+      }
+      
+      block.dimension.playSound("item.sweet_berries.pick", block.location);
+      player.onScreenDisplay.setActionBar("Harvested and replanted onion");
+      return;
+    }
+    
+    // 2.5 Herb crop harvest: drops raw herb and resets stage to 2
+    if (stage === 3 && block.typeId.startsWith("breakfast:herb_crop_")) {
+      const herbName = block.typeId.replace("breakfast:herb_crop_", "");
+      
+      if (heldItem && KNIVES.includes(heldItem.typeId)) {
+        // Knife harvest: drops 2 chopped herbs and damages the knife
+        const harvestItem = `breakfast:chopped_${herbName}`;
+        const stack = new ItemStack(harvestItem, 2);
+        block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+        
+        const durability = heldItem.getComponent("minecraft:durability");
+        if (durability) {
+          durability.damage += 1;
+          if (durability.damage >= durability.maxDurability) {
+            if (inventory && inventory.container) {
+              inventory.container.setItem(player.selectedSlotIndex, undefined);
+            }
+            block.dimension.playSound("random.break", block.location);
+          } else {
+            if (inventory && inventory.container) {
+              inventory.container.setItem(player.selectedSlotIndex, heldItem);
+            }
+          }
+        }
+        
+        const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
+        block.setPermutation(resetPerm);
+        
+        block.dimension.playSound("mob.sheep.shear", block.location);
+        player.onScreenDisplay.setActionBar("Harvested chopped " + herbName);
+        return;
+      } else {
+        // Hand/other harvest: drops 1 raw herb
+        const harvestItem = `breakfast:herb_${herbName}`;
+        const stack = new ItemStack(harvestItem, 1);
+        block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+        
+        const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
+        block.setPermutation(resetPerm);
+        
+        block.dimension.playSound("item.sweet_berries.pick", block.location);
+        player.onScreenDisplay.setActionBar("Harvested " + herbName);
+        return;
+      }
+    }
+    
+    // 3. Spinach top-block harvest: shears or knife, sets to air, drops leaves
+    if (block.typeId === "breakfast:spinach_crop" && stage === 3) {
+      const below = block.below();
+      if (below && below.typeId === "breakfast:spinach_crop") {
+        if (heldItem && (heldItem.typeId === "minecraft:shears" || KNIVES.includes(heldItem.typeId))) {
+          const count = 1 + Math.floor(Math.random() * 2);
+          const stack = new ItemStack("breakfast:spinach", count);
+          block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+          
+          block.setType("minecraft:air");
+          
+          // Damage the tool
+          const durability = heldItem.getComponent("minecraft:durability");
+          if (durability) {
+            durability.damage += 1;
+            if (durability.damage >= durability.maxDurability) {
+              if (inventory && inventory.container) {
+                inventory.container.setItem(player.selectedSlotIndex, undefined);
+              }
+              block.dimension.playSound("random.break", block.location);
+            } else {
+              if (inventory && inventory.container) {
+                inventory.container.setItem(player.selectedSlotIndex, heldItem);
+              }
+            }
+          }
+          
+          block.dimension.playSound("mob.sheep.shear", block.location);
+          player.onScreenDisplay.setActionBar("Harvested Spinach");
+          return;
+        }
+      }
     }
   } catch (err) {
     console.warn("[Breakfast] Error in handleCropInteract: " + err);
@@ -1117,13 +1533,215 @@ function handleHerbPotTick(event) {
 
       const itemVisual = blockData.stage >= 2 ? `breakfast:herb_${blockData.herbType}` : `breakfast:${blockData.herbType}_seeds`;
       updatePlacedEntity(block, "breakfast:herb_pot_plant", itemVisual, 0.5);
-
-      const pLoc = { x: block.location.x + 0.5, y: block.location.y + 0.8, z: block.location.z + 0.5 };
-      try {
-        block.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
-      } catch (e) {}
     }
   } catch (err) {
     console.warn("[Breakfast] Error in handleHerbPotTick: " + err);
   }
 }
+
+// Helper to safely consume a single item from the player's hand
+function consumePlayerItem(player, item) {
+  try {
+    let isCreative = false;
+    try {
+      isCreative = (player.getGameMode() === "creative" || player.getGameMode() === GameMode.creative);
+    } catch (e) {}
+
+    if (!isCreative) {
+      const inventory = player.getComponent("minecraft:inventory");
+      if (inventory && inventory.container) {
+        const container = inventory.container;
+        const selectedIndex = player.selectedSlotIndex;
+        const handItem = container.getItem(selectedIndex);
+        if (handItem && handItem.typeId === item.typeId) {
+          if (handItem.amount > 1) {
+            handItem.amount -= 1;
+            container.setItem(selectedIndex, handItem);
+          } else {
+            container.setItem(selectedIndex, undefined);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error consuming item: " + err);
+  }
+}
+
+// Global after events for block interactions (specifically bone meal)
+world.afterEvents.playerInteractWithBlock.subscribe((event) => {
+  const { player, block, beforeItemStack } = event;
+
+  if (!player || !block || !beforeItemStack) return;
+
+  if (beforeItemStack.typeId === "minecraft:bone_meal") {
+    const blockId = block.typeId;
+
+    // 1. Check if the block is a custom crop
+    if (blockId.startsWith("breakfast:") && (blockId.endsWith("_crop") || blockId.startsWith("breakfast:herb_crop_"))) {
+      try {
+        const stage = block.permutation.getState("breakfast:growth_stage");
+        if (stage !== undefined) {
+          if (stage < 3) {
+            // Advance growth stage
+            const growth = 1 + (Math.random() < 0.5 ? 1 : 0);
+            const newStage = Math.min(3, stage + growth);
+            const newPerm = block.permutation.withState("breakfast:growth_stage", newStage);
+            block.setPermutation(newPerm);
+
+            // Play effects
+            block.dimension.playSound("item.bone_meal.use", block.location);
+            const pLoc = { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 };
+            try {
+              block.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+            } catch (e) {}
+
+            // Consume bone meal
+            consumePlayerItem(player, beforeItemStack);
+          } else if (stage === 3) {
+            if (blockId === "breakfast:tomato_crop") {
+              const above = block.above();
+              if (above && above.typeId === "breakfast:tomato_trellis") {
+                above.setType("breakfast:tomato_crop");
+                const perm = above.permutation
+                  .withState("breakfast:growth_stage", 0)
+                  .withState("breakfast:is_climbing", true);
+                above.setPermutation(perm);
+
+                // Play effects
+                above.dimension.playSound("dig.wood", above.location);
+                above.dimension.playSound("item.bone_meal.use", above.location);
+                const pLoc = { x: above.location.x + 0.5, y: above.location.y + 0.5, z: above.location.z + 0.5 };
+                try {
+                  above.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+                } catch (e) {}
+
+                // Consume bone meal
+                consumePlayerItem(player, beforeItemStack);
+              }
+            } else if (blockId === "breakfast:spinach_crop") {
+              const below = block.below();
+              if (below && below.typeId === "minecraft:farmland") {
+                const above = block.above();
+                if (above && above.typeId === "minecraft:air") {
+                  above.setType("breakfast:spinach_crop");
+                  const perm = above.permutation.withState("breakfast:growth_stage", 0);
+                  above.setPermutation(perm);
+
+                  // Play effects
+                  above.dimension.playSound("dig.grass", above.location);
+                  above.dimension.playSound("item.bone_meal.use", above.location);
+                  const pLoc = { x: above.location.x + 0.5, y: above.location.y + 0.5, z: above.location.z + 0.5 };
+                  try {
+                    above.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+                  } catch (e) {}
+
+                  // Consume bone meal
+                  consumePlayerItem(player, beforeItemStack);
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("[Breakfast] Error in crop bonemeal: " + err);
+      }
+    }
+    // 2. Check if the block is a custom herb pot
+    else if (blockId === "breakfast:herb_pot") {
+      try {
+        const blockData = getBlockData(block);
+        if (blockData && blockData.herbType && blockData.stage < 3) {
+          const growth = 1 + (Math.random() < 0.5 ? 1 : 0);
+          blockData.stage = Math.min(3, blockData.stage + growth);
+          saveBlockData(block, blockData);
+
+          const itemVisual = blockData.stage >= 2 ? `breakfast:herb_${blockData.herbType}` : `breakfast:${blockData.herbType}_seeds`;
+          updatePlacedEntity(block, "breakfast:herb_pot_plant", itemVisual, 0.5);
+
+          // Play effects
+          block.dimension.playSound("item.bone_meal.use", block.location);
+          const pLoc = { x: block.location.x + 0.5, y: block.location.y + 0.8, z: block.location.z + 0.5 };
+          try {
+            block.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+          } catch (e) {}
+
+          // Consume bone meal
+          consumePlayerItem(player, beforeItemStack);
+        }
+      } catch (err) {
+        console.warn("[Breakfast] Error in herb pot bonemeal: " + err);
+      }
+    }
+  }
+});
+
+// Global custom entity drops handler (knife-only drops with looting enchantment support)
+world.afterEvents.entityDie.subscribe((event) => {
+  const { deadEntity, damageSource } = event;
+  if (!deadEntity || !damageSource) return;
+
+  const attacker = damageSource.damagingEntity;
+  if (!attacker || attacker.typeId !== "minecraft:player") return;
+
+  try {
+    const inventory = attacker.getComponent("minecraft:inventory");
+    if (!inventory || !inventory.container) return;
+
+    const heldItem = inventory.container.getItem(attacker.selectedSlotIndex);
+    const toolTypeId = heldItem ? heldItem.typeId : "";
+
+    if (!KNIVES.includes(toolTypeId)) return;
+
+    // Determine custom drops based on entity type
+    let drops = [];
+    const typeId = deadEntity.typeId;
+
+    if (typeId === "minecraft:cow") {
+      drops.push("breakfast:beef_flank");
+      drops.push("breakfast:suet");
+    } else if (typeId === "minecraft:pig") {
+      drops.push("breakfast:pork_belly");
+    } else if (typeId === "minecraft:sheep") {
+      drops.push("breakfast:mutton_ribs");
+    } else if (typeId === "minecraft:chicken") {
+      drops.push("breakfast:chicken_breast");
+    } else if (typeId === "minecraft:rabbit") {
+      drops.push("breakfast:rabbit_backstrap");
+    }
+
+    if (drops.length === 0) return;
+
+    // Check looting level
+    let lootingLevel = 0;
+    try {
+      const enchantable = heldItem.getComponent("minecraft:enchantable");
+      if (enchantable) {
+        const lootingEnchant = enchantable.getEnchantment("looting");
+        if (lootingEnchant) {
+          lootingLevel = lootingEnchant.level;
+        }
+      }
+    } catch (e) {}
+
+    const dimension = deadEntity.dimension;
+    const location = deadEntity.location;
+
+    for (const dropItem of drops) {
+      let count = 0;
+      if (Math.random() < 0.5) count++; // Base 50% chance for 1 drop
+      
+      // Bonus drops for looting level (each level gives a 50% chance for +1 item)
+      for (let i = 0; i < lootingLevel; i++) {
+        if (Math.random() < 0.5) count++;
+      }
+
+      if (count > 0) {
+        const stack = new ItemStack(dropItem, count);
+        dimension.spawnItem(stack, { x: location.x, y: location.y + 0.5, z: location.z });
+      }
+    }
+  } catch (err) {
+    console.warn("[Breakfast] Error in entityDie custom drops: " + err);
+  }
+});

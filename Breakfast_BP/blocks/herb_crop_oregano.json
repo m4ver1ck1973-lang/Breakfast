@@ -3,7 +3,7 @@
   "minecraft:block": {
     "description": {
       "identifier": "breakfast:herb_crop_oregano",
-      "properties": {
+      "states": {
         "breakfast:growth_stage": [
           0,
           1,
@@ -46,12 +46,37 @@
           400
         ],
         "looping": true
+      },
+      "minecraft:loot": "loot_tables/empty.json",
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ],
+            "block_filter": [
+              "minecraft:farmland"
+            ]
+          }
+        ]
       }
     },
     "permutations": [
       {
         "condition": "q.block_state('breakfast:growth_stage') == 0",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              3,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "herb_crop_oregano_0",
@@ -63,6 +88,18 @@
       {
         "condition": "q.block_state('breakfast:growth_stage') == 1",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              5,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "herb_crop_oregano_1",
@@ -74,6 +111,18 @@
       {
         "condition": "q.block_state('breakfast:growth_stage') == 2",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              7,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "herb_crop_oregano_2",
@@ -85,6 +134,18 @@
       {
         "condition": "q.block_state('breakfast:growth_stage') == 3",
         "components": {
+          "minecraft:selection_box": {
+            "origin": [
+              -8,
+              0,
+              -8
+            ],
+            "size": [
+              16,
+              9,
+              16
+            ]
+          },
           "minecraft:material_instances": {
             "*": {
               "texture": "herb_crop_oregano_3",

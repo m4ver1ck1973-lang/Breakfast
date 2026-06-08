@@ -32,12 +32,13 @@ This document provides a clean handoff summary of the Breakfast Minecraft Bedroc
 * [models/blocks/](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_RP/models/blocks) — Custom 3D geometries for the griddle, tomato trellis, and herb pot.
 
 ### Developer Tools (`Breakfast/tools/`)
-* [generate_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/generate_textures.py) — Downscaling, quantizing, and binary alpha processing for items.
+* [generate_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/generate_textures.py) — Downscaling, quantizing, and binary alpha processing for items. Updated with a standing rule warning check, automatic Resource Pack deployment, and timestamped raw file archiving.
 * [audit_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/audit_textures.py) — Audits item and texture coordinate matching.
 
 ---
 
-## 3. Key Resolutions & Learnings (v1.0.23)
+## 3. Key Resolutions & Learnings (v1.1.0)
+* **Standing Rule for Item Textures**: Established a project rule that all item textures must be 32x32 retro-quantized PNGs. They are generated via Gemini Web UI, saved to `staging/textures/items/raw/`, and post-processed using `generate_textures.py --post-process-only` which automatically deploys them to the RP and archives the raw source files. Procedural placeholder generation is disabled by default. See [texture_generation_rules.md](file:///c:/Users/brett/Code/Antigravity/Breakfast/docs/texture_generation_rules.md).
 * **Custom Components V2 Inline Format**: Custom block components in Minecraft Bedrock UWP must be declared directly inside `"components"` (e.g. `"breakfast:herb_pot_component": {}`) rather than using the legacy `"minecraft:custom_components": [ ... ]` array wrapper.
 * **Crop Permutations**: We implemented clean, performance-optimized crop growth stages (0-3) using the `"breakfast:growth_stage"` block state property and permutations inside block JSON files. This maps each stage to a separate texture (e.g. `onion_crop_0` to `onion_crop_3`).
 * **Visual Helpers for Pot/Planters**: The `placed_item` entity acts as a visual child element on the `herb_pot` to display seeds (stages 0-1) and raw plants (stages 2-3) dynamically based on the block's current growth progress.

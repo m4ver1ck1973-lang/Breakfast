@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.0",
+  "format_version": "1.21.60",
   "minecraft:item": {
     "description": {
       "identifier": "breakfast:bread_slice",
@@ -10,6 +10,9 @@
     "components": {
       "minecraft:icon": "bread_slice",
       "minecraft:max_stack_size": 64,
+      "minecraft:compostable": {
+        "composting_chance": 65
+      },
       "minecraft:food": {
         "nutrition": 2,
         "saturation_modifier": 0.2,

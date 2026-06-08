@@ -14,6 +14,9 @@
       },
       {
         "item": "breakfast:fried_egg"
+      },
+      {
+        "item": "breakfast:skillet"
       }
     ],
     "result": {

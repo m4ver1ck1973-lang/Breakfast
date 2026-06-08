@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.0",
+  "format_version": "1.21.60",
   "minecraft:item": {
     "description": {
       "identifier": "breakfast:raw_hash_browns",
@@ -9,7 +9,10 @@
     },
     "components": {
       "minecraft:icon": "raw_hash_browns",
-      "minecraft:max_stack_size": 64
+      "minecraft:max_stack_size": 64,
+      "minecraft:compostable": {
+        "composting_chance": 65
+      }
     }
   }
 }
