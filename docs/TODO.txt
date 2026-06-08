@@ -2,6 +2,8 @@
 
 Chop carrots and beetroot
 
+Hwrbs in pots can be harvested with shears, knives and keep growing.
+
 Update all textures
 
 Full testing
