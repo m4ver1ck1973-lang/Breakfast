@@ -55,8 +55,7 @@
               "up"
             ],
             "block_filter": [
-              "minecraft:farmland",
-              "breakfast:spinach_crop"
+              "minecraft:farmland"
             ]
           }
         ]

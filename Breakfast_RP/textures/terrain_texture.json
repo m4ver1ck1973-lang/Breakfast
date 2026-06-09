@@ -46,6 +46,18 @@
     "tomato_crop_3": {
       "textures": "textures/blocks/tomato_crop_3"
     },
+    "tomato_crop_climbing_0": {
+      "textures": "textures/blocks/tomato_crop_0"
+    },
+    "tomato_crop_climbing_1": {
+      "textures": "textures/blocks/tomato_crop_1"
+    },
+    "tomato_crop_climbing_2": {
+      "textures": "textures/blocks/tomato_crop_2"
+    },
+    "tomato_crop_climbing_3": {
+      "textures": "textures/blocks/tomato_crop_3"
+    },
     "pepper_crop_0": {
       "textures": "textures/blocks/pepper_crop_0"
     },

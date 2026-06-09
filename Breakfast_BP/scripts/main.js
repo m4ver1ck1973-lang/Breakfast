@@ -926,21 +926,9 @@ function dropCropItems(dimension, location, blockTypeId, permutation) {
       seeds = "breakfast:pepper_seeds";
       cropItem = "breakfast:pepper";
     } else if (blockTypeId === "breakfast:spinach_crop") {
-      let isTop = false;
-      try {
-        const below = dimension.getBlock({ x: location.x, y: location.y - 1, z: location.z });
-        if (below && below.typeId === "breakfast:spinach_crop") {
-          isTop = true;
-        }
-      } catch (e) {}
-      
-      if (isTop) {
-        seeds = "";
-      } else {
-        seeds = "breakfast:spinach_seeds";
-      }
+      seeds = "breakfast:spinach_seeds";
       cropItem = "breakfast:spinach";
-      minCrop = 1; maxCrop = 2;
+      minCrop = 1; maxCrop = 1;
     } else if (blockTypeId.startsWith("breakfast:herb_crop_")) {
       const herbType = blockTypeId.replace("breakfast:herb_crop_", "");
       seeds = `breakfast:${herbType}_seeds`;
@@ -1294,25 +1282,16 @@ function handleCropTick(event) {
           const above = block.above();
           if (above && above.typeId === "breakfast:tomato_trellis") {
             if (Math.random() < TRELLIS_GROWTH_CHANCE) {
+              const dirState = above.permutation.getState("minecraft:cardinal_direction");
               above.setType("breakfast:tomato_crop");
-              const perm = above.permutation
+              let perm = above.permutation
                 .withState("breakfast:growth_stage", 0)
                 .withState("breakfast:is_climbing", true);
+              if (dirState !== undefined) {
+                perm = perm.withState("minecraft:cardinal_direction", dirState);
+              }
               above.setPermutation(perm);
               block.dimension.playSound("dig.wood", above.location);
-            }
-          }
-        }
-      } else if (block.typeId === "breakfast:spinach_crop") {
-        const below = block.below();
-        if (below && below.typeId === "minecraft:farmland") {
-          const above = block.above();
-          if (above && above.typeId === "minecraft:air") {
-            if (Math.random() < SPINACH_GROWTH_CHANCE) {
-              above.setType("breakfast:spinach_crop");
-              const perm = above.permutation.withState("breakfast:growth_stage", 0);
-              above.setPermutation(perm);
-              block.dimension.playSound("dig.grass", above.location);
             }
           }
         }
@@ -1424,37 +1403,44 @@ function handleCropInteract(event) {
       }
     }
     
-    // 3. Spinach top-block harvest: shears or knife, sets to air, drops leaves
+    // 3. Spinach harvest: shears/knife harvests leaves, hand harvests spinach
     if (block.typeId === "breakfast:spinach_crop" && stage === 3) {
-      const below = block.below();
-      if (below && below.typeId === "breakfast:spinach_crop") {
-        if (heldItem && (heldItem.typeId === "minecraft:shears" || KNIVES.includes(heldItem.typeId))) {
-          const count = 1 + Math.floor(Math.random() * 2);
-          const stack = new ItemStack("breakfast:spinach", count);
-          block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
-          
-          block.setType("minecraft:air");
-          
-          // Damage the tool
-          const durability = heldItem.getComponent("minecraft:durability");
-          if (durability) {
-            durability.damage += 1;
-            if (durability.damage >= durability.maxDurability) {
-              if (inventory && inventory.container) {
-                inventory.container.setItem(player.selectedSlotIndex, undefined);
-              }
-              block.dimension.playSound("random.break", block.location);
-            } else {
-              if (inventory && inventory.container) {
-                inventory.container.setItem(player.selectedSlotIndex, heldItem);
-              }
+      if (heldItem && (heldItem.typeId === "minecraft:shears" || KNIVES.includes(heldItem.typeId))) {
+        const stack = new ItemStack("breakfast:spinach_leaves", 2);
+        block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+        
+        // Damage the tool
+        const durability = heldItem.getComponent("minecraft:durability");
+        if (durability) {
+          durability.damage += 1;
+          if (durability.damage >= durability.maxDurability) {
+            if (inventory && inventory.container) {
+              inventory.container.setItem(player.selectedSlotIndex, undefined);
+            }
+            block.dimension.playSound("random.break", block.location);
+          } else {
+            if (inventory && inventory.container) {
+              inventory.container.setItem(player.selectedSlotIndex, heldItem);
             }
           }
-          
-          block.dimension.playSound("mob.sheep.shear", block.location);
-          player.onScreenDisplay.setActionBar("Harvested Spinach");
-          return;
         }
+        
+        const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
+        block.setPermutation(resetPerm);
+        
+        block.dimension.playSound("mob.sheep.shear", block.location);
+        player.onScreenDisplay.setActionBar("Harvested spinach leaves");
+        return;
+      } else {
+        const stack = new ItemStack("breakfast:spinach", 1);
+        block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+        
+        const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
+        block.setPermutation(resetPerm);
+        
+        block.dimension.playSound("item.sweet_berries.pick", block.location);
+        player.onScreenDisplay.setActionBar("Harvested spinach");
+        return;
       }
     }
   } catch (err) {
