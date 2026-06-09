@@ -1499,8 +1499,8 @@ function handleHerbPotInteract(event) {
       return;
     }
 
-    // Case 2: Holding a Knife -> Shearing/harvesting mature herbs
-    if (KNIVES.includes(itemInHand.typeId)) {
+    // Case 2: Holding a Knife or Shears -> Shearing/harvesting mature herbs
+    if (KNIVES.includes(itemInHand.typeId) || itemInHand.typeId === "minecraft:shears") {
       if (!blockData.herbType) {
         player.onScreenDisplay.setActionBar("Pot is empty");
         return;

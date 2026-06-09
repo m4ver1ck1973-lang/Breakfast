@@ -1,8 +1,8 @@
 6-7-26 10:39pm
 
-Chop carrots and beetroot
+X - Chop carrots and beetroot
 
-Hwrbs in pots can be harvested with shears, knives and keep growing.
+(optional) Herbs in pots can be harvested with shears, knives and keep growing. 2 blocks tall like spinach.
 
 Update all textures
 
@@ -13,3 +13,9 @@ Documentation
 In-game guide and / or wiki
 
 Feature freeze and refinement
+
+Next Release:
+
+Cheese aging, cutting and serving
+
+3d textures for items on display
