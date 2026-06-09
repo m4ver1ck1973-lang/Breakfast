@@ -74,6 +74,20 @@ item.breakfast:spinach=Spinach
 item.breakfast:spinach_leaves=Spinach Leaves
 item.breakfast:spinach_seeds=Spinach Seeds
 
+# Slices & Grilled Veggies/Mushrooms
+item.breakfast:carrot_slices=Carrot Slices
+item.breakfast:grilled_carrot=Grilled Carrot
+item.breakfast:beetroot_slices=Beetroot Slices
+item.breakfast:grilled_beetroot=Grilled Beetroot
+item.breakfast:brown_mushroom_slices=Brown Mushroom Slices
+item.breakfast:grilled_brown_mushroom=Grilled Brown Mushroom
+item.breakfast:red_mushroom_slices=Red Mushroom Slices
+item.breakfast:grilled_red_mushroom=Grilled Red Mushroom
+item.breakfast:crimson_fungus_slices=Crimson Fungus Slices
+item.breakfast:grilled_crimson_fungus=Grilled Crimson Fungus
+item.breakfast:warped_fungus_slices=Warped Fungus Slices
+item.breakfast:grilled_warped_fungus=Grilled Warped Fungus
+
 # Herbs
 item.breakfast:herb_rosemary=Rosemary
 item.breakfast:chopped_rosemary=Chopped Rosemary
