@@ -1437,8 +1437,11 @@ def process_and_save(img, item_id, staging_dir, rp_dir=None):
     os.makedirs(os.path.join(staging_dir, "32x32"), exist_ok=True)
     os.makedirs(os.path.join(staging_dir, "32x32_quantized"), exist_ok=True)
     
-    # Resize using Lanczos for high quality cohesiveness
-    size_32 = img.resize((32, 32), Image.Resampling.LANCZOS)
+    # Choose resizing method based on input size: 16x16 uses NEAREST to preserve crisp pixel art
+    if img.size == (16, 16):
+        size_32 = img.resize((32, 32), Image.Resampling.NEAREST)
+    else:
+        size_32 = img.resize((32, 32), Image.Resampling.LANCZOS)
     size_32 = enforce_binary_alpha(size_32)
     
     # Save normal resized version
@@ -1557,9 +1560,14 @@ def main():
                     # Crop and pad
                     cropped = autocrop_and_pad(img)
                     
-                    # Resize and save using LANCZOS for 32x32
+                    # Resize based on input size: skip if already 32x32, nearest if 16x16
                     os.makedirs(os.path.join(staging_dir, "32x32"), exist_ok=True)
-                    size_32 = cropped.resize((32, 32), Image.Resampling.LANCZOS)
+                    if cropped.size == (32, 32):
+                        size_32 = cropped
+                    elif cropped.size == (16, 16):
+                        size_32 = cropped.resize((32, 32), Image.Resampling.NEAREST)
+                    else:
+                        size_32 = cropped.resize((32, 32), Image.Resampling.LANCZOS)
                     size_32 = enforce_binary_alpha(size_32)
                     size_32.save(os.path.join(staging_dir, "32x32", f"{item_id}.png"))
                     
