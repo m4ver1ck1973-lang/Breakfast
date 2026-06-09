@@ -376,7 +376,7 @@ function handleButcherBlockInteract(event) {
   // Case 2: Holding a Knife -> Cut the placed item
   if (KNIVES.includes(itemInHand.typeId)) {
     if (!blockData.placedItem) {
-      player.onScreenDisplay.setActionBar("Place a pork chop, ham, pork belly, potato, or bread first");
+      player.onScreenDisplay.setActionBar("Place a meat cut, vegetable, or bread first");
       return;
     }
 
@@ -503,7 +503,7 @@ function handleButcherBlockInteract(event) {
       block.dimension.playSound("dig.wood", block.location);
       player.onScreenDisplay.setActionBar("Placed " + itemInHand.typeId.split(":")[1]);
     } else {
-      player.onScreenDisplay.setActionBar("Hold a pork chop, ham, pork belly, potato, or bread to place");
+      player.onScreenDisplay.setActionBar("Hold a meat cut, vegetable, or bread to place");
     }
   }
 }
@@ -521,9 +521,8 @@ const MEATS = [
 const VEGGIES = [
   "breakfast:onion", "breakfast:onion_slices", "breakfast:pepper", "breakfast:pepper_slices",
   "breakfast:spinach", "breakfast:spinach_leaves", "minecraft:sweet_berries", "minecraft:glow_berries",
-  "minecraft:brown_mushroom", "minecraft:red_mushroom", "breakfast:herb_rosemary",
+  "breakfast:herb_rosemary",
   "breakfast:herb_thyme", "breakfast:herb_sage", "breakfast:herb_oregano",
-  "minecraft:crimson_fungus", "minecraft:warped_fungus",
   "breakfast:carrot_slices", "breakfast:grilled_carrot", "breakfast:beetroot_slices", "breakfast:grilled_beetroot",
   "breakfast:brown_mushroom_slices", "breakfast:grilled_brown_mushroom", "breakfast:red_mushroom_slices", "breakfast:grilled_red_mushroom",
   "breakfast:crimson_fungus_slices", "breakfast:grilled_crimson_fungus", "breakfast:warped_fungus_slices", "breakfast:grilled_warped_fungus"
