@@ -128,9 +128,6 @@
     "pepper_slices": {
       "textures": "textures/items/pepper_slices"
     },
-    "spinach_leaves": {
-      "textures": "textures/items/spinach_leaves"
-    },
     "rosemary_chopped": {
       "textures": "textures/items/rosemary_chopped"
     },

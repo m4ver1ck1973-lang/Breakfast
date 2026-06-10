@@ -100,81 +100,103 @@ const ITEM_TO_VARIANT = {
   "breakfast:pepper_slices": 41,
   "breakfast:grilled_pepper": 42,
   "breakfast:spinach": 43,
-  "breakfast:spinach_leaves": 44,
-  "breakfast:herb_rosemary": 45,
-  "breakfast:chopped_rosemary": 46,
-  "breakfast:herb_thyme": 47,
-  "breakfast:chopped_thyme": 48,
-  "breakfast:herb_sage": 49,
-  "breakfast:chopped_sage": 50,
-  "breakfast:herb_oregano": 51,
-  "breakfast:chopped_oregano": 52,
-  "breakfast:spices": 53,
-  "breakfast:salt": 54,
-  "breakfast:cheese_curds": 55,
-  "breakfast:cheese_wheel": 56,
-  "breakfast:cheese_slice": 57,
-  "breakfast:beef_flank": 58,
-  "breakfast:steak_strips": 59,
-  "breakfast:cooked_steak_strips": 60,
-  "breakfast:suet": 61,
-  "breakfast:tallow": 62,
-  "breakfast:chicken_breast": 63,
-  "breakfast:mutton_ribs": 64,
-  "breakfast:mutton_strips": 65,
-  "breakfast:cooked_mutton_strips": 66,
-  "breakfast:rabbit_backstrap": 67,
-  "breakfast:rabbit_sausage_raw": 68,
-  "breakfast:rabbit_sausage": 69,
-  "breakfast:onion_seeds": 70,
-  "breakfast:tomato_seeds": 71,
-  "breakfast:pepper_seeds": 72,
-  "breakfast:spinach_seeds": 73,
-  "breakfast:rosemary_seeds": 74,
-  "breakfast:thyme_seeds": 75,
-  "breakfast:sage_seeds": 76,
-  "breakfast:oregano_seeds": 77,
-  "breakfast:omelet": 78,
-  "breakfast:bacon_omelet": 79,
-  "breakfast:ham_omelet": 80,
-  "breakfast:mushroom_omelet": 81,
-  "breakfast:nether_fungi_omelet": 82,
-  "minecraft:sweet_berries": 83,
-  "minecraft:glow_berries": 84,
-  "minecraft:brown_mushroom": 85,
-  "minecraft:red_mushroom": 86,
-  "minecraft:crimson_fungus": 87,
-  "minecraft:warped_fungus": 88,
-  "breakfast:skillet": 89,
-  "breakfast:miners_skillet": 90,
-  "breakfast:carrot_slices": 91,
-  "breakfast:grilled_carrot": 92,
-  "breakfast:beetroot_slices": 93,
-  "breakfast:grilled_beetroot": 94,
-  "breakfast:brown_mushroom_slices": 95,
-  "breakfast:grilled_brown_mushroom": 96,
-  "breakfast:red_mushroom_slices": 97,
-  "breakfast:grilled_red_mushroom": 98,
-  "breakfast:crimson_fungus_slices": 99,
-  "breakfast:grilled_crimson_fungus": 100,
-  "breakfast:warped_fungus_slices": 101,
-  "breakfast:grilled_warped_fungus": 102,
-  "minecraft:carrot": 103,
-  "minecraft:beetroot": 104
+  "breakfast:herb_rosemary": 44,
+  "breakfast:chopped_rosemary": 45,
+  "breakfast:herb_thyme": 46,
+  "breakfast:chopped_thyme": 47,
+  "breakfast:herb_sage": 48,
+  "breakfast:chopped_sage": 49,
+  "breakfast:herb_oregano": 50,
+  "breakfast:chopped_oregano": 51,
+  "breakfast:spices": 52,
+  "breakfast:salt": 53,
+  "breakfast:cheese_curds": 54,
+  "breakfast:cheese_wheel": 55,
+  "breakfast:cheese_slice": 56,
+  "breakfast:beef_flank": 57,
+  "breakfast:steak_strips": 58,
+  "breakfast:cooked_steak_strips": 59,
+  "breakfast:suet": 60,
+  "breakfast:tallow": 61,
+  "breakfast:chicken_breast": 62,
+  "breakfast:mutton_ribs": 63,
+  "breakfast:mutton_strips": 64,
+  "breakfast:cooked_mutton_strips": 65,
+  "breakfast:rabbit_backstrap": 66,
+  "breakfast:rabbit_sausage_raw": 67,
+  "breakfast:rabbit_sausage": 68,
+  "breakfast:onion_seeds": 69,
+  "breakfast:tomato_seeds": 70,
+  "breakfast:pepper_seeds": 71,
+  "breakfast:spinach_seeds": 72,
+  "breakfast:rosemary_seeds": 73,
+  "breakfast:thyme_seeds": 74,
+  "breakfast:sage_seeds": 75,
+  "breakfast:oregano_seeds": 76,
+  "breakfast:omelet": 77,
+  "breakfast:bacon_omelet": 78,
+  "breakfast:ham_omelet": 79,
+  "breakfast:mushroom_omelet": 80,
+  "breakfast:nether_fungi_omelet": 81,
+  "minecraft:sweet_berries": 82,
+  "minecraft:glow_berries": 83,
+  "minecraft:brown_mushroom": 84,
+  "minecraft:red_mushroom": 85,
+  "minecraft:crimson_fungus": 86,
+  "minecraft:warped_fungus": 87,
+  "breakfast:skillet": 88,
+  "breakfast:miners_skillet": 89,
+  "breakfast:carrot_slices": 90,
+  "breakfast:grilled_carrot": 91,
+  "breakfast:beetroot_slices": 92,
+  "breakfast:grilled_beetroot": 93,
+  "breakfast:brown_mushroom_slices": 94,
+  "breakfast:grilled_brown_mushroom": 95,
+  "breakfast:red_mushroom_slices": 96,
+  "breakfast:grilled_red_mushroom": 97,
+  "breakfast:crimson_fungus_slices": 98,
+  "breakfast:grilled_crimson_fungus": 99,
+  "breakfast:warped_fungus_slices": 100,
+  "breakfast:grilled_warped_fungus": 101,
+  "minecraft:carrot": 102,
+  "minecraft:beetroot": 103
 };
 
 function getVariantFromItem(itemTypeId) {
   return ITEM_TO_VARIANT[itemTypeId] || 0;
 }
 
+const GRIDDLE_SLOT_LAYOUT = [
+  { index: 0, offset: { x: -0.25, z: -0.25 }, bounds: { xMin: 0.5, xMax: 1, zMin: 0.5, zMax: 1 } },
+  { index: 1, offset: { x: 0.25, z: -0.25 }, bounds: { xMin: 0, xMax: 0.5, zMin: 0.5, zMax: 1 } },
+  { index: 2, offset: { x: -0.25, z: 0.25 }, bounds: { xMin: 0.5, xMax: 1, zMin: 0, zMax: 0.5 } },
+  { index: 3, offset: { x: 0.25, z: 0.25 }, bounds: { xMin: 0, xMax: 0.5, zMin: 0, zMax: 0.5 } }
+];
+
 function getGriddleSlotOffsets(index) {
-  switch (index) {
-    case 0: return { x: 0.25, z: 0.25 };    // Slot 1 (SE)
-    case 1: return { x: -0.25, z: 0.25 };   // Slot 2 (SW)
-    case 2: return { x: 0.25, z: -0.25 };   // Slot 3 (NE)
-    case 3: return { x: -0.25, z: -0.25 };  // Slot 4 (NW)
-    default: return { x: 0, z: 0 };
+  const slot = GRIDDLE_SLOT_LAYOUT[index];
+  return slot ? slot.offset : { x: 0, z: 0 };
+}
+
+function getGriddleSlotFromFaceLocation(faceLocation) {
+  if (!faceLocation) return -1;
+
+  const x = Math.min(Math.max(faceLocation.x, 0), 0.999999);
+  const z = Math.min(Math.max(faceLocation.z, 0), 0.999999);
+
+  for (const slot of GRIDDLE_SLOT_LAYOUT) {
+    const { xMin, xMax, zMin, zMax } = slot.bounds;
+    if (
+      x >= xMin &&
+      x < xMax &&
+      z >= zMin &&
+      z < zMax
+    ) {
+      return slot.index;
+    }
   }
+
+  return -1;
 }
 
 // Helper to remove any placed visual entities in a slot or butcher block
@@ -520,7 +542,7 @@ const MEATS = [
 ];
 const VEGGIES = [
   "breakfast:onion", "breakfast:onion_slices", "breakfast:pepper", "breakfast:pepper_slices",
-  "breakfast:spinach", "breakfast:spinach_leaves", "minecraft:sweet_berries", "minecraft:glow_berries",
+  "breakfast:spinach", "minecraft:sweet_berries", "minecraft:glow_berries",
   "breakfast:herb_rosemary",
   "breakfast:herb_thyme", "breakfast:herb_sage", "breakfast:herb_oregano",
   "breakfast:carrot_slices", "breakfast:grilled_carrot", "breakfast:beetroot_slices", "breakfast:grilled_beetroot",
@@ -681,18 +703,7 @@ function handleGriddleInteract(event) {
   let clickedSlot = -1;
   const faceStr = String(face);
   if ((faceStr === "Up" || faceStr === "up") && faceLoc) {
-    const clickX = faceLoc.x;
-    const clickZ = faceLoc.z;
-    
-    // Absolute coordinate mapping relative to block space:
-    // NW corner is at x < 0.5, z < 0.5
-    // NE corner is at x >= 0.5, z < 0.5
-    // SW corner is at x < 0.5, z >= 0.5
-    // SE corner is at x >= 0.5, z >= 0.5
-    if (clickX < 0.5 && clickZ < 0.5) clickedSlot = 0;        // NW
-    else if (clickX >= 0.5 && clickZ < 0.5) clickedSlot = 1;  // NE
-    else if (clickX < 0.5 && clickZ >= 0.5) clickedSlot = 2;  // SW
-    else if (clickX >= 0.5 && clickZ >= 0.5) clickedSlot = 3; // SE
+    clickedSlot = getGriddleSlotFromFaceLocation(faceLoc);
   }
 
   if (itemInHand && isPlaceableOnGriddle(itemInHand.typeId)) {
@@ -925,10 +936,6 @@ function dropCropItems(dimension, location, blockTypeId, permutation) {
     } else if (blockTypeId === "breakfast:pepper_crop") {
       seeds = "breakfast:pepper_seeds";
       cropItem = "breakfast:pepper";
-    } else if (blockTypeId === "breakfast:spinach_crop") {
-      seeds = "breakfast:spinach_seeds";
-      cropItem = "breakfast:spinach";
-      minCrop = 1; maxCrop = 1;
     } else if (blockTypeId.startsWith("breakfast:herb_crop_")) {
       const herbType = blockTypeId.replace("breakfast:herb_crop_", "");
       seeds = `breakfast:${herbType}_seeds`;
@@ -1321,7 +1328,7 @@ function handleCropInteract(event) {
       return;
     }
     
-    // 2. Tomato and Pepper harvest: drops fruit and resets stage to 2
+    // 2. Tomato and Pepper harvest: drops fruit and resets regrowth stage
     if (stage === 3 && (block.typeId === "breakfast:tomato_crop" || block.typeId === "breakfast:pepper_crop")) {
       const isTomato = block.typeId === "breakfast:tomato_crop";
       const harvestItem = isTomato ? "breakfast:tomato" : "breakfast:pepper";
@@ -1330,6 +1337,7 @@ function handleCropInteract(event) {
       const stack = new ItemStack(harvestItem, count);
       block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
       
+      // Stage 2 is the full bush state; stage 3 is fruit-bearing.
       const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
       block.setPermutation(resetPerm);
       
@@ -1403,45 +1411,16 @@ function handleCropInteract(event) {
       }
     }
     
-    // 3. Spinach harvest: shears/knife harvests leaves, hand harvests spinach
     if (block.typeId === "breakfast:spinach_crop" && stage === 3) {
-      if (heldItem && (heldItem.typeId === "minecraft:shears" || KNIVES.includes(heldItem.typeId))) {
-        const stack = new ItemStack("breakfast:spinach_leaves", 2);
-        block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
-        
-        // Damage the tool
-        const durability = heldItem.getComponent("minecraft:durability");
-        if (durability) {
-          durability.damage += 1;
-          if (durability.damage >= durability.maxDurability) {
-            if (inventory && inventory.container) {
-              inventory.container.setItem(player.selectedSlotIndex, undefined);
-            }
-            block.dimension.playSound("random.break", block.location);
-          } else {
-            if (inventory && inventory.container) {
-              inventory.container.setItem(player.selectedSlotIndex, heldItem);
-            }
-          }
-        }
-        
-        const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
-        block.setPermutation(resetPerm);
-        
-        block.dimension.playSound("mob.sheep.shear", block.location);
-        player.onScreenDisplay.setActionBar("Harvested spinach leaves");
-        return;
-      } else {
-        const stack = new ItemStack("breakfast:spinach", 1);
-        block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
-        
-        const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
-        block.setPermutation(resetPerm);
-        
-        block.dimension.playSound("item.sweet_berries.pick", block.location);
-        player.onScreenDisplay.setActionBar("Harvested spinach");
-        return;
-      }
+      const stack = new ItemStack("breakfast:spinach", 1);
+      block.dimension.spawnItem(stack, { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 });
+
+      const resetPerm = block.permutation.withState("breakfast:growth_stage", 2);
+      block.setPermutation(resetPerm);
+
+      block.dimension.playSound("item.sweet_berries.pick", block.location);
+      player.onScreenDisplay.setActionBar("Harvested spinach");
+      return;
     }
   } catch (err) {
     console.warn("[Breakfast] Error in handleCropInteract: " + err);
@@ -1629,7 +1608,7 @@ world.afterEvents.playerInteractWithBlock.subscribe((event) => {
             block.dimension.playSound("item.bone_meal.use", block.location);
             const pLoc = { x: block.location.x + 0.5, y: block.location.y + 0.5, z: block.location.z + 0.5 };
             try {
-              block.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+              block.dimension.spawnParticle("minecraft:crop_growth_emitter", pLoc);
             } catch (e) {}
 
             // Consume bone meal
@@ -1649,32 +1628,11 @@ world.afterEvents.playerInteractWithBlock.subscribe((event) => {
                 above.dimension.playSound("item.bone_meal.use", above.location);
                 const pLoc = { x: above.location.x + 0.5, y: above.location.y + 0.5, z: above.location.z + 0.5 };
                 try {
-                  above.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+                  above.dimension.spawnParticle("minecraft:crop_growth_emitter", pLoc);
                 } catch (e) {}
 
                 // Consume bone meal
                 consumePlayerItem(player, beforeItemStack);
-              }
-            } else if (blockId === "breakfast:spinach_crop") {
-              const below = block.below();
-              if (below && below.typeId === "minecraft:farmland") {
-                const above = block.above();
-                if (above && above.typeId === "minecraft:air") {
-                  above.setType("breakfast:spinach_crop");
-                  const perm = above.permutation.withState("breakfast:growth_stage", 0);
-                  above.setPermutation(perm);
-
-                  // Play effects
-                  above.dimension.playSound("dig.grass", above.location);
-                  above.dimension.playSound("item.bone_meal.use", above.location);
-                  const pLoc = { x: above.location.x + 0.5, y: above.location.y + 0.5, z: above.location.z + 0.5 };
-                  try {
-                    above.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
-                  } catch (e) {}
-
-                  // Consume bone meal
-                  consumePlayerItem(player, beforeItemStack);
-                }
               }
             }
           }
@@ -1699,7 +1657,7 @@ world.afterEvents.playerInteractWithBlock.subscribe((event) => {
           block.dimension.playSound("item.bone_meal.use", block.location);
           const pLoc = { x: block.location.x + 0.5, y: block.location.y + 0.8, z: block.location.z + 0.5 };
           try {
-            block.dimension.spawnParticle("minecraft:crop_growth_area_emitter", pLoc);
+            block.dimension.spawnParticle("minecraft:crop_growth_emitter", pLoc);
           } catch (e) {}
 
           // Consume bone meal

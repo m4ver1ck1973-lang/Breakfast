@@ -1113,8 +1113,6 @@ def draw_procedural(item_id):
         return draw_pepper("raw")
     elif "spinach_seeds" in item_id:
         return draw_spinach("seeds")
-    elif "spinach_leaves" in item_id:
-        return draw_spinach("leaves")
     elif "spinach" in item_id:
         return draw_spinach("raw")
     elif "rosemary_seeds" in item_id:
@@ -1232,7 +1230,6 @@ PROMPT_MAP = {
     "pepper_grilled": "grilled charred green bell pepper rings",
     "spinach": "a fresh green spinach leaf",
     "spinach_seeds": "spinach crop seeds",
-    "spinach_leaves": "a heap of chopped green spinach leaves",
     "rosemary": "a sprig of fresh green rosemary herb",
     "rosemary_seeds": "rosemary herb seeds",
     "rosemary_chopped": "chopped rosemary needles",

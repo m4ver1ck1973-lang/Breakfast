@@ -33,7 +33,6 @@ def generate_items(bp_dir):
         "red_mushroom_slices": {"icon": "red_mushroom_slices"},
         "crimson_fungus_slices": {"icon": "crimson_fungus_slices"},
         "warped_fungus_slices": {"icon": "warped_fungus_slices"},
-        "spinach_leaves": {"icon": "spinach_leaves"},
         "chopped_rosemary": {"icon": "rosemary_chopped"},
         "chopped_thyme": {"icon": "thyme_chopped"},
         "chopped_sage": {"icon": "sage_chopped"},
@@ -66,7 +65,7 @@ def generate_items(bp_dir):
         compost_chance = None
         if item_name.endswith("_seeds"):
             compost_chance = 30
-        elif item_name in ["onion_slices", "tomato_slice", "pepper_slices", "spinach_leaves", 
+        elif item_name in ["onion_slices", "tomato_slice", "pepper_slices",
                            "herb_rosemary", "herb_thyme", "herb_sage", "herb_oregano",
                            "carrot_slices", "beetroot_slices", "brown_mushroom_slices",
                            "red_mushroom_slices", "crimson_fungus_slices", "warped_fungus_slices"]:

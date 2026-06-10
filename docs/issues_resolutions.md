@@ -165,3 +165,44 @@ After downscaling generated textures to 32x32, strange, multi-colored/magenta/pu
 * Updated the post-processing script [generate_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/generate_textures.py) to add an `enforce_binary_alpha` function.
 * This function forces any pixel with alpha < 128 to be fully transparent black `(0, 0, 0, 0)` and alpha >= 128 to be fully opaque `(r, g, b, 255)`.
 * Regenerated and redeployed all 30 textures with this rule, removing all semi-transparency rendering glitches.
+
+---
+
+## Issue 12: Griddle Slot Interactions Drift Out of Sync
+
+### Symptom
+The Griddle visually rendered items in four distinct quadrants, but the click-to-slot logic was maintained separately from the render offsets. Over time, this created a mirrored interaction mapping where the slot a player clicked did not always correspond to the slot that was visually occupied.
+
+### Investigation
+1. Reviewed the Griddle slot placement logic in [main.js](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/scripts/main.js): slot offsets were defined in `getGriddleSlotOffsets()`.
+2. Reviewed the click handling logic in the same file: `handleGriddleInteract()` independently mapped `faceLocation` quadrants to slot indexes.
+3. Identified the maintenance risk: because the render placement and hit detection were encoded in separate branches, any future layout tweak could easily reintroduce mismatched interactions.
+
+### Resolution
+* Refactored the Griddle to use a shared `GRIDDLE_SLOT_LAYOUT` table in [main.js](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/scripts/main.js).
+* Updated `getGriddleSlotOffsets()` to read from the shared table instead of a standalone switch statement.
+* Added `getGriddleSlotFromFaceLocation()` so click detection resolves slot indexes from the same layout data as rendering.
+* Clamped click coordinates before slot resolution to make edge clicks behave predictably.
+
+---
+
+## Issue 13: Spinach Leaf Artifact Still Dropping
+
+### Symptom
+The legacy `breakfast:spinach_leaves` item still dropped from shears/knife interactions even after the tall spinach mechanic was removed.
+
+### Resolution
+* Removed the old spinach bone-meal growth branch from [main.js](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/scripts/main.js).
+* Deleted the `breakfast:spinach_leaves` item definition, UI language entry, item texture mapping, placed-item render mapping, and registry row.
+* Removed the lingering generator references in [generate_json_files.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/generate_json_files.py) and [generate_textures.py](file:///c:/Users/brett/Code/Antigravity/Breakfast/tools/generate_textures.py).
+
+---
+
+## Issue 14: Tomato Harvest Reset Used The Wrong Regrowth Stage
+
+### Symptom
+Tomato crops that were harvested without a trellis were being reset to stage 2, which no longer matched the current four-texture tomato crop flow.
+
+### Resolution
+* Updated the tomato and pepper harvest branch in [main.js](file:///c:/Users/brett/Code/Antigravity/Breakfast/Breakfast_BP/scripts/main.js) so both crops now reset to stage 2 after harvesting.
+* Synced the crop guide in [WIKI_GUIDE.md](file:///c:/Users/brett/Code/Antigravity/Breakfast/docs/WIKI_GUIDE.md) and [wiki.html](file:///c:/Users/brett/Code/Antigravity/Breakfast/docs/wiki.html) to describe the updated tomato behavior.

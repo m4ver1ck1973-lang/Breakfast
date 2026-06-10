@@ -28,16 +28,19 @@
         "seconds_to_destroy": 0.1
       },
       "minecraft:collision_box": false,
+      "minecraft:connection_rule": {
+        "accepts_connections_from": "none"
+      },
       "minecraft:selection_box": {
         "origin": [
-          -8,
+          -4,
           0,
-          -8
+          -4
         ],
         "size": [
-          16,
           8,
-          16
+          8,
+          8
         ]
       },
       "minecraft:tick": {
@@ -67,14 +70,14 @@
         "components": {
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
-              16,
+              8,
               3,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -90,14 +93,14 @@
         "components": {
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
-              16,
+              8,
               5,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -113,14 +116,14 @@
         "components": {
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
-              16,
+              8,
               7,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -136,14 +139,14 @@
         "components": {
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
-              16,
+              8,
               9,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {

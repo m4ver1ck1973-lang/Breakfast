@@ -47,16 +47,19 @@
         "seconds_to_destroy": 0.1
       },
       "minecraft:collision_box": false,
+      "minecraft:connection_rule": {
+        "accepts_connections_from": "none"
+      },
       "minecraft:selection_box": {
         "origin": [
-          -8,
+          -4,
           0,
-          -8
+          -4
         ],
         "size": [
-          16,
           8,
-          16
+          8,
+          8
         ]
       },
       "minecraft:tick": {
@@ -88,14 +91,14 @@
           "minecraft:geometry": "minecraft:geometry.cross",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
-              16,
+              8,
               4,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -112,14 +115,14 @@
           "minecraft:geometry": "geometry.tomato_crop_trellis",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
+              8,
               16,
-              16,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -140,14 +143,14 @@
           "minecraft:geometry": "minecraft:geometry.cross",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
-              16,
               8,
-              16
+              8,
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -164,14 +167,14 @@
           "minecraft:geometry": "geometry.tomato_crop_trellis",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
+              8,
               16,
-              16,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -192,14 +195,14 @@
           "minecraft:geometry": "minecraft:geometry.cross",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
+              8,
               16,
-              16,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -216,14 +219,14 @@
           "minecraft:geometry": "geometry.tomato_crop_trellis",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
+              8,
               16,
-              16,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -244,14 +247,14 @@
           "minecraft:geometry": "minecraft:geometry.cross",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
+              8,
               16,
-              16,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {
@@ -268,14 +271,14 @@
           "minecraft:geometry": "geometry.tomato_crop_trellis",
           "minecraft:selection_box": {
             "origin": [
-              -8,
+              -4,
               0,
-              -8
+              -4
             ],
             "size": [
+              8,
               16,
-              16,
-              16
+              8
             ]
           },
           "minecraft:material_instances": {

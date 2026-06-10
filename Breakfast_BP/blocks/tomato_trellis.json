@@ -26,6 +26,9 @@
         "seconds_to_destroy": 1.0
       },
       "minecraft:collision_box": false,
+      "minecraft:connection_rule": {
+        "accepts_connections_from": "none"
+      },
       "minecraft:selection_box": {
         "origin": [
           -8,
